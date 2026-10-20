@@ -1,0 +1,560 @@
+{%- liquid
+
+  # Product form id
+  # - Used to map inputs outside the form to the correct product form using form="{{ product_form_id }}" attribute
+  # - Also used as a prefix in input ids and labels
+  assign product_form_id = 'product-form-' | append: section.id
+
+  # Combined listing: media may belong to the selected variant's product
+  assign product_for_media = product
+  if product.id != product.selected_or_first_available_variant.product.id and product.selected_or_first_available_variant != blank
+    assign product_for_media = product.selected_or_first_available_variant.product
+  endif
+
+  # Variant image display (main gallery, thumbnails, and zoom modal when variant_images is not "all")
+  assign variant_images_mode = section.settings.variant_images | default: 'all'
+  assign variant_image_srcs = product_for_media.images | where: 'attached_to_variant?', true | map: 'src'
+  assign selected_variant_for_media = product.selected_or_first_available_variant
+  assign current_featured_src = ''
+
+  # High variant fix for grouped variant images, requires a custom.variant_group_start metafield on the product. Metafield type is list of image srcs that are attached to variants after the 250 variant count.
+  if product.variants_count > 250 and variant_images_mode == 'selected_group' and product.metafields.custom.variant_group_start.value != blank
+    assign manual_image_srcs = product.metafields.custom.variant_group_start.value | map: 'src'
+    assign variant_image_srcs = variant_image_srcs | concat: manual_image_srcs | uniq
+  endif
+
+  # Prefer featured_media (any media type; use preview_image). Fallback to featured_image when media is blank.
+  if selected_variant_for_media.featured_media != blank
+    assign current_featured_src = selected_variant_for_media.featured_media.preview_image.src
+  elsif selected_variant_for_media.featured_image != blank
+    assign current_featured_src = selected_variant_for_media.featured_image.src
+  endif
+
+  assign filtered_media_ids = ''
+  assign filtered_media_count = 0
+
+  if variant_images_mode != 'all' and product_for_media.has_only_default_variant == false and variant_image_srcs.size > 0 and current_featured_src != blank
+    if variant_images_mode == 'selected'
+      for media in product_for_media.media
+        assign media_src = media.preview_image.src
+        if variant_image_srcs contains media_src and media_src != current_featured_src
+          continue
+        endif
+        assign filtered_media_ids = filtered_media_ids | append: ',' | append: media.id
+        assign filtered_media_count = filtered_media_count | plus: 1
+      endfor
+    elsif variant_images_mode == 'selected_group'
+      assign sg_started = false
+      for media in product_for_media.media
+        assign media_src = media.preview_image.src
+        if media_src == current_featured_src
+          assign sg_started = true
+        elsif sg_started and variant_image_srcs contains media_src
+          break
+        endif
+        if sg_started
+          assign filtered_media_ids = filtered_media_ids | append: ',' | append: media.id
+          assign filtered_media_count = filtered_media_count | plus: 1
+        endif
+      endfor
+    endif
+    if filtered_media_ids != ''
+      # Trailing comma so token checks like ,id, match the last id (product-media-slider / thumbnails).
+      assign filtered_media_ids = filtered_media_ids | append: ','
+    endif
+  endif
+
+  if filtered_media_count == 0
+    assign filtered_media_ids = ''
+    assign filtered_media_count = product_for_media.media.size
+  endif
+
+  # Product page media_layout defines the desktop media structure as "grid" or "traditional" desktop layout.
+  # - Traditional places media in a slider.
+  # - Grid shows all media in a grid of 1 or 2 columns.
+  # - Slider will be forced in mobile.
+
+  assign md_two_columns = false
+  assign media_gap = section.settings.media_gap | append: 'px'
+  assign sm_media_gap = section.settings.sm_media_gap | append: 'px'
+  assign mobile_sizes = '(max-width: 767px) calc(100vw / 1)'
+  assign tablet_sizes = '(max-width: 1023px) calc(100vw / 2)'
+  assign desktop_sizes = 'calc(100vw / 2)'
+
+  # media column width setting affect on column classes and variables
+  case section.settings.media_col_width
+    when 'narrow'
+      assign media_column_class = 'col-md-5'
+      assign content_column_class = 'col-md-7'
+      assign content_width_limit_class = 'col-md-max-5'
+    when 'wide'
+      assign media_column_class = 'col-md-7'
+      assign content_column_class = 'col-md-5'
+      assign content_width_limit_class = 'col-md-max-4'
+    when 'extra_wide'
+      assign media_column_class = 'col-md-8'
+      assign content_column_class = 'col-md-4'
+      assign content_width_limit_class = 'col-md-max-4'
+
+    else
+      # medium as default value
+      assign media_column_class = 'col-md-6'
+      assign content_column_class = 'col-md-6'
+      assign content_width_limit_class = 'col-md-max-4'
+  endcase
+
+  # media_layout affect on column classes and variables
+  if section.settings.media_layout contains 'two-columns'
+    assign md_two_columns = true
+    assign first_item_full = true
+    assign desktop_sizes = 'calc(100vw * (2 / 3))'
+
+    if product.media.size > 1 and section.settings.media_layout != "two-columns-stacked"
+      assign first_item_full = false
+      assign desktop_sizes = 'calc(100vw / 3)'
+    endif
+  endif
+
+  # Media slider variable formatting
+  assign mobile_media_as_slider = true
+  assign desktop_media_as_slider = false
+
+  # Thumbnails slider variable formatting
+  assign mobile_thumbnails = section.settings.show_thumbnails_sm_down
+  assign desktop_thumbnails = false
+  assign desktop_thumbnails_position = 'below'
+  assign desktop_thumbnails_as_slider = true
+
+  if section.settings.media_layout contains 'traditional'
+    assign desktop_thumbnails = true
+    assign desktop_media_as_slider = true
+  endif
+
+  case section.settings.media_layout
+    when 'traditional-below-as-grid'
+      assign desktop_thumbnails_as_slider = false
+    when 'traditional-below'
+      assign desktop_thumbnails_as_slider = true
+    when 'traditional-next-to'
+      assign desktop_thumbnails_as_slider = true
+      assign desktop_thumbnails_position = 'next-to'
+    when 'traditional'
+      assign desktop_thumbnails = false
+  endcase
+
+  # To render thumbnails at all
+  assign render_thumbnails = false
+  if filtered_media_count <= 1
+    assign mobile_media_as_slider = false
+    assign desktop_media_as_slider = false
+  elsif mobile_thumbnails or desktop_thumbnails
+    assign render_thumbnails = true
+  endif
+
+  # Formatting sizes attributes for images
+  assign sizes = mobile_sizes | append: ', ' | append: tablet_sizes | append: ', ' | append: desktop_sizes
+
+  # Tag related
+  assign product_tags = product.tags | join: ','
+  assign is_preorder = false
+
+  if product_tags contains 'Preorder' or product_tags contains 'preorder' or product.metafields.woolman.preorder.value == true
+    assign is_preorder = true
+
+    if product.metafields.woolman.preorder_info.value != blank
+      assign preorder_info = product.metafields.woolman.preorder_info.value
+    else
+      assign preorder_info = 'products.product.preorder.info_html' | t
+    endif
+  endif
+
+  # Quantity selector and Multiply add related
+  assign quantity_selector_block = section.blocks | where: 'type', 'quantity_selector' | first
+  if quantity_selector_block
+    assign has_quantity_selector = true
+    assign next_to_add_to_cart = quantity_selector_block.settings.next_to_add_to_cart
+  else
+    assign has_quantity_selector = false
+    assign next_to_add_to_cart = false
+  endif
+
+  # Badges constructor
+  assign badges_block = section.blocks | where: 'type', 'badges' | first
+  if badges_block
+    capture the_badges
+      render 'product-badges', product: product, use_variant_price: true
+    endcapture
+  endif
+
+  # Size guide
+  # The "Option name" setting takes comma-separated option names, matched case-insensitively.
+  assign size_guide_block = section.blocks | where: 'type', 'size_guide' | first
+  assign show_size_guide = false
+  assign size_guide_trigger = size_guide_block.settings.size_guide_trigger | default: false
+
+  assign size_guide_option_names = ''
+  if size_guide_trigger != blank
+    assign size_guide_trigger_list = size_guide_trigger | split: ','
+    for trigger_name in size_guide_trigger_list
+      assign clean_name = trigger_name | strip | downcase
+      if clean_name != blank
+        assign size_guide_option_names = size_guide_option_names | append: clean_name | append: '||'
+      endif
+    endfor
+  endif
+  assign size_guide_options = size_guide_option_names | split: '||'
+
+  assign product_has_size_guide_option = false
+  for product_option in product.options
+    assign product_option_key = product_option | downcase
+    if size_guide_options contains product_option_key
+      assign product_has_size_guide_option = true
+      break
+    endif
+  endfor
+
+  if size_guide_block and size_guide_block.settings.size_guide_image != blank or size_guide_block.settings.size_guide_content != blank or size_guide_block.settings.size_guide_page_handle != blank
+    if size_guide_trigger == blank or product_has_size_guide_option
+      assign show_size_guide = true
+
+      capture size_guide_button
+        render 'size-guide-button', label: size_guide_block.settings.size_guide_button_label, drawer_id: size_guide_block.id, show_ruler: size_guide_block.settings.size_guide_show_ruler
+      endcapture
+    endif
+  endif
+
+  # Zoom modal settings
+  assign show_zoom_mobile = true
+  assign show_zoom_desktop = true
+  assign zoom_type_mobile = section.settings.media_zoom
+  assign zoom_type_desktop = section.settings.sm_media_zoom
+  if zoom_type_mobile == 'disabled'
+    assign show_zoom_mobile = false
+  endif
+  if zoom_type_desktop == 'disabled'
+    assign show_zoom_desktop = false
+  endif
+
+  # Custom background colors
+  assign custom_background_colors = section.settings.custom_background_colors
+-%}
+
+<div
+  id="{{ section.id }}"
+  class="container pt pb sm-pt sm-pb sm-down-edge-to-edge color-{{ section.settings.color_scheme }}{% if section.settings.enable_full_width %} full-width{% endif %}"
+  style="
+    --pt: {{ section.settings.padding_top | append: 'px' }};
+    --pb: {{ section.settings.padding_bottom | append: 'px' }};
+    --sm-pt: {{ section.settings.md_padding_top | append: 'px' }};
+    --sm-pb: {{ section.settings.md_padding_bottom | append: 'px' }};">
+  <div
+    class="sm-br product-main grid"
+    style="
+      --sm-br: {{ section.settings.border_radius | append: 'px' }};
+      {%- if custom_background_colors and section.settings.section_bg != blank -%}
+      background: {{ section.settings.section_bg }};
+      {%- endif -%}">
+
+    <div
+      class="pdp-media col-12 sm-p sm-br {{ media_column_class }}"
+      style="
+        --sm-p: {{ section.settings.sm-p | append: 'px' }};
+        --sm-br: {{ section.settings.border_radius | append: 'px' }};
+        {%- if custom_background_colors and section.settings.media_col_bg != blank -%}
+        background: {{ section.settings.media_col_bg }};
+        {%- endif -%}
+      ">
+      <div id="product-media-area-{{ section.id }}" class="product-media-area">
+        <div
+          class="media-sliders sm-gap{% if render_thumbnails and desktop_thumbnails_position == 'next-to' %} thumbnails-next-to{% endif %}"
+          style="
+            --gap: {{ media_gap }};
+            --sm-gap: {{ sm_media_gap | default: '3px' }};">
+
+          {% if badges_block and badges_block.settings.badges_position == 'over-media' %}
+            {{ the_badges }}
+          {% endif %}
+
+          {% assign product_media_bg = section.settings.product_media_bg %}
+          {% unless custom_background_colors %}
+            {% assign product_media_bg = 'transparent' %}
+          {% endunless %}
+
+          {%- render 'product-media-slider',
+            product: product_for_media,
+            aspect_ratio: section.settings.product_image_aspect_ratio,
+            background_color: product_media_bg,
+            md_two_columns: md_two_columns,
+            first_item_full: first_item_full,
+            sizing_rule: section.settings.media_fill_rule,
+            slider_mobile: mobile_media_as_slider,
+            slider_desktop: desktop_media_as_slider,
+            media_gap: media_gap,
+            sm_media_gap: sm_media_gap,
+            sm_border_radius: section.settings.media_border_radius,
+            slide_peek: section.settings.enable_slider_peek,
+            show_zoom_mobile: show_zoom_mobile,
+            show_zoom_desktop: show_zoom_desktop,
+            sizes: sizes,
+            context: 'product-template',
+            filtered_media_ids: filtered_media_ids,
+            filtered_media_count: filtered_media_count,
+            variant_images_mode: variant_images_mode
+          -%}
+
+          {%- if render_thumbnails -%}
+            {%- render 'product-media-thumbnails',
+              product: product_for_media,
+              aspect_ratio: section.settings.product_image_aspect_ratio,
+              background_color: product_media_bg,
+              slider_desktop: desktop_thumbnails_as_slider,
+              desktop_thumbnails_position: desktop_thumbnails_position,
+              sizing_rule: section.settings.media_fill_rule,
+              media_gap: media_gap,
+              sm_media_gap: sm_media_gap,
+              sm_border_radius: section.settings.media_border_radius,
+              show_in_mobile: mobile_thumbnails,
+              show_in_desktop: desktop_thumbnails,
+              filtered_media_ids: filtered_media_ids,
+              filtered_media_count: filtered_media_count,
+              variant_images_mode: variant_images_mode
+            -%}
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+
+  {% comment %}
+    PDP content includes anything expect the product media. Everything should be made using blocks so the merchant can adjust the page to their vision.
+  {% endcomment %}
+  <div
+    class="pdp-content col-12 sm-down-p-page sm-p sm-br {{ content_column_class }}"
+    style="
+      --sm-p: {{ section.settings.sm-p | append: 'px' }};
+      --sm-br: {{ section.settings.border_radius | append: 'px' }};
+      {%- if custom_background_colors and section.settings.content_col_bg != blank -%}
+      background: {{ section.settings.content_col_bg }};
+      {%- endif -%}">
+
+    <div class="m-auto sticky {{ content_width_limit_class }}">
+      {% if section.settings.show_breadcrumb %}
+        <div class="mb-gutter">
+          {% render 'breadcrumb' %}
+        </div>
+      {% endif %}
+      {%- for block in section.blocks -%}
+        {%- liquid
+          #Skip "STATIC" blocks
+          if block.type == 'sticky_buy_bar'
+            continue
+          endif
+        -%}
+        {%- capture block_inner_html -%}
+          {%- assign show_block = true -%}
+          {%- case block.type -%}
+            {%- when '@app' -%}
+              {%- render block -%}
+            {%- when 'text' -%}
+              {%- render 'product-block-text', block: block, section: section -%}
+            {%- when 'title' -%}
+              {%- render 'product-block-title', product: product -%}
+            {%- when 'price' -%}
+              {%- render 'product-block-price', product: product, block: block, section: section -%}
+            {%- when 'description' -%}
+              {%- if product.description == blank -%}
+                {%- assign show_block = false -%}
+              {%- else -%}
+                {%- render 'product-block-description', product: product, block: block, section: section -%}
+              {%- endif -%}
+            {%- when 'custom_liquid' -%}
+              {{ block.settings.custom_liquid }}
+            {%- when 'collapsible_tab' -%}
+              {%- if block.settings.open_as_drawer -%}
+                {%- assign has_collapsible_drawers = true -%}
+              {%- endif -%}
+              {%- render 'product-block-collapsible-tab', block: block, section: section -%}
+            {%- when 'sibling_products' -%}
+              {%- render 'product-block-sibling-products', product: product, block: block, section: section -%}
+            {%- when 'quantity_selector' -%}
+              {%- if block.settings.next_to_add_to_cart -%}
+                {%- continue -%}
+              {%- endif -%}
+              {%- render 'product-block-quantity-selector', section: section, product_form_id: product_form_id -%}
+            {%- when 'share' -%}
+              {%- render 'product-block-share', product: product, block: block, section: section -%}
+            {%- when 'variant_picker' -%}
+              {%- render 'product-variant-picker',
+                product: product,
+                product_form_id: product_form_id,
+                section_id: section.id,
+                block: block,
+                shopify_attributes: block.shopify_attributes,
+                is_preorder: is_preorder,
+                size_guide_button: size_guide_button,
+                size_guide_options: size_guide_options,
+                variant_images_mode: variant_images_mode -%}
+              {%- liquid
+                if product.has_only_default_variant
+                  assign show_block = false
+                endif
+              -%}
+            {%- when 'buy_buttons' -%}
+              {%- render 'product-block-buy-buttons', product: product, block: block, section: section, product_form_id: product_form_id, is_preorder: is_preorder, preorder_info: preorder_info, has_quantity_selector: has_quantity_selector, next_to_add_to_cart: next_to_add_to_cart -%}
+            {%- when 'rating' -%}
+              {{ 'component-rating.css' | asset_url | stylesheet_tag }}
+              {%- render 'rating', product: product -%}
+            {%- when 'inventory_status' -%}
+              {%- render 'product-inventory-status',
+                product: product,
+                current_variant: product.selected_or_first_available_variant,
+                block: block -%}
+            {%- when 'similar_collections' -%}
+              {%- render 'product-similar-collections',
+                product: product,
+                block: block -%}
+            {%- when 'pickup_availability' -%}
+              {%- render 'product-block-pickup-availability', product: product, block: block -%}
+            {%- when 'icons' -%}
+              {%- render 'product-block-icons', block: block -%}
+            {%- when 'sku' -%}
+              {%- render 'product-block-sku', product: product, block: block, section: section -%}
+            {%- when 'upsell_products' -%}
+              {%- if block.settings.upsell_products != empty -%}
+                {%- render 'product-template-upsell', product_form_id: product_form_id, section: section, block: block, product: product, is_preorder: is_preorder -%}
+              {%- else -%}
+                {%- assign show_block = false -%}
+              {%- endif -%}
+            {%- when 'badges' -%}
+              {% if the_badges == blank %}
+                {%- assign show_block = false -%}
+                {%- continue -%}
+              {% endif %}
+              {% if badges_block.settings.badges_position == 'text-column' %}
+                {{ the_badges }}
+              {% endif %}
+            {%- when 'attribute_insights' -%}
+              {%- render 'attribute-insights', type: block.settings.display_type, show_helper_splitters: block.settings.show_helper_splitters, amount_of_segments: block.settings.amount_of_segments, start_label: block.settings.start_label, center_label: block.settings.center_label, end_label: block.settings.end_label, value: block.settings.value, attribute_title: block.settings.title, border_radius: block.settings.border_radius, show_messages: block.settings.show_messages, below_threshold_value: block.settings.below_threshold_value, above_threshold_value: block.settings.above_threshold_value, below_threshold_message: block.settings.below_threshold_message, above_threshold_message: block.settings.above_threshold_message, between_threshold_message: block.settings.between_threshold_message -%}
+            {%- endcase -%}
+        {%- endcapture -%}
+
+        {%- comment -%} A collapsible item without content renders nothing, so leave out its wrapper and margin too {%- endcomment -%}
+        {%- if block.type == 'collapsible_tab' and block_inner_html == blank -%}
+          {%- assign show_block = false -%}
+        {%- endif -%}
+
+        {%- if show_block -%}
+          <div class="product-block product-block__{{ block.type | escape }}" style="margin-top: {{ block.settings.margin_top | append: 'px' }}" {{ block.shopify_attributes }}>
+            {{ block_inner_html }}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+
+  </div>
+</div>
+
+{%- if show_zoom_mobile or show_zoom_desktop -%}
+  {% render 'modal-zoom-gallery',
+    zoom_type_mobile: zoom_type_mobile,
+    zoom_type_desktop: zoom_type_desktop,
+    medias: product_for_media.media,
+    id: section.id,
+    filtered_media_ids: filtered_media_ids,
+    filtered_media_count: filtered_media_count,
+    variant_images_mode: variant_images_mode %}
+{%- endif -%}
+
+{%- liquid
+# Sticky buy bar if in used blocks
+assign sticky_buy_bar = section.blocks | where: 'type', 'sticky_buy_bar' | first
+if sticky_buy_bar
+ assign price_block = section.blocks | where: 'type', 'price' | first
+ render 'product-buy-bar', price_font_weight: price_block.settings.font_weight, product_form_id: product_form_id, buy_bar_br: sticky_buy_bar.settings.border_radius, product_image_aspect_ratio: section.settings.product_image_aspect_ratio, is_preorder: is_preorder, color_scheme: sticky_buy_bar.settings.color_scheme, overlay_str: sticky_buy_bar.settings.overlay_str
+endif
+
+# Collapsible tabs that are set as drawers are loaded here so they are properly aligned on the DOM tree and do not cause any layout issues.
+if has_collapsible_drawers
+  assign collapsible_blocks = section.blocks | where: 'type', 'collapsible_tab'
+  for block in collapsible_blocks
+    if block.settings.open_as_drawer == true
+      # Same content and empty check as product-block-collapsible-tab.liquid
+      assign rich_text = block.settings.content | strip_html | strip
+      capture custom_liquid_output
+        echo block.settings.custom_liquid
+      endcapture
+      assign custom_liquid_output = custom_liquid_output | strip
+      if rich_text != blank or block.settings.page.content != blank or custom_liquid_output != blank
+        capture collapsible_content
+          echo block.settings.content
+          echo block.settings.page.content
+          echo custom_liquid_output
+        endcapture
+        assign collapsible_id = 'Details-' | append: block.id | append: '-' | append: section.id
+        assign collapsible_title = block.settings.title | default: block.settings.page.title
+        render 'drawer-tabs', drawer_id: collapsible_id, title: collapsible_title, text: collapsible_content
+      endif
+    endif
+  endfor
+endif
+
+# Size guide drawer
+if show_size_guide
+  render 'drawer-tabs', drawer_id: size_guide_block.id, title: size_guide_block.settings.size_guide_button_label, text: size_guide_block.settings.size_guide_content, page: size_guide_block.settings.size_guide_page_handle, image: size_guide_block.settings.size_guide_image
+endif
+
+-%}
+
+
+<script type="text/javascript" src="{{ 'template-product.js' | asset_url }}" defer></script>
+
+<script>
+  // Store product handles to history for "recently-viewed" section.
+  (function() {
+    const history = sessionStorage.getItem('Woolman_Product_History') ? sessionStorage.getItem('Woolman_Product_History').split(',') : [];
+    const productHandle = window.location.pathname.split('/').pop();
+    if (!productHandle) return;
+
+    if (history.includes(productHandle)) {
+      // remove from the list to add first in line again
+      let indexToRemove = history.indexOf(productHandle);
+      if (indexToRemove !== -1) {
+        // Remove the item using splice
+        history.splice(indexToRemove, 1);
+      }
+    } else if (history.length >= 10) {
+      // only store up to 10 recently viewed products
+      history.pop();
+    }
+
+    // Add the new item to the array start
+    history.unshift(productHandle);
+    sessionStorage.setItem('Woolman_Product_History', history.join(','));
+  })();
+
+  document.addEventListener('DOMContentLoaded', function() {
+    function isIE() {
+      const ua = window.navigator.userAgent;
+      const msie = ua.indexOf('MSIE ');
+      const trident = ua.indexOf('Trident/');
+      return(msie > 0 || trident > 0);
+    }
+    if (! isIE())
+      return;
+
+    const hiddenInput = document.querySelector('# {{ product_form_id }}input[name="id"]');
+    const noScriptInputWrapper = document.createElement('div');
+    const variantSwitcher = document.querySelector('variant-radios[data-section=" {{ section.id }}"]') || document.querySelector('variant-selects[data-section=" {{ section.id }}"]');
+    noScriptInputWrapper.innerHTML = document.querySelector('.product-form__noscript-wrapper- {{ section.id }}').textContent;
+    variantSwitcher.outerHTML = noScriptInputWrapper.outerHTML;
+    document.querySelector('#Variants- {{ section.id }}').addEventListener('change', function(event) {
+      hiddenInput.value = event.currentTarget.value;
+    });
+  });
+</script>
+
+{% unless settings.disable_product_structured_data %}
+  <script type="application/ld+json">
+    {{ product | structured_data }}
+  </script>
+{% endunless %}

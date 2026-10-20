@@ -1,0 +1,475 @@
+{{ 'section-divider.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  # Flip controls
+  if section.settings.flip_horizontal and section.settings.flip_vertical
+    assign transform_style = 'transform: scale(-1)'
+  elsif section.settings.flip_vertical
+    assign transform_style = 'transform: scale(1, -1)'
+  elsif section.settings.flip_horizontal
+    assign transform_style = 'transform: scale(-1, 1)'
+  else
+    assign transform_style = 'transform: scale(1)'
+  endif
+
+  # Colors. "Match previous/next section" uses the neighboring section's color scheme background,
+  # set as --divider-previous-bg / --divider-next-bg in css-settings-and-variables.liquid.
+  capture top_fill
+    case section.settings.top_color_mode
+      when 'previous'
+        echo 'var(--divider-previous-bg)'
+      when 'next'
+        echo 'var(--divider-next-bg)'
+      when 'custom'
+        echo section.settings.top_color
+      else
+        echo 'transparent'
+    endcase
+  endcapture
+  capture bottom_fill
+    case section.settings.bottom_color_mode
+      when 'previous'
+        echo 'var(--divider-previous-bg)'
+      when 'transparent'
+        echo 'transparent'
+      when 'custom'
+        echo section.settings.bottom_color
+      else
+        echo 'var(--divider-next-bg)'
+    endcase
+  endcapture
+
+  # Animated graphics are drawn with the middle part, so they fall back to the button color when it's empty.
+  assign animated_graphics = 'rolling_curve,glitch,chevrons,mountains' | split: ','
+  assign middle_color = section.settings.middle_color
+  if animated_graphics contains section.settings.graphic_type
+    assign animated = true
+    if middle_color == blank
+      assign middle_color = 'var(--color-button-background)'
+    endif
+    case section.settings.motion_speed
+      when 'slow'
+        assign motion_speed = 0.5
+      when 'fast'
+        assign motion_speed = 2
+      else
+        assign motion_speed = 1
+    endcase
+  endif
+  if middle_color contains 'gradient'
+    assign middle_fill = 'url(#' | append: section.id | append: '-gradient)'
+  else
+    assign middle_fill = middle_color
+  endif
+
+  # Top and bottom refer to where the parts appear on the page, so they swap when the graphic is flipped vertically.
+  if section.settings.flip_vertical
+    assign top_part_fill = bottom_fill
+    assign bottom_part_fill = top_fill
+  else
+    assign top_part_fill = top_fill
+    assign bottom_part_fill = bottom_fill
+  endif
+-%}
+
+<div
+  id="{{ section.id }}"
+  class="container edge-to-edge mt mb sm-mt sm-mb"
+  style="
+    --mt: {{ section.settings.padding_top | append: 'px' }};
+    --mb: {{ section.settings.padding_bottom | append: 'px' }};
+    --sm-mt: {{ section.settings.md_padding_top | append: 'px' }};
+    --sm-mb: {{ section.settings.md_padding_bottom | append: 'px' }};
+  ">
+  <div
+    class="divider-graphics {{ section.settings.position }}{% if animated and section.settings.motion != 'off' %} divider-motion-{{ section.settings.motion }}{% endif %}"
+    style="
+      {{ transform_style }};
+      {%- if animated %} --divider-speed: {{ motion_speed }};{% endif -%}
+      --divider-top-fill: {{ top_part_fill | strip }};
+      --divider-bottom-fill: {{ bottom_part_fill | strip }};
+      {%- if middle_fill != blank %} --divider-middle-fill: {{ middle_fill }};{% endif -%}
+    ">
+    {%- if section.settings.graphic_type == 'custom' -%}
+      {%- if middle_color contains 'gradient' -%}
+        {%- comment -%} Gradient for custom SVG paths with the "middle-part" class. Hidden without display: none, which would disable the gradient. {%- endcomment -%}
+        <svg class="divider-gradient-defs" aria-hidden="true" focusable="false" width="0" height="0">
+          <defs>{%- render 'divider-gradient', id: section.id, middle_part_color: middle_color -%}</defs>
+        </svg>
+      {%- endif -%}
+      {%- if section.settings.custom_svg_mobile != blank -%}
+        <div class="sm-hide">
+          {{ section.settings.custom_svg_mobile }}
+        </div>
+      {%- endif -%}
+      <div {% if section.settings.custom_svg_mobile != blank %}class="sm-down-hide"{% endif %}>
+        {{ section.settings.custom_svg }}
+      </div>
+    {%- else -%}
+      {%- render 'divider-graphics',
+        graphics: section.settings.graphic_type,
+        id: section.id,
+        middle_part_color: middle_color,
+        sm_height: section.settings.sm_graphics_height,
+        sm_width: section.settings.sm_graphics_width,
+        height: section.settings.graphics_height,
+        width: section.settings.graphics_width -%}
+    {%- endif -%}
+  </div>
+</div>
+
+
+{% schema %}
+{
+  "name": "t:sections.divider.name",
+  "class": "section--divider",
+  "disabled_on": {
+    "groups": ["header", "aside"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.divider.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.divider.settings.divider_graphics.header"
+    },
+    {
+      "type": "select",
+      "id": "graphic_type",
+      "label": "t:sections.divider.settings.divider_graphics.label",
+      "default": "wave",
+      "options": [
+        {
+          "group": "t:sections.divider.settings.divider_graphics.groups.static",
+          "value": "curve",
+          "label": "t:sections.divider.settings.divider_graphics.options.curve"
+        },
+        {
+          "group": "t:sections.divider.settings.divider_graphics.groups.static",
+          "value": "jagged",
+          "label": "t:sections.divider.settings.divider_graphics.options.jagged"
+        },
+        {
+          "group": "t:sections.divider.settings.divider_graphics.groups.static",
+          "value": "tilted",
+          "label": "t:sections.divider.settings.divider_graphics.options.tilted"
+        },
+        {
+          "group": "t:sections.divider.settings.divider_graphics.groups.static",
+          "value": "wave",
+          "label": "t:sections.divider.settings.divider_graphics.options.wave"
+        },
+        {
+          "group": "t:sections.divider.settings.divider_graphics.groups.static",
+          "value": "waves",
+          "label": "t:sections.divider.settings.divider_graphics.options.waves"
+        },
+        {
+          "group": "t:sections.divider.settings.divider_graphics.groups.static",
+          "value": "fold",
+          "label": "t:sections.divider.settings.divider_graphics.options.fold"
+        },
+        {
+          "group": "t:sections.divider.settings.divider_graphics.groups.animated",
+          "value": "rolling_curve",
+          "label": "t:sections.divider.settings.divider_graphics.options.rolling_curve"
+        },
+        {
+          "group": "t:sections.divider.settings.divider_graphics.groups.animated",
+          "value": "glitch",
+          "label": "t:sections.divider.settings.divider_graphics.options.glitch"
+        },
+        {
+          "group": "t:sections.divider.settings.divider_graphics.groups.animated",
+          "value": "chevrons",
+          "label": "t:sections.divider.settings.divider_graphics.options.chevrons"
+        },
+        {
+          "group": "t:sections.divider.settings.divider_graphics.groups.animated",
+          "value": "mountains",
+          "label": "t:sections.divider.settings.divider_graphics.options.mountains"
+        },
+        {
+          "group": "t:sections.divider.settings.divider_graphics.groups.custom",
+          "value": "custom",
+          "label": "t:sections.divider.settings.divider_graphics.options.custom"
+        }
+      ]
+    },
+    {
+      "type": "html",
+      "id": "custom_svg",
+      "label": "t:sections.divider.settings.divider_graphics.custom_label",
+      "info": "t:sections.divider.settings.divider_graphics.custom_info",
+      "visible_if": "{{ section.settings.graphic_type == 'custom' }}"
+    },
+    {
+      "type": "html",
+      "id": "custom_svg_mobile",
+      "label": "t:sections.divider.settings.divider_graphics.custom_mobile_label",
+      "info": "t:sections.divider.settings.divider_graphics.custom_mobile_info",
+      "visible_if": "{{ section.settings.graphic_type == 'custom' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "flip_horizontal",
+      "label": "t:sections.divider.settings.flip_horizontal",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "flip_vertical",
+      "label": "t:sections.divider.settings.flip_vertical",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.divider.settings.motion.header",
+      "info": "t:sections.divider.settings.motion.header_info",
+      "visible_if": "{{ section.settings.graphic_type == 'rolling_curve' or section.settings.graphic_type == 'glitch' or section.settings.graphic_type == 'chevrons' or section.settings.graphic_type == 'mountains' }}"
+    },
+    {
+      "type": "select",
+      "id": "motion",
+      "label": "t:sections.divider.settings.motion.label",
+      "info": "t:sections.divider.settings.motion.info",
+      "default": "continuous",
+      "options": [
+        {
+          "value": "off",
+          "label": "t:sections.divider.settings.motion.options.off"
+        },
+        {
+          "value": "continuous",
+          "label": "t:sections.divider.settings.motion.options.continuous"
+        },
+        {
+          "value": "scroll",
+          "label": "t:sections.divider.settings.motion.options.scroll"
+        }
+      ],
+      "visible_if": "{{ section.settings.graphic_type == 'rolling_curve' or section.settings.graphic_type == 'glitch' or section.settings.graphic_type == 'chevrons' or section.settings.graphic_type == 'mountains' }}"
+    },
+    {
+      "type": "select",
+      "id": "motion_speed",
+      "label": "t:sections.divider.settings.motion.speed_label",
+      "default": "medium",
+      "options": [
+        {
+          "value": "slow",
+          "label": "t:sections.divider.settings.motion.speed_options.slow"
+        },
+        {
+          "value": "medium",
+          "label": "t:sections.divider.settings.motion.speed_options.medium"
+        },
+        {
+          "value": "fast",
+          "label": "t:sections.divider.settings.motion.speed_options.fast"
+        }
+      ],
+      "visible_if": "{{ section.settings.motion != 'off' and section.settings.graphic_type == 'rolling_curve' or section.settings.graphic_type == 'glitch' or section.settings.graphic_type == 'chevrons' or section.settings.graphic_type == 'mountains' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.divider.settings.graphics_position.header"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "t:sections.divider.settings.graphics_position.label",
+      "info": "t:sections.divider.settings.graphics_position.info",
+      "default": "top-previous",
+      "options": [
+        {
+          "value": "top-previous",
+          "label": "t:sections.divider.settings.graphics_position.options.top_previous"
+        },
+        {
+          "value": "in-between",
+          "label": "t:sections.divider.settings.graphics_position.options.in_between"
+        },
+        {
+          "value": "top-next",
+          "label": "t:sections.divider.settings.graphics_position.options.top_next"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.divider.settings.graphics_colors.header",
+      "info": "t:sections.divider.settings.graphics_colors.info"
+    },
+    {
+      "type": "select",
+      "id": "top_color_mode",
+      "label": "t:sections.divider.settings.graphics_colors.top_part_color",
+      "default": "transparent",
+      "options": [
+        {
+          "value": "transparent",
+          "label": "t:sections.divider.settings.graphics_colors.options.transparent"
+        },
+        {
+          "value": "previous",
+          "label": "t:sections.divider.settings.graphics_colors.options.previous"
+        },
+        {
+          "value": "next",
+          "label": "t:sections.divider.settings.graphics_colors.options.next"
+        },
+        {
+          "value": "custom",
+          "label": "t:sections.divider.settings.graphics_colors.options.custom"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "top_color",
+      "label": "t:sections.divider.settings.graphics_colors.top_custom_color",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.top_color_mode == 'custom' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "middle_color",
+      "label": "t:sections.divider.settings.graphics_colors.middle_part_color",
+      "info": "t:sections.divider.settings.graphics_colors.middle_part_info"
+    },
+    {
+      "type": "select",
+      "id": "bottom_color_mode",
+      "label": "t:sections.divider.settings.graphics_colors.bottom_part_color",
+      "default": "next",
+      "options": [
+        {
+          "value": "next",
+          "label": "t:sections.divider.settings.graphics_colors.options.next"
+        },
+        {
+          "value": "previous",
+          "label": "t:sections.divider.settings.graphics_colors.options.previous"
+        },
+        {
+          "value": "transparent",
+          "label": "t:sections.divider.settings.graphics_colors.options.transparent"
+        },
+        {
+          "value": "custom",
+          "label": "t:sections.divider.settings.graphics_colors.options.custom"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "bottom_color",
+      "label": "t:sections.divider.settings.graphics_colors.bottom_custom_color",
+      "default": "#000000",
+      "visible_if": "{{ section.settings.bottom_color_mode == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.headers.desktop_layout"
+    },
+    {
+      "type": "range",
+      "id": "sm_graphics_height",
+      "label": "t:sections.divider.settings.graphics_size.graphics_height",
+      "info": "t:sections.divider.settings.graphics_size.graphics_height_info",
+      "default": 0,
+      "min": 0,
+      "max": 800,
+      "step": 10,
+      "unit": "px",
+      "visible_if": "{{ section.settings.graphic_type != 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "sm_graphics_width",
+      "label": "t:sections.divider.settings.graphics_size.graphics_width",
+      "default": 100,
+      "min": 100,
+      "max": 300,
+      "step": 2,
+      "unit": "%",
+      "visible_if": "{{ section.settings.graphic_type != 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "md_padding_top",
+      "label": "t:sections.layout.margin_top",
+      "default": 0,
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "md_padding_bottom",
+      "label": "t:sections.layout.margin_bottom",
+      "default": 0,
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.headers.mobile_layout"
+    },
+    {
+      "type": "range",
+      "id": "graphics_height",
+      "label": "t:sections.divider.settings.graphics_size.graphics_height",
+      "info": "t:sections.divider.settings.graphics_size.graphics_height_info",
+      "default": 0,
+      "min": 0,
+      "max": 800,
+      "step": 10,
+      "unit": "px",
+      "visible_if": "{{ section.settings.graphic_type != 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "graphics_width",
+      "label": "t:sections.divider.settings.graphics_size.graphics_width",
+      "default": 100,
+      "min": 100,
+      "max": 300,
+      "step": 2,
+      "unit": "%",
+      "visible_if": "{{ section.settings.graphic_type != 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:sections.layout.margin_top",
+      "default": 0,
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:sections.layout.margin_bottom",
+      "default": 0,
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.divider.name",
+      "category": "t:sections.section_categories.utility_and_support"
+    }
+  ]
+}
+{% endschema %}

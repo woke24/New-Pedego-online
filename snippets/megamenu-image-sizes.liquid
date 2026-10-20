@@ -1,0 +1,79 @@
+{% comment %}
+  Outputs a sizes attribute for megamenu banner, product, or column images.
+
+  accepts:
+    - context: {String} dropdown | drawer
+    - aside_width: {Number} 20–100, share of megamenu width used by aside (or full row for columns zone)
+    - columns: {Number} grid columns in the image row
+    - zone: {String} aside | columns — columns zone spans full megamenu width
+
+  Below 1024px (drawer), images render at the drawer width (375px max).
+
+  At viewports >= settings.content_ideal_width, sizes use a fixed px width derived
+  from that setting (capped content area, aside share, and column count).
+
+  Usage:
+    {% capture sizes %}{% render 'megamenu-image-sizes', ... %}{% endcapture %}
+{% endcomment %}
+{%- liquid
+  assign columns = columns | default: 1
+  if columns < 1
+    assign columns = 1
+  endif
+  assign aside_width = aside_width | default: 40
+  assign zone = zone | default: 'aside'
+  assign container_margin = settings.container_margin | default: 16
+  assign ideal_width = settings.content_ideal_width
+  assign container_gutter = container_margin | times: 2
+  assign content_width = ideal_width | minus: container_gutter
+
+  assign drawer_nav = ideal_width | times: 40 | divided_by: 100
+  if drawer_nav > 400
+    assign drawer_nav = 400
+  endif
+  assign drawer_content_width = ideal_width | minus: drawer_nav | minus: container_gutter
+
+  if zone == 'columns'
+    assign width_factor = 100
+  else
+    assign width_factor = aside_width
+  endif
+
+  assign drawer_below_lg = 375
+  assign below_lg_breakpoint = '(max-width: 1023px) '
+  assign below_lg_px = drawer_below_lg | append: 'px'
+
+  assign desktop_viewport = '100vw'
+  assign dropdown_desktop_expr = 'calc(((' | append: desktop_viewport | append: ' - ' | append: container_margin | append: 'px * 2)'
+
+  if width_factor != 100
+    assign dropdown_desktop_expr = dropdown_desktop_expr | append: ' * ' | append: width_factor | append: ' / 100'
+  endif
+
+  assign dropdown_desktop_expr = dropdown_desktop_expr | append: ') / ' | append: columns | append: ')'
+
+  if zone == 'columns'
+    assign drawer_desktop_expr = 'calc(((100vw - min(40vw, 400px) - ' | append: container_margin | append: 'px * 2) / ' | append: columns | append: ')'
+  elsif width_factor == 100
+    assign drawer_desktop_expr = 'calc(((100vw - min(40vw, 400px) - ' | append: container_margin | append: 'px * 2) / ' | append: columns | append: ')'
+  else
+    assign drawer_desktop_expr = 'calc(((100vw - min(40vw, 400px) - ' | append: container_margin | append: 'px * 2) * ' | append: width_factor | append: ' / 100) / ' | append: columns | append: ')'
+  endif
+
+  if width_factor == 100
+    assign dropdown_ideal_px = content_width | divided_by: columns
+    assign drawer_ideal_px = drawer_content_width | divided_by: columns
+  else
+    assign dropdown_ideal_px = content_width | times: width_factor | divided_by: 100 | divided_by: columns
+    assign drawer_ideal_px = drawer_content_width | times: width_factor | divided_by: 100 | divided_by: columns
+  endif
+
+  assign ideal_breakpoint = '(min-width: ' | append: ideal_width | append: 'px) '
+
+  if context == 'drawer'
+    assign sizes = below_lg_breakpoint | append: below_lg_px | append: ', ' | append: ideal_breakpoint | append: drawer_ideal_px | append: 'px, (min-width: 1024px) ' | append: drawer_desktop_expr
+  else
+    assign sizes = '(min-width: ' | append: ideal_width | append: 'px) ' | append: dropdown_ideal_px | append: 'px, (min-width: 1024px) ' | append: dropdown_desktop_expr
+  endif
+-%}
+{{- sizes -}}

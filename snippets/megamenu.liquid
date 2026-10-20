@@ -1,0 +1,130 @@
+{% comment %}
+  Renders megamenu layout for header dropdown and drawer.
+
+  accepts:
+    - block: {Object} megamenu section block
+    - menu_item: {Object} parent link
+    - context: {String} dropdown | drawer
+    - drawer_links: {String} optional HTML for drawer drilldown links (not used for megamenu-columns)
+    - section: {Object} optional header section (required for megamenu-columns drawer)
+{% endcomment %}
+{%- liquid
+  assign menu_columns = block.settings.menu_columns | default: 3
+-%}
+{%- capture effective_menu_columns_output -%}
+  {%- render 'megamenu-nav-column-count', links: menu_item.links, menu_columns: menu_columns -%}
+{%- endcapture -%}
+{%- liquid
+  assign effective_menu_columns = effective_menu_columns_output | strip | plus: 0
+  assign nav_menu_columns = effective_menu_columns
+  if block.type == 'megamenu-columns' and nav_menu_columns > 6
+    assign nav_menu_columns = 6
+  endif
+
+  assign megamenu_modifier = block.type | replace: 'megamenu-', ''
+  assign megamenu_classes = 'megamenu megamenu--' | append: megamenu_modifier
+
+  if block.type == 'megamenu-banners'
+    assign aside_width = block.settings.aside_width
+    assign aside_cols = block.settings.banner_columns
+    assign megamenu_style = '--aside-width: ' | append: aside_width | append: '%; --menu-cols: ' | append: effective_menu_columns | append: '; --aside-cols: ' | append: aside_cols | append: ';'
+    if aside_width == 100
+      assign megamenu_classes = megamenu_classes | append: ' megamenu--aside-full'
+    endif
+  elsif block.type == 'megamenu-products'
+    assign aside_width = block.settings.aside_width
+    assign aside_cols = block.settings.product_columns
+    assign megamenu_style = '--aside-width: ' | append: aside_width | append: '%; --menu-cols: ' | append: effective_menu_columns | append: '; --aside-cols: ' | append: aside_cols | append: ';'
+    if aside_width == 100
+      assign megamenu_classes = megamenu_classes | append: ' megamenu--aside-full'
+    endif
+  else
+    assign megamenu_cols_css = effective_menu_columns
+    if block.type == 'megamenu-columns'
+      assign megamenu_cols_css = nav_menu_columns
+    endif
+    assign megamenu_style = '--menu-cols: ' | append: megamenu_cols_css | append: ';'
+  endif
+
+  if block.type == 'megamenu-banners' or block.type == 'megamenu-products'
+    capture aside_image_sizes
+      render 'megamenu-image-sizes', context: context, aside_width: aside_width, columns: aside_cols, zone: 'aside'
+    endcapture
+  endif
+
+  if block.type == 'megamenu-columns'
+    capture column_image_sizes
+      render 'megamenu-image-sizes', context: context, aside_width: 100, columns: nav_menu_columns, zone: 'columns'
+    endcapture
+  endif
+-%}
+
+<div
+  class="{{ megamenu_classes }}"
+  style="{{ megamenu_style }}"
+  data-menu-parent="{{ block.settings.menu_parent | escape }}"
+  {{ block.shopify_attributes }}>
+  {%- if block.type == 'megamenu-columns' -%}
+    <div class="megamenu__nav">
+      {% render 'megamenu-nav-columns',
+        block: block,
+        links: menu_item.links,
+        menu_columns: nav_menu_columns,
+        sizes: column_image_sizes,
+        context: context,
+        section: section
+      %}
+    </div>
+  {%- else -%}
+    {%- capture megamenu_nav_items -%}
+      {%- if effective_menu_columns > 1 and menu_item.links.size > 0 -%}
+        {%- for col in (1..effective_menu_columns) -%}
+          <div class="megamenu__nav-column">
+            {% render 'megamenu-nav-links',
+              links: menu_item.links,
+              column_index: col,
+              menu_columns: effective_menu_columns
+            %}
+          </div>
+        {%- endfor -%}
+      {%- elsif menu_item.links.size > 0 -%}
+        <div class="megamenu__nav-column">
+          {% render 'megamenu-nav-links', links: menu_item.links %}
+        </div>
+      {%- endif -%}
+    {%- endcapture -%}
+
+    {%- capture megamenu_aside -%}
+      <aside class="megamenu__aside">
+        {%- if block.type == 'megamenu-banners' -%}
+          {% render 'megamenu-banners-aside', block: block, sizes: aside_image_sizes %}
+        {%- elsif block.type == 'megamenu-products' -%}
+          {%- liquid
+            if block.settings.collection != empty
+              assign menu_products = block.settings.collection.products
+            elsif block.settings.product_list != empty
+              assign menu_products = block.settings.product_list
+            endif
+          -%}
+          {%- for product in menu_products limit: block.settings.product_limit -%}
+            {% render 'card-product', product: product, sizes: aside_image_sizes %}
+          {%- endfor -%}
+        {%- endif -%}
+      </aside>
+    {%- endcapture -%}
+
+    {%- if block.settings.content_order == 'content_first' and megamenu_nav_items != blank -%}
+      {{ megamenu_aside }}
+      <div class="megamenu__nav">
+        {{ megamenu_nav_items }}
+      </div>
+    {%- elsif megamenu_nav_items != blank -%}
+      <div class="megamenu__nav">
+        {{ megamenu_nav_items }}
+      </div>
+      {{ megamenu_aside }}
+    {%- else -%}
+      {{ megamenu_aside }}
+    {%- endif -%}
+  {%- endif -%}
+</div>

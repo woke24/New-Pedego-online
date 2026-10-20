@@ -1,0 +1,112 @@
+{%- comment -%}
+  Renders sibling products (woolman.sibling_products) as images or labels.
+  Images use gridy-slider with 4 items per row. Labels use the variant picker's option button
+  style (.option-button in component-product-form.css) and follow Theme settings > Variant picker >
+  Option buttons (Button width and Selected button).
+  Label text comes from each sibling's custom.sibling_label metafield, falling back to the product title.
+
+  Accepts:
+  - product: {Object} Current product, marked as the current sibling
+  - display_style: {String} 'images' or 'labels'
+  - slider_id: {String} Unique id for the images slider
+  - aspect_ratio: {String} Image aspect ratio in images mode
+  - context: {String} 'product' (default) or 'quick-view'. In quick view, sibling clicks swap the modal content.
+
+  Usage:
+  {% render 'sibling-products', product: product, display_style: 'labels', slider_id: 'slider-siblings', context: 'quick-view' %}
+{%- endcomment -%}
+{%- liquid
+  assign siblings = product.metafields.woolman.sibling_products.value | sort_natural
+
+  assign show_labels = false
+  if display_style == 'labels'
+    assign show_labels = true
+  endif
+
+  # Labels follow Theme settings > Variant picker > Option buttons, like the variant buttons
+  assign equal_width = false
+  if show_labels and settings.variant_picker_button_width == 'equal'
+    assign equal_width = true
+  endif
+  assign solid_selected = false
+  if show_labels and settings.variant_picker_selected_style == 'solid'
+    assign solid_selected = true
+  endif
+  assign longest_label = 1
+
+  assign ipr = 4
+  assign slider_enabled = false
+  if siblings.size > ipr
+    assign slider_enabled = true
+  endif
+-%}
+
+{%- if siblings and siblings != blank -%}
+  {%- capture sibling_items -%}
+    {%- for sibling in siblings -%}
+      {%- liquid
+        assign is_current = false
+        if sibling.id == product.id
+          assign is_current = true
+        endif
+
+        assign sibling_label = sibling.metafields.custom.sibling_label.value | default: sibling.title
+        assign label_length = sibling_label | size
+        if label_length > longest_label
+          assign longest_label = label_length
+        endif
+      -%}
+      <a
+        href="{{ sibling.url }}"
+        {% unless show_labels %}id="{{ slider_id }}-item-{{ sibling.id }}"{% endunless %}
+        class="{% if show_labels %}option-button{% else %}sibling-product{% if is_current %} current-product{% endif %}{% endif %}"
+        {% if is_current %}aria-current="page"{% endif %}
+        {% if context == 'quick-view' %}data-quick-view-sibling{% endif %}>
+        {%- if show_labels -%}
+          <span>{{ sibling_label | escape }}</span>
+        {%- else -%}
+          {%- render 'img',
+            src: sibling.featured_media.preview_image,
+            sizing_rule: 'cover',
+            aspect_ratio: aspect_ratio,
+            lazyload: true,
+            sizes: '(max-width: 767px) 25vw, 165px' -%}
+          <span class="visually-hidden">{{ sibling_label | escape }}</span>
+        {%- endif -%}
+      </a>
+    {%- endfor -%}
+  {%- endcapture -%}
+
+  {%- if show_labels -%}
+    <div
+      class="option-buttons{% if equal_width %} option-buttons--equal{% endif %}{% if solid_selected %} option-buttons--solid{% endif %}"
+      data-option-name="sibling-products"
+      {% if equal_width %}style="--option-chars: {{ longest_label }};"{% endif %}
+    >
+      {{ sibling_items }}
+    </div>
+  {%- else -%}
+    <div class="the-siblings">
+      <gridy-slider
+        id="{{ slider_id }}"
+        class="gridy-slider"
+        data-mobile-enabled="{{ slider_enabled }}"
+        data-tablet-enabled="{{ slider_enabled }}"
+        data-desktop-enabled="{{ slider_enabled }}"
+        data-ipr-mobile="{{ ipr }}"
+        data-ipr-tablet="{{ ipr }}"
+        data-ipr-desktop="{{ ipr }}"
+        data-arrows="true"
+        data-init-scroll-to="{{ slider_id }}-item-{{ product.id }}">
+
+        <div class="gridy-track scrollbar--hide grid grid-cols-{{ ipr }} sm-grid-cols-{{ ipr }}">
+          {{ sibling_items }}
+        </div>
+        {%- if slider_enabled -%}
+          {% render 'gridy-arrows',
+            class: 'sm-on-edge' %}
+        {%- endif -%}
+      </gridy-slider>
+    </div>
+  {%- endif -%}
+{%- endif -%}

@@ -1,0 +1,113 @@
+{%- comment -%}
+  Styles snippet for Hero section with overlay links.
+
+  Accepts:
+  - section: {Object} The section object (section  access)
+  - media_block: {Object} The media block object (required)
+{%- endcomment -%}
+
+{% liquid
+  # Focal point
+  assign focal_point_desktop = media_block.settings.image.presentation.focal_point | default: '50% 50%'
+  assign focal_point_mobile = media_block.settings.image_mobile.presentation.focal_point | default: focal_point_desktop
+
+  # Section height
+  assign section_height = section.settings.section_height | default: 'auto'
+  assign section_height_desktop = section.settings.section_height_desktop | default: 'auto'
+
+  if section_height == 'by_pixels'
+    assign section_height = section.settings.section_pixel_height | append: 'px'
+  elsif section_height == 'fixed_ratio'
+    assign section_height = 'auto'
+  endif
+
+  if section_height_desktop == 'by_pixels'
+    assign section_height_desktop = section.settings.section_pixel_height_desktop | append: 'px'
+  elsif section_height_desktop == 'fixed_ratio'
+    assign section_height_desktop = 'auto'
+  endif
+%}
+
+{%- style -%}
+  @media only screen and (max-width: 767px) {
+    #{{ section.id }} .hero__media img,
+    #{{ section.id }} .hero__media video {
+      object-position: {{ focal_point_mobile }};
+    }
+
+    {%- if section.settings.section_height == 'auto' and media_block.settings.media_type == 'external_video' -%}
+      #{{ section.id }} .hero__media {
+        aspect-ratio: {{ media_block.settings.external_video_url_mobile_aspect_ratio | default: '9:16' | replace: ':', '/' }};
+      }
+    {%- endif -%}
+
+    {%- if section.settings.content_align_mobile contains 'contained' -%}
+      #{{ section.id }} .hero__media {
+        height: {{ section_height }};
+      }
+    {%- else -%}
+      #{{ section.id }} .hero {
+        min-height: {{ section_height }};
+      }
+    {%- endif -%}
+
+    {%- if section.settings.section_height == 'fixed_ratio' and section.settings.content_align_mobile contains 'contained' -%}
+      #{{ section.id }} .hero__media {
+        aspect-ratio: {{ section.settings.section_fixed_ratio }};
+      }
+    {%- elsif section.settings.section_height == 'fixed_ratio'-%}
+      #{{ section.id }} .hero {
+        aspect-ratio: {{ section.settings.section_fixed_ratio }};
+      }
+    {%- endif -%}
+  }
+
+  @media only screen and (min-width: 768px) {
+    #{{ section.id }} .hero__media img,
+    #{{ section.id }} .hero__media video {
+      object-position: {{ focal_point_desktop }};
+    }
+
+    {%- if section.settings.section_height_desktop == 'auto' and media_block.settings.media_type == 'external_video' -%}
+      #{{ section.id }} .hero__media {
+        aspect-ratio: {{ media_block.settings.external_video_url_aspect_ratio | default: '16:9' | replace: ':', '/' }};
+      }
+    {%- endif -%}
+
+    {%- if section.settings.content_align_desktop contains 'contained' -%}
+      #{{ section.id }} .hero__media {
+        height: {{ section_height_desktop }};
+      }
+    {%- else -%}
+      #{{ section.id }} .hero {
+        min-height: {{ section_height_desktop }};
+      }
+    {%- endif -%}
+
+    {%- if section.settings.section_height_desktop == 'fixed_ratio' and section.settings.content_align_desktop contains 'contained' -%}
+      #{{ section.id }} .hero__media {
+        aspect-ratio: {{ section.settings.section_fixed_ratio_desktop }};
+      }
+    {%- elsif section.settings.section_height_desktop == 'fixed_ratio'-%}
+      #{{ section.id }} .hero {
+        aspect-ratio: {{ section.settings.section_fixed_ratio_desktop }};
+      }
+    {%- endif -%}
+  }
+
+  {% if section.settings.overlay_opacity > 0 %}
+    #{{ section.id }} .hero__text::before,
+    #{{ section.id }} .hero__fields::before {
+      opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    }
+  {% endif %}
+  {%- if text_gradient_color != blank -%}
+    #{{ section.id }} time {
+      background: {{ text_gradient_color }};
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  {%- endif -%}
+{%- endstyle -%}
+

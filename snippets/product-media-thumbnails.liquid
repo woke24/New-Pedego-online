@@ -1,0 +1,120 @@
+{%- liquid
+
+  # ** PUROPOSE **
+  # This code generates media thumbnails.
+  # data-thumbnails-for value needs to mach the main media slider ID
+
+  if desktop_thumbnails_position == 'next-to'
+    assign grid_classes = 'grid-cols-5 md-grid-cols-1 column'
+  else
+    assign grid_classes = 'grid-cols-5'
+  endif
+
+  if show_in_desktop == false
+    assign visibility_class = 'md-hide'
+  elsif show_in_mobile == false
+    assign visibility_class = 'md-down-hide'
+  endif
+
+  assign filtered_media_ids = filtered_media_ids | default: ''
+  assign filtered_media_count = filtered_media_count | default: product.media.size
+
+  if filtered_media_count < 6
+    assign slider_mobile = false
+  else
+    assign slider_mobile = true
+  endif
+
+  assign featured_media_id = product.selected_or_first_available_variant.featured_media.id
+  assign thumb_activate_first = false
+  if filtered_media_ids != '' and featured_media_id != blank
+    assign featured_token = ',' | append: featured_media_id | append: ','
+    unless filtered_media_ids contains featured_token
+      assign thumb_activate_first = true
+    endunless
+  endif
+
+  assign attached_to_variant = product.images | where: 'attached_to_variant?', true
+-%}
+
+<gridy-slider
+  id="thumbnail-slider-{{ section.id }}"
+  class="gridy-slider product-thumbnails-slider {{ visibility_class }}"
+  data-thumbnails-for="slider-{{ section.id }}"
+  data-mobile-enabled="{{ slider_mobile }}"
+  data-tablet-enabled="{{ slider_mobile }}"
+  data-desktop-enabled="{{ slider_desktop }}"
+  data-arrows="false">
+  <div
+    class="gridy-track scrollbar--hide grid sm-gap {{ grid_classes }}"
+    style="
+      --gap: {{ media_gap | default: '24px' }};
+      --sm-gap: {{ sm_media_gap | default: '3px' }};
+      --sm-br: {{ sm_border_radius | append: 'px' }};">
+    {%- if product != nil -%}
+      {%- assign first_visible_thumb = true -%}
+      {% if variant_images_mode == 'selected' and filtered_media_ids != '' %}
+        {%- liquid
+          assign is_active = false
+          if featured_media_id != blank and thumb_activate_first == false and product.selected_or_first_available_variant.featured_media.id == featured_media_id
+            assign is_active = true
+          elsif thumb_activate_first and first_visible_thumb
+            assign is_active = true
+          elsif featured_media_id == blank and first_visible_thumb
+            assign is_active = true
+          endif
+        -%}
+        <button
+          id="thumbnail-item-{{ product.selected_or_first_available_variant.featured_media.id }}"
+          type="button"
+          data-item-id="item-{{ product.selected_or_first_available_variant.featured_media.id }}"
+          data-thumbnail-btn
+          class="thumbnail-btn sm-br{% if is_active %} active{% endif %}"
+          style="
+            background-color: {{ background_color }};">
+          <figure class="media media--image-for-{{ product.selected_or_first_available_variant.featured_media.media_type }} {{ sizing_rule }} {{ section.settings.product_image_aspect_ratio }}">
+            {{ product.selected_or_first_available_variant.featured_media.preview_image | image_url: width: 240 | image_tag }}
+          </figure>
+        </button>
+        {%- assign first_visible_thumb = false -%}
+      {% endif %}
+      {%- for media in product.media -%}
+        {%- liquid
+          if filtered_media_ids != ''
+            # When "selected" mode is enabled, we will skip that are attached to any variant
+            if variant_images_mode == 'selected' and attached_to_variant contains media.src
+              continue
+            endif
+
+            assign thumb_media_token = ',' | append: media.id | append: ','
+            unless filtered_media_ids contains thumb_media_token
+              continue
+            endunless
+          endif
+
+          assign is_active = false
+          if featured_media_id != blank and thumb_activate_first == false and media.id == featured_media_id
+            assign is_active = true
+          elsif thumb_activate_first and first_visible_thumb
+            assign is_active = true
+          elsif featured_media_id == blank and first_visible_thumb
+            assign is_active = true
+          endif
+        -%}
+        <button
+          id="thumbnail-item-{{ media.id }}"
+          type="button"
+          data-item-id="item-{{ media.id }}"
+          data-thumbnail-btn
+          class="thumbnail-btn sm-br{% if is_active %} active{% endif %}"
+          style="
+            background-color: {{ background_color }};">
+          <figure class="media media--image-for-{{ media.media_type }} {{ sizing_rule }} {{ section.settings.product_image_aspect_ratio }}">
+            {{ media.preview_image | image_url: width: 240 | image_tag }}
+          </figure>
+        </button>
+        {%- assign first_visible_thumb = false -%}
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</gridy-slider>

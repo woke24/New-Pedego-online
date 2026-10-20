@@ -1,0 +1,42 @@
+cart-recommendations {
+  display: grid;
+  grid-template-rows: 0fr; /* Collapsed state */
+  transition: grid-template-rows 1.2s ease-in-out;
+  overflow: hidden;
+}
+cart-recommendations.products-loaded {
+  grid-template-rows: 1fr; /* Expanded state */
+}
+.cart-recommendations-container {
+  min-height: 0;
+}
+.drawer cart-recommendations .card-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+cart-recommendations .grid {
+  --gap: 8px;
+}
+/* Recommendations animate in when they change: the heading first, then each item, rising slightly while fading in.
+   --recommendation-index is set in cart.js (CartRecommendations.animateIn). */
+@keyframes recommendation-animate-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.recommendation-animate-in {
+  animation: recommendation-animate-in 0.4s ease-out both;
+  animation-delay: calc(var(--recommendation-index, 0) * 80ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .recommendation-animate-in {
+    animation: none;
+  }
+}

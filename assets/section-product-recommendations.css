@@ -1,0 +1,12 @@
+product-recommendations {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.8s ease-in-out;
+  overflow: hidden;
+}
+product-recommendations.products-loaded {
+  grid-template-rows: 1fr;
+}
+product-recommendations .fetch-container {
+  min-height: 0;
+}

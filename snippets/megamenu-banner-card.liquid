@@ -1,0 +1,64 @@
+{% comment %}
+  Single megamenu banner card.
+
+  accepts:
+    - image: {Image}
+    - title: {String}
+    - link: {String}
+    - aspect_ratio: {String}
+    - text_position: {String}
+    - title_style: {String}
+    - sizes: {String} optional
+    - shopify_attributes: {String} optional
+{% endcomment %}
+{%- liquid
+  assign card_text_align = 'text-align-center'
+  if text_position contains 'horizontal-left'
+    assign card_text_align = 'text-align-left'
+  elsif text_position contains 'horizontal-right'
+    assign card_text_align = 'text-align-right'
+  endif
+
+  # 'outside-above' and 'outside-below' show the heading above or below the image instead of on it
+  assign heading_outside = false
+  if text_position contains 'outside-'
+    assign heading_outside = true
+  endif
+-%}
+{%- capture banner_heading -%}
+  <span class="{{ title_style }} size--small{% if title_style contains 'btn' and link == blank %} disabled{% endif %}">{{ title | replace: '[br]', '<br>' }}</span>
+{%- endcapture -%}
+<div
+  class="card card--banner megamenu-banner {% if heading_outside %}megamenu-banner--outside{% else %}br-img{% endif %}"
+  style="--card-body-padding: 1.2rem;"
+  {{ shopify_attributes }}>
+  {% capture banner_content %}
+    {%- if heading_outside and text_position contains 'outside-above' and title != blank -%}
+      <div class="megamenu-banner__heading {{ card_text_align }}">{{ banner_heading }}</div>
+    {%- endif -%}
+    {%- render 'img',
+      src: image,
+      aspect_ratio: aspect_ratio,
+      sizes: sizes,
+      lazyload: true
+    -%}
+    {%- if heading_outside -%}
+      {%- if text_position contains 'outside-below' and title != blank -%}
+        <div class="megamenu-banner__heading {{ card_text_align }}">{{ banner_heading }}</div>
+      {%- endif -%}
+    {%- else -%}
+      <div class="card-media-overlay flex {{ text_position }} {{ card_text_align }}">
+        {{ banner_heading }}
+      </div>
+    {%- endif -%}
+  {% endcapture %}
+  {%- if link != blank -%}
+    <a class="card-media" href="{{ link }}">
+      {{ banner_content }}
+    </a>
+  {%- else -%}
+    <div class="card-media">
+      {{ banner_content }}
+    </div>
+  {%- endif -%}
+</div>

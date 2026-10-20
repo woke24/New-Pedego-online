@@ -1,0 +1,52 @@
+/* Sibling products, used on the product page and in the quick view modal */
+@media only screen and (max-width: 767px) {
+  .the-siblings .gridy-arrows {
+    width: calc(100% + var(--container-margin)* 2);
+    left: calc(0px - var(--container-margin));
+  }
+}
+
+.sibling-product {
+  position: relative;
+  padding: 8px;
+  background: var(--color-card-background);
+  border-radius: min(var(--card-border-radius), 12px);
+}
+.sibling-product:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: min(var(--card-border-radius), 12px);
+  box-shadow: inset 0 0 0 0 var(--color-card-foreground);
+  transition: box-shadow 0.3s ease-in-out;
+}
+.sibling-product:hover:before {
+  box-shadow: inset 0 0 0 2px var(--color-card-foreground);
+}
+.sibling-product.current-product {
+  border: 1px solid var(--color-foreground);
+}
+/* Quick view swaps to the clicked sibling, in both image and label style */
+[data-quick-view-sibling].loading {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Quick view modal */
+.product-modal__siblings--before_variants {
+  margin-bottom: 16px;
+}
+.product-modal__siblings--after_buy_buttons {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-borders);
+}
+@media only screen and (max-width: 767px) {
+  .product-modal__siblings .the-siblings .gridy-arrows {
+    width: 100%;
+    left: 0;
+  }
+}

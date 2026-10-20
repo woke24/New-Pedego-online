@@ -1,0 +1,163 @@
+/* ========================================
+    EXTERNAL-VIDEO - BASE STYLES (Standalone)
+
+    When used outside a .external-video-container, external-video
+    acts as a simple responsive video container
+    with native aspect ratio sizing.
+
+    CSS Variables API:
+    --video-width:  Width component of aspect ratio (e.g., 16 for 16:9)
+    --video-height: Height component of aspect ratio (e.g., 9 for 16:9)
+======================================== */
+external-video {
+  display: block;
+  width: 100%;
+
+  /* Default video dimensions (16:9) */
+  --video-width: 16;
+  --video-height: 9;
+}
+/* Contain video but fill the area */
+.fill-external-media external-video {
+  width: 100%;
+  height: 100%;
+}
+
+/* Standalone iframe - simple responsive sizing */
+external-video iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--video-width) / var(--video-height);
+  border: none;
+}
+
+.media:not(.external-video-container, .natural) external-video iframe {
+  height: 100%;
+  background: #000;
+}
+
+external-video .external-video-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+  gap: 1rem;
+  aspect-ratio: var(--video-width) / var(--video-height);
+}
+external-video .external-video-placeholder > * {
+  opacity: 0.5;
+}
+.external-video-container:not(.natural) external-video .external-video-placeholder {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: unset;
+}
+
+/* ========================================
+    EXTERNAL-VIDEO INSIDE .EXTERNAL-VIDEO-CONTAINER
+
+    When inside a .external-video-container, external-video uses
+    absolute positioning and cover scaling behavior.
+
+    Additional CSS Variables (only for .external-video-container context):
+    --video-width-mobile:    Width for mobile breakpoint
+    --video-height-mobile:   Height for mobile breakpoint
+    --video-overflow-top:    Pixels to extend above banner (hides video top)
+    --video-overflow-bottom: Pixels to extend below banner (hides video bottom)
+======================================== */
+.external-video-container external-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  /* Default overflow (no cropping) */
+  --video-overflow-top: 0px;
+  --video-overflow-bottom: 0px;
+}
+
+.external-video-container external-video.has-overflow {
+  --video-overflow-top: 100px;
+  --video-overflow-bottom: 100px;
+}
+
+/* Banner iframe - cover behavior with centering */
+.external-video-container external-video iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  aspect-ratio: unset;
+  pointer-events: none; /* Optional: prevents interaction */
+}
+
+/* ========================================
+    BANNER COVER SCALING - FALLBACK
+    For browsers without container queries
+======================================== */
+.external-video-container external-video iframe {
+  --_virtual-height: calc(100vh + var(--video-overflow-top) + var(--video-overflow-bottom));
+  width: calc(var(--_virtual-height) * var(--video-width) / var(--video-height));
+  height: var(--_virtual-height);
+  min-width: 100%;
+  min-height: calc(100% + var(--video-overflow-top) + var(--video-overflow-bottom));
+
+  /* Adjust position for asymmetric overflow */
+  --_overflow-shift: calc((var(--video-overflow-top) - var(--video-overflow-bottom)) / 2);
+  transform: translate(-50%, calc(-50% - var(--_overflow-shift)));
+}
+
+/* ========================================
+    BANNER COVER SCALING - CONTAINER QUERIES
+    Modern approach with precise cover behavior
+
+    Formula explanation:
+    - Virtual height = container height + overflow top + overflow bottom
+    - width:  max(container width, virtual height × video ratio)
+    - height: max(virtual height, container width / video ratio)
+    - Position offset accounts for asymmetric overflow
+======================================== */
+@supports (container-type: size) {
+  .external-video-container {
+    container-type: size;
+  }
+
+  .external-video-container external-video iframe {
+    width: auto;
+    height: auto;
+    min-width: unset;
+    min-height: unset;
+
+    /* Virtual container height includes overflow areas */
+    --_virtual-height: calc(100cqh + var(--video-overflow-top) + var(--video-overflow-bottom));
+
+    /* Cover calculation using virtual height */
+    width: max(100cqw, calc(var(--_virtual-height) * var(--video-width) / var(--video-height)));
+    height: max(var(--_virtual-height), calc(100cqw * var(--video-height) / var(--video-width)));
+
+    /* Adjust centering for asymmetric overflow */
+    --_overflow-shift: calc((var(--video-overflow-top) - var(--video-overflow-bottom)) / 2);
+    transform: translate(-50%, calc(-50% - var(--_overflow-shift)));
+  }
+}
+
+/* ========================================
+    BANNER RESPONSIVE VIDEO RATIOS
+    Different ratios for mobile vs desktop
+======================================== */
+@media (max-width: 768px) {
+  @supports (container-type: size) {
+    .external-video-container external-video iframe {
+      --_virtual-height: calc(100cqh + var(--video-overflow-top) + var(--video-overflow-bottom));
+
+      width: max(
+        100cqw,
+        calc(var(--_virtual-height) * var(--video-width-mobile, var(--video-width)) / var(--video-height-mobile, var(--video-height)))
+      );
+      height: max(
+        var(--_virtual-height),
+        calc(100cqw * var(--video-height-mobile, var(--video-height)) / var(--video-width-mobile, var(--video-width)))
+      );
+    }
+  }
+}

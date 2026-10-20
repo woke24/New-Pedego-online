@@ -1,0 +1,26 @@
+{%- comment -%}
+  Renders banners in a grid layout.
+
+  Accepts:
+  - banner_blocks: {Array} The array of banner blocks settings mapped
+  - loop_index: {Number} The index of the current loop
+  - ipr_array: {Array} The array of items per row
+  - lazy_load: {Boolean} Whether to lazy load the banners
+  - current_page: {Number} The current page
+
+  Used in:
+  - collection-items.liquid
+  - blog-items.liquid
+{%- endcomment -%}
+
+{%- liquid
+assign current_banners = banner_blocks | where: 'nth_item', loop_index
+
+if current_banners
+  for banner in current_banners
+    if current_page == 1 or banner.page_shown == 'all'
+      render 'card-banner', current_block: banner, lazyload: lazy_load, section: section, ipr_array: ipr_array
+    endif
+  endfor
+endif
+-%}

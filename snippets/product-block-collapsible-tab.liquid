@@ -1,0 +1,63 @@
+{%- comment -%}
+  Renders the product page "collapsible_tab" block. Used in product-template.liquid.
+  The content combines the rich text, the page and the custom Liquid; the item is hidden when all of them are empty.
+  The drawer version (open_as_drawer) is rendered in product-template.liquid with the same content and check.
+
+  Accepts:
+  - block: Product section block object
+  - section: Section object
+{%- endcomment -%}
+
+{%- liquid
+  # Rich text only holds text, links and lists, so markup without text (e.g. an emptied "<p></p>") counts as empty.
+  # Page content and custom Liquid can be just an image or an embed, so they only count as empty when nothing is output.
+  assign rich_text = block.settings.content | strip_html | strip
+  capture custom_liquid_output
+    echo block.settings.custom_liquid
+  endcapture
+  assign custom_liquid_output = custom_liquid_output | strip
+  assign has_content = false
+  if rich_text != blank or block.settings.page.content != blank or custom_liquid_output != blank
+    assign has_content = true
+  endif
+-%}
+
+{%- if has_content -%}
+{%- capture collapsible_content -%}
+  {{- block.settings.content -}}
+  {{- block.settings.page.content -}}
+  {{- custom_liquid_output -}}
+{%- endcapture -%}
+{%- assign collapsible_id = 'Details-' | append: block.id | append: '-' | append: section.id -%}
+{%- capture summary_title -%}
+  <span>{{ block.settings.title | default: block.settings.page.title }}</span>
+  {%- liquid
+     if block.settings.icon and block.settings.icon != 'none'
+       if block.settings.icon == 'icon-caret__right' and block.settings.open_as_drawer == false
+         assign icon_name = 'icon-caret__down'
+       else
+         assign icon_name = block.settings.icon
+       endif
+
+       render 'icons', icon_name: icon_name
+     endif
+   -%}
+{%- endcapture -%}
+
+{%- unless block.settings.open_as_drawer -%}
+  {%- capture details_body -%}
+    <div class="content rte pt-8 pb-16">
+      {{ collapsible_content }}
+    </div>
+  {%- endcapture -%}
+
+  <details id="{{- collapsible_id -}}">
+    <summary>{{- summary_title -}}</summary>
+    {{- details_body -}}
+  </details>
+{%- else -%}
+  <a class="summary-title" href="#drawer-{{ collapsible_id }}">
+    {{- summary_title -}}
+  </a>
+{%- endunless -%}
+{%- endif -%}

@@ -1,0 +1,242 @@
+/* Specs bar. The grid is a <dl>; each item holds a <dt> (title and tooltip trigger) and <dd>s (value, tooltip). */
+.specs-bar-list {
+  margin: 0;
+}
+.specs-bar-item {
+  /* Inline padding of the item at each side, also used to size the tooltip to the item's content.
+     Only items with vertical dividers have padding. */
+  --specs-pad-start: 0px;
+  --specs-pad-end: 0px;
+  /* Vertical padding of the item (mobile only), also used to keep the tooltip's distance from the content */
+  --specs-pad-block: 0px;
+  padding-block: var(--specs-pad-block);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  /* Tooltip anchor: every item reuses the same name, scoped to itself */
+  anchor-name: --specs-tip;
+  anchor-scope: --specs-tip;
+}
+/* Space after the divider only: the grid gap already separates the content from the next divider,
+   so every divider has the same space on both sides. */
+.specs-bar-divider {
+  --specs-pad-start: var(--gap);
+  padding-inline: var(--gap) 0;
+  border-inline-start: 1px solid var(--color-borders);
+}
+@media only screen and (max-width: 767px) {
+  /* Mobile: space above and below each spec */
+  .specs-bar-item {
+    --specs-pad-block: 1.2rem;
+  }
+  /* One column: the specs are stacked, so the dividers become horizontal lines between them.
+     Two columns keep the vertical dividers. */
+  .grid-cols-1 > .specs-bar-divider {
+    --specs-pad-start: 0px;
+    position: relative;
+    padding-inline: 0;
+    border-inline-start: 0;
+  }
+  .grid-cols-1 > .specs-bar-divider + .specs-bar-divider::before {
+    content: "";
+    position: absolute;
+    /* Middle of the row gap, so the space above and below the line is even */
+    top: calc(var(--gap) / -2);
+    inset-inline: 0;
+    height: 1px;
+    background: var(--color-borders);
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  /* Grid with more specs than fit in one row: double the row gap to keep the rows (and their
+     dividers) apart. */
+  .specs-bar-list {
+    row-gap: calc(var(--gap) * 2);
+  }
+}
+
+/* reset.css makes dt and dd inline */
+.specs-bar-header {
+  display: block;
+  position: relative;
+  min-height: 2rem;
+  padding-inline-end: 2.8rem;
+}
+.text-align-center .specs-bar-header {
+  padding-inline-start: 2.8rem;
+}
+/* With dividers, the icon sits at the end of the spec, before the next divider. */
+.specs-bar-header .info-tooltip {
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+}
+/* Without dividers, the end of the spec is close to the next one, so the icon follows the title instead
+   and reads as part of this spec. */
+.specs-bar-item:not(.specs-bar-divider) .specs-bar-header {
+  padding-inline: 0;
+}
+.specs-bar-item:not(.specs-bar-divider) .specs-bar-header .info-tooltip {
+  position: static;
+  vertical-align: middle;
+  margin-inline-start: 0.8rem;
+}
+
+/* Font, weight, case and letter spacing come from the subheading class (theme typography settings) */
+.specs-bar-title {
+  line-height: var(--font-body-line-height);
+}
+
+.specs-bar-value {
+  display: block;
+  margin: 0;
+  font-weight: bold;
+}
+/* Items no longer clip, so break very long words instead of letting them run into the next spec */
+.specs-bar-title,
+.specs-bar-value {
+  overflow-wrap: anywhere;
+}
+
+/* Info tooltip */
+.info-tooltip {
+  display: inline-flex;
+  line-height: 0;
+}
+/* Padding, border, background and colour are already reset by reset.css */
+.info-tooltip-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+/* Bigger click and tap area (44px around the 20px icon) without changing the layout: a transparent
+   pseudo-element extends the button past its box. */
+.info-tooltip-trigger::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+}
+/* Outline color only while the tooltip is open. Hover uses a different cue, so the icon doesn't
+   look open right after closing it (pointer still on it, or sticky hover after a tap).
+   In the Specs bar the content is a <dd> outside .info-tooltip, so the item is checked instead. */
+.info-tooltip:has(:popover-open) .info-tooltip-trigger,
+.specs-bar-item:has(> .info-tooltip-content:popover-open) .info-tooltip-trigger {
+  color: var(--color-outlines);
+}
+@media (hover: hover) {
+  .info-tooltip-trigger:hover {
+    opacity: 0.7;
+  }
+  .info-tooltip:has(:popover-open) .info-tooltip-trigger:hover,
+  .specs-bar-item:has(> .info-tooltip-content:popover-open) .info-tooltip-trigger:hover {
+    opacity: 1;
+  }
+}
+.info-tooltip-trigger .info-icon {
+  display: block;
+}
+
+/* Closed popovers are hidden by the browser's own styles, which any author display rule overrides
+   (like reset.css making dd inline, when the content is a <dd>), so hide them here too. */
+.info-tooltip-content:not(:popover-open) {
+  display: none;
+}
+/* Native popover (popover="auto") below the specs bar item, as wide as the item's content: it lines up
+   with the item's end edge and grows towards the start (span-left), the width leaves out the item
+   padding, and the end margin skips the padding at that side. Narrow columns keep a minimum width;
+   if that runs off the screen, the tooltip flips to grow from the item's start edge instead. */
+.info-tooltip-content {
+  --tooltip-padding: 2.4rem;
+  position-anchor: --specs-tip;
+  position-area: bottom span-left;
+  position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  container-type: anchored;
+  inset: auto;
+  /* 1.2rem from the content: the item's vertical padding already counts towards it */
+  margin-block: calc(1.2rem - var(--specs-pad-block));
+  margin-inline: 0 var(--specs-pad-end);
+  width: calc(anchor-size(width) - var(--specs-pad-start) - var(--specs-pad-end));
+  min-width: min(20rem, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  padding: var(--tooltip-padding);
+  overflow: visible;
+  border: 1px solid var(--color-borders);
+  /* Follows the merchant's modal radius setting, capped to suit a small tooltip */
+  border-radius: min(var(--modal-border-radius), 0.6rem);
+  background: var(--color-background);
+  color: var(--color-foreground);
+  line-height: var(--font-body-line-height);
+  text-align: start;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* Mobile with two columns: a column is narrower than the tooltip's minimum width, so the tooltip of a
+   spec in the left column starts at its content and grows to the right instead, staying inside the page
+   margins like the right column's tooltip. */
+@media only screen and (max-width: 767px) {
+  .grid-cols-2 > .specs-bar-item:nth-child(odd) > .info-tooltip-content {
+    position-area: bottom span-right;
+    margin-inline: var(--specs-pad-start) 0;
+  }
+}
+
+/* Metaobject rich text is wrapped in .metafield-rich_text_field, so reset inside it too */
+.info-tooltip-content > :first-child,
+.info-tooltip-content > .metafield-rich_text_field > :first-child {
+  margin-top: 0;
+}
+.info-tooltip-content > :last-child,
+.info-tooltip-content > .metafield-rich_text_field > :last-child {
+  margin-bottom: 0;
+}
+
+/* Arrow on the top edge, pointing up to the specs bar item */
+.info-tooltip-content::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% - 5px);
+  left: var(--tooltip-padding);
+  width: 12px;
+  height: 12px;
+  border-style: solid;
+  border-width: 1px 1px 0 0;
+  border-color: var(--color-borders);
+  background: var(--color-background);
+  transform: rotate(-45deg);
+}
+/* The arrow follows the spec's text alignment, so it points at the centered or right-aligned content */
+.text-align-center > .info-tooltip-content::before {
+  left: calc(50% - 6px);
+}
+.text-align-right > .info-tooltip-content::before {
+  left: auto;
+  right: var(--tooltip-padding);
+}
+
+/* Tooltip flipped above the item: the arrow would point the wrong way, so hide it */
+@container anchored(fallback: flip-block) or anchored(fallback: flip-block flip-inline) {
+  .info-tooltip-content::before {
+    display: none;
+  }
+}
+
+/* Browsers without anchor positioning: show the tooltip near the bottom of the viewport */
+@supports not (anchor-name: --a) {
+  .info-tooltip-content {
+    position: fixed;
+    inset: auto 16px 16px;
+    width: auto;
+    min-width: 0;
+    max-width: 28rem;
+    margin: 0 auto;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  }
+  .info-tooltip-content::before {
+    display: none;
+  }
+}

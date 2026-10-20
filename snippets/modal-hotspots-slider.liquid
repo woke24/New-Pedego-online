@@ -1,0 +1,117 @@
+{%- comment -%}
+  Modal Hotspots Slider snippet for Image with Hotspots section.
+
+  Accepts:
+  - section: {Object} The section object (section  access)
+  - slide_blocks: {Array} The modal slides array
+
+  Single slide object settings:
+  - media_type: {String} The media type (image, video, external_video, mixed_media)
+  - image: {Image} The image object
+  - video: {Video} The video object
+  - external_video_url: {String} The external video URL
+  - external_video_aspect_ratio: {String} The external video aspect ratio
+  - video_controls: {Boolean} The video controls
+  - video_autoplay: {Boolean} The video autoplay
+  - text: {String} The text
+
+  Used in:
+  - sections/image-with-hotspots.liquid
+  - sections/on-demand-info.liquid
+{%- endcomment -%}
+
+{% liquid
+  assign slider_items_count = slide_blocks.size
+%}
+
+<modal-gridy-slider-parent id="modal-{{ section.id }}" class="modal modal--slider moddal--hotspots color-{{ settings.color_scheme_modals }}" data-modal data-parent>
+  <gridy-slider id="slider-{{ section.id }}"
+    class="gridy-slider"
+    data-mobile-enabled="true"
+    data-tablet-enabled="true"
+    data-desktop-enabled="true"
+    data-ipr-desktop="1"
+    data-ipr-tablet="1"
+    data-ipr-mobile="1"
+    data-arrows="true"
+    data-overflow-visible="true">
+    <div class="gridy-track scrollbar--hide grid grid-cols-1" data-contents-wrapper dir="ltr">
+      {%- for block in slide_blocks -%}
+        {% liquid
+          assign has_media = false
+
+          if block.settings.media_type == 'image' and block.settings.image != blank
+            assign has_media = true
+          elsif block.settings.media_type == 'video' and block.settings.video != blank
+            assign has_media = true
+          elsif block.settings.media_type == 'external_video' and block.settings.external_video_url != blank
+            assign has_media = true
+          elsif block.settings.media_type == 'mixed_media' and block.settings.video != blank or block.settings.image != blank
+            assign has_media = true
+          endif
+        %}
+
+        <div class="modal-dialog modal-dialog--large{% if forloop.index == 1 %} active
+        {% endif %}" data-contents data-modal-dialog role="dialog" aria-modal="true" tabindex="-1">
+          <a class="modal-close pos--absolute" href="#" data-modal-close data-close aria-label="{{ 'accessibility.close_something' | t: something: 'modal' }}">
+            {% render 'icon-close' %}
+          </a>
+
+          <div class="modal-grid{% if has_media %} modal-grid--with-media{% endif %}">
+            {%- if has_media -%}
+              <div class="modal-grid-media-column">
+                {% case block.settings.media_type %}
+                  {% when 'image' %}
+                    {%- render 'img',
+                      lazyload: true,
+                      src: block.settings.image
+                    -%}
+                  {% when 'video' %}
+                    {%- render 'video-frame',
+                      video_default: block.settings.video,
+                      controls: block.settings.video_controls,
+                      autoplay: block.settings.video_autoplay
+                    -%}
+                  {% when 'external_video' %}
+                    {% assign hide_branding = true %}
+                    {% if block.settings.video_controls %}
+                      {% assign hide_branding = false %}
+                    {% endif %}
+                    <div class="media{% if hide_branding %} external-video-container{% else %} fill-external-media{% endif %}">
+                      {%- render 'external-video',
+                        default_external_video: block.settings.external_video_url,
+                        default_external_video_aspect_ratio: block.settings.external_video_aspect_ratio,
+                        controls: block.settings.video_controls,
+                        autoplay: block.settings.video_autoplay,
+                        hide_branding: hide_branding -%}
+                    </div>
+                  {% when 'mixed_media' %}
+                    {% if block.settings.video != blank %}
+                      {%- render 'video-frame',
+                        video_default: block.settings.video,
+                        controls: block.settings.video_controls,
+                        autoplay: block.settings.video_autoplay -%}
+                    {% else %}
+                      {%- render 'img',
+                        lazyload: true,
+                        src: block.settings.image -%}
+                    {% endif %}
+                {% endcase %}
+              </div>
+            {%- endif -%}
+            <div class="modal-grid-text-column p-24 sm-p-40 scrollbar--hide rte">{{ block.settings.text }}</div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if slider_items_count > 1 -%}
+      {% render 'gridy-arrows' %}
+    {%- endif -%}
+  </gridy-slider>
+
+  {% comment %} Background, click to close {% endcomment %}
+  <a href="#" class="page-overlay" data-modal-overlay data-overlay tabindex="-1"></a>
+</modal-gridy-slider-parent>
+
+<script type="text/javascript" defer src="{{ 'component-modal-gridy-slider.js' | asset_url }}"></script>

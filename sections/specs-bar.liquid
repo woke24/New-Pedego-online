@@ -1,0 +1,375 @@
+{{ 'section-specs-bar.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  # Spec blocks. A block connected to a metaobject list is repeated by Shopify once per entry.
+  assign spec_blocks = section.blocks | where: 'type', 'spec'
+
+  # Count only the items that will be rendered
+  assign items_count = 0
+  for block in spec_blocks
+    if block.settings.title != blank or block.settings.text != blank
+      assign items_count = items_count | plus: 1
+    endif
+  endfor
+
+  # Item classes
+  assign item_classes = 'text-align-' | append: section.settings.alignment
+  if section.settings.show_dividers
+    assign item_classes = item_classes | append: ' specs-bar-divider'
+  endif
+  assign title_classes = section.settings.title_sm_size_multiplier | append: ' ' | append: section.settings.title_size_multiplier
+  assign text_classes = section.settings.sm_size_multiplier | append: ' ' | append: section.settings.size_multiplier
+-%}
+
+{%- if items_count > 0 -%}
+<div
+  id="{{ section.id }}"
+  class="specs-bar container section-spacing color-{{ section.settings.color_scheme }} pt pb sm-pt sm-pb"
+  style="
+    --pt: {{ section.settings.padding_top | append: 'px' }};
+    --pb: {{ section.settings.padding_bottom | append: 'px' }};
+    --sm-pt: {{ section.settings.md_padding_top | append: 'px' }};
+    --sm-pb: {{ section.settings.md_padding_bottom | append: 'px' }};
+  ">
+  {%- comment -%} The specs are term and value pairs, so the grid is a description list (see specs-bar-item.liquid). {%- endcomment -%}
+  <dl class="specs-bar-list grid grid-cols-{{ section.settings.items_per_row_mobile | default: 1 }} sm-grid-cols-{{ section.settings.items_per_row_tablet }} md-grid-cols-{{ section.settings.items_per_row_desktop }}">
+    {%- for block in spec_blocks -%}
+      {%- liquid
+        # forloop.index keeps ids unique when Shopify repeats a block for metaobject entries
+        assign item_id = section.id | append: '-' | append: block.id | append: '-' | append: forloop.index
+        assign item_title = block.settings.title | escape
+        assign item_text = block.settings.text | escape | newline_to_br
+      -%}
+      {%- render 'specs-bar-item',
+        title: item_title,
+        text: item_text,
+        tooltip: block.settings.tooltip,
+        id: item_id,
+        classes: item_classes,
+        title_classes: title_classes,
+        text_classes: text_classes,
+        attributes: block.shopify_attributes -%}
+    {%- endfor -%}
+  </dl>
+</div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.specs_bar.name",
+  "class": "section--specs-bar",
+  "tag": "section",
+  "disabled_on": {
+    "groups": [
+      "header",
+      "aside"
+    ]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.specs_bar.info"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "default": "default",
+      "label": "t:sections.colors.color_scheme.label"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "t:sections.typography.text_align",
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dividers",
+      "label": "t:sections.specs_bar.settings.show_dividers.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.headers.desktop_layout"
+    },
+    {
+      "type": "range",
+      "id": "items_per_row_desktop",
+      "label": "t:sections.layout.columns_per_row",
+      "min": 2,
+      "max": 6,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "md_padding_top",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "label": "t:sections.layout.margin_top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "md_padding_bottom",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "label": "t:sections.layout.margin_bottom",
+      "default": 40
+    },
+    {
+      "type": "select",
+      "id": "title_sm_size_multiplier",
+      "label": "t:sections.specs_bar.settings.title_size.label",
+      "default": "sm-size--tiny",
+      "options": [
+        {
+          "value": "sm-size--tiny",
+          "label": "t:sections.typography.size_options.tiny"
+        },
+        {
+          "value": "sm-size--small",
+          "label": "t:sections.typography.size_options.small"
+        },
+        {
+          "value": "sm-size--default",
+          "label": "t:sections.typography.size_options.default"
+        },
+        {
+          "value": "sm-size--large",
+          "label": "t:sections.typography.size_options.large"
+        },
+        {
+          "value": "sm-size--huge",
+          "label": "t:sections.typography.size_options.huge"
+        },
+        {
+          "value": "sm-size--gigantic",
+          "label": "t:sections.typography.size_options.gigantic"
+        },
+        {
+          "value": "sm-size--outrageous",
+          "label": "t:sections.typography.size_options.outrageous"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "sm_size_multiplier",
+      "label": "t:sections.specs_bar.settings.text_size.label",
+      "default": "sm-size--default",
+      "options": [
+        {
+          "value": "sm-size--tiny",
+          "label": "t:sections.typography.size_options.tiny"
+        },
+        {
+          "value": "sm-size--small",
+          "label": "t:sections.typography.size_options.small"
+        },
+        {
+          "value": "sm-size--default",
+          "label": "t:sections.typography.size_options.default"
+        },
+        {
+          "value": "sm-size--large",
+          "label": "t:sections.typography.size_options.large"
+        },
+        {
+          "value": "sm-size--huge",
+          "label": "t:sections.typography.size_options.huge"
+        },
+        {
+          "value": "sm-size--gigantic",
+          "label": "t:sections.typography.size_options.gigantic"
+        },
+        {
+          "value": "sm-size--outrageous",
+          "label": "t:sections.typography.size_options.outrageous"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.headers.tablet_layout"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.paragraphs.tablet_layout_info"
+    },
+    {
+      "type": "range",
+      "id": "items_per_row_tablet",
+      "label": "t:sections.layout.columns_per_row",
+      "min": 1,
+      "max": 4,
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "t:sections.headers.mobile_layout"
+    },
+    {
+      "type": "select",
+      "id": "items_per_row_mobile",
+      "label": "t:sections.layout.columns_per_row",
+      "options": [
+        {
+          "value": "1",
+          "label": "t:sections.specs_bar.settings.columns_mobile.one"
+        },
+        {
+          "value": "2",
+          "label": "t:sections.specs_bar.settings.columns_mobile.two"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "select",
+      "id": "title_size_multiplier",
+      "label": "t:sections.specs_bar.settings.title_size.label",
+      "default": "size--tiny",
+      "options": [
+        {
+          "value": "size--tiny",
+          "label": "t:sections.typography.size_options.tiny"
+        },
+        {
+          "value": "size--small",
+          "label": "t:sections.typography.size_options.small"
+        },
+        {
+          "value": "size--default",
+          "label": "t:sections.typography.size_options.default"
+        },
+        {
+          "value": "size--large",
+          "label": "t:sections.typography.size_options.large"
+        },
+        {
+          "value": "size--huge",
+          "label": "t:sections.typography.size_options.huge"
+        },
+        {
+          "value": "size--gigantic",
+          "label": "t:sections.typography.size_options.gigantic"
+        },
+        {
+          "value": "size--outrageous",
+          "label": "t:sections.typography.size_options.outrageous"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "size_multiplier",
+      "label": "t:sections.specs_bar.settings.text_size.label",
+      "default": "size--default",
+      "options": [
+        {
+          "value": "size--tiny",
+          "label": "t:sections.typography.size_options.tiny"
+        },
+        {
+          "value": "size--small",
+          "label": "t:sections.typography.size_options.small"
+        },
+        {
+          "value": "size--default",
+          "label": "t:sections.typography.size_options.default"
+        },
+        {
+          "value": "size--large",
+          "label": "t:sections.typography.size_options.large"
+        },
+        {
+          "value": "size--huge",
+          "label": "t:sections.typography.size_options.huge"
+        },
+        {
+          "value": "size--gigantic",
+          "label": "t:sections.typography.size_options.gigantic"
+        },
+        {
+          "value": "size--outrageous",
+          "label": "t:sections.typography.size_options.outrageous"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "label": "t:sections.layout.margin_top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "label": "t:sections.layout.margin_bottom",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "spec",
+      "name": "t:sections.specs_bar.blocks.spec.name",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "t:sections.specs_bar.blocks.spec.info"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.specs_bar.blocks.spec.title.label",
+          "default": "t:sections.specs_bar.presets.title"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.specs_bar.blocks.spec.text.label",
+          "default": "t:sections.specs_bar.presets.text"
+        },
+        {
+          "type": "richtext",
+          "id": "tooltip",
+          "label": "t:sections.specs_bar.blocks.spec.tooltip.label",
+          "info": "t:sections.specs_bar.blocks.spec.tooltip.info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.specs_bar.name",
+      "category": "t:sections.section_categories.product_and_collection_promotion",
+      "blocks": [
+        {
+          "type": "spec"
+        },
+        {
+          "type": "spec"
+        },
+        {
+          "type": "spec"
+        },
+        {
+          "type": "spec"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

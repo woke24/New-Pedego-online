@@ -1,0 +1,32 @@
+{%- comment -%}
+  Renders the product page "description" block. Used in product-template.liquid.
+
+  Accepts:
+  - product: Product object
+  - block: Product section block object
+  - section: Section object
+{%- endcomment -%}
+
+{% assign rte_length = product.description | strip_html | size %}
+{%- if block.settings.enable_collapsible and block.settings.collapsible_type == 'collapsible' -%}
+  <details id="Description-{{ block.id }}">
+    <summary>
+      <span>{{ 'products.product.description' | t }}</span>
+      {% render 'icon-caret', direction: 'down' %}
+    </summary>
+    <div class="content rte pt-8 pb-16">
+      {{ product.description }}
+    </div>
+  </details>
+{% elsif block.settings.enable_collapsible and block.settings.collapsible_type == 'read_more' and rte_length > 250 %}
+  {%- assign block_unique_id = 'read-more-product-description-' | append: block.id | append: '-' | append: section.id -%}
+  {%- render 'read-more-text',
+    content: product.description,
+    block_id: block_unique_id,
+    attributes: block.shopify_attributes,
+    context_label: 'product description' -%}
+{% else %}
+  <div class="rte">
+    {{ product.description }}
+  </div>
+{%- endif -%}

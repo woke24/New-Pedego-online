@@ -1,0 +1,37 @@
+{%- comment -%}
+  Single item of the Specs bar section: one term and value pair inside the section's <dl>.
+  The title (with the tooltip trigger) is the <dt>, the value is the <dd>, and the tooltip content is a second <dd>
+  that describes the same term. A group always has a <dt> and a <dd>, so an empty half is output as hidden.
+
+  Accepts:
+  - title: {String} Upper label text
+  - text: {String} Value text
+  - tooltip: {String} Optional rich text tooltip content
+  - id: {String} Unique id for the item
+  - classes: {String} Item wrapper classes
+  - title_classes: {String} Title size classes
+  - text_classes: {String} Text size classes
+  - attributes: {String} Optional block.shopify_attributes
+{%- endcomment -%}
+
+{%- if title != blank or text != blank -%}
+  {%- assign tooltip_id = id | append: '-tooltip' -%}
+  <div class="specs-bar-item {{ classes }}" {{ attributes }}>
+    {%- if title != blank or tooltip != blank -%}
+      <dt class="specs-bar-header">
+        {%- if title != blank -%}
+          <span class="specs-bar-title subheading {{ title_classes }}">{{ title }}</span>
+        {%- endif -%}
+        {%- render 'info-tooltip', id: tooltip_id, content: tooltip, label: title, part: 'trigger' -%}
+      </dt>
+    {%- else -%}
+      <dt hidden></dt>
+    {%- endif -%}
+    {%- if text != blank -%}
+      <dd class="specs-bar-value h4 {{ text_classes }}">{{ text }}</dd>
+    {%- elsif tooltip == blank -%}
+      <dd hidden></dd>
+    {%- endif -%}
+    {%- render 'info-tooltip', id: tooltip_id, content: tooltip, label: title, part: 'content', content_tag: 'dd' -%}
+  </div>
+{%- endif -%}

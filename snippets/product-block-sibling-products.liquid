@@ -1,0 +1,27 @@
+{%- comment -%}
+  Renders the product page "sibling_products" block. Used in product-template.liquid.
+  The siblings themselves come from sibling-products.liquid, shared with the quick view modal.
+
+  Accepts:
+  - product: Product object
+  - block: Product section block object
+  - section: Section object
+{%- endcomment -%}
+
+{%- if product.metafields.woolman.sibling_products.value != blank -%}
+  {%- assign sibling_slider_id = 'slider-' | append: block.id -%}
+  {%- if block.settings.variant_option_name != blank -%}
+    {%- assign option_name_handleized = block.settings.variant_option_name | handleize -%}
+    <p class="mb-8">{{ block.settings.variant_option_name }}: <strong>{{ product.options_by_name[option_name_handleized].values | first }}</strong></p>
+  {%- endif -%}
+  {%- comment -%} Margin top applies when there's no variant option title, as before the shared snippet. {%- endcomment -%}
+  <div {% if block.settings.variant_option_name == blank %}style="margin-top: {{ block.settings.margin_top | append: 'px' }}"{% endif %}>
+    {%- render 'sibling-products',
+      product: product,
+      display_style: block.settings.display_style,
+      slider_id: sibling_slider_id,
+      aspect_ratio: section.settings.product_image_aspect_ratio,
+      context: 'product'
+    -%}
+  </div>
+{%- endif -%}

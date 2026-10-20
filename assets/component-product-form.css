@@ -1,0 +1,398 @@
+/* Form Elements */
+.product-form__input {
+  flex: 0 0 100%;
+  padding: 0;
+  margin: 0 0 1.2rem 0;
+  min-width: fit-content;
+  border: none;
+}
+
+variant-radios,
+variant-selects {
+  display: block;
+}
+
+.product-form__input--dropdown {
+  margin-bottom: 1.6rem;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+}
+
+.product-block .form__label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  padding-left: 0;
+  margin-bottom: 4px;
+}
+
+/* a hidden input that is used to identify the variant */
+.product-form__input input[type='radio'] {
+  clip: rect(0, 0, 0, 0);
+  overflow: hidden;
+  position: absolute;
+  height: 1px;
+  width: 1px;
+}
+
+/* OPTION BUTTON - shared by the variant picker labels and the sibling product labels (sibling-products.liquid) */
+.option-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.product-form__input .option-buttons {
+  margin: 5px 0 2px;
+}
+
+/* OPTION BUTTON - default state */
+.option-button {
+  --cross-color: var(--color-borders);
+  border-radius: var(--button-border-radius);
+  border: solid 1px var(--color-borders);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  display: inline-block;
+  max-width: 100%;
+  /* The vertical padding gives back the extra 0.4em line height, so single-line buttons keep their height */
+  padding: calc(8px - 0.2em) 12px;
+  font-size: 1.4rem;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: break-word;
+  cursor: pointer;
+  position: relative;
+  min-width: 44px;
+
+  transition: border 0.16s ease-in-out, background-color 0.16s ease-in-out, color 0.16s ease-in-out, opacity 0.16s ease-in-out;
+}
+
+/* OPTION BUTTONS - equal width (Theme settings > Variant picker > Button width)
+   Columns fit the longest value (--option-chars, set in Liquid) and fill the row. */
+.option-buttons--equal {
+  --option-min-width: max(44px, calc(var(--option-chars, 1) * 1.1ch + 26px));
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--option-min-width)), 1fr));
+  font-size: 1.4rem;
+}
+.option-buttons--equal .option-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* OPTION BUTTON - hover and selected states. The crossed out line follows the border color. */
+.option-button:hover,
+:checked + .option-button,
+.option-button[aria-current="page"] {
+  --cross-color: var(--color-foreground);
+  border-color: var(--color-foreground);
+}
+
+/* OPTION BUTTON - solid selected state (Theme settings > Variant picker > Selected button) */
+.option-buttons--solid :checked + .option-button,
+.option-buttons--solid .option-button[aria-current="page"] {
+  --cross-color: var(--color-background);
+  background-color: var(--color-foreground);
+  color: var(--color-background);
+}
+
+/* OPTION BUTTON - forced colors mode (accessibility) */
+@media screen and (forced-colors: active) {
+  :checked + .option-button,
+  .option-button[aria-current="page"] {
+    text-decoration: underline;
+  }
+}
+
+/* OPTION BUTTON - text selection */
+:checked + .option-button::selection {
+  background-color: var(--color-foreground);
+}
+.option-buttons--solid :checked + .option-button::selection {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/* OPTION BUTTON - crossed out (data-cross-unavailable)
+   The line is drawn in currentColor, so its color transitions together with the button border. */
+[data-cross-unavailable="true"] .disabled + .option-button::after {
+  display: block;
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  transform: rotate(-45deg);
+  color: var(--cross-color);
+  border-left: solid 1px currentColor;
+  transition: color 0.16s ease-in-out;
+}
+
+/* OPTION BUTTON - crossed out corner to corner on equal width buttons */
+[data-cross-unavailable="true"] .option-buttons--equal .disabled + .option-button::after {
+  inset: 0;
+  transform: none;
+  border-left: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 0.5px),
+    currentColor calc(50% - 0.5px),
+    currentColor calc(50% + 0.5px),
+    transparent calc(50% + 0.5px)
+  );
+}
+
+/* OPTION BUTTON - unavailable state (data-cross-unavailable) */
+[data-cross-unavailable="true"] .disabled:not(:checked) + .option-button:not(:hover) {
+  opacity: 0.65;
+}
+
+.product-form__input .select {
+  position: relative;
+}
+
+.product-form__input .select select {
+  padding-right: 4.8rem;
+  padding-top: 2.8rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.product-form__input .select svg {
+  top: 50%;
+  right: 0;
+  position: absolute;
+  pointer-events: none;
+  transform: translate(50%, -50%);
+  width: 1.8rem !important;
+  height: 1.8rem !important;
+  right: 2.8rem !important;
+}
+
+.product-form__submit {
+  padding-left: 1.2rem !important;
+  padding-right: 1.2rem !important;
+}
+
+.product-form__input .swatch.has-image {
+  background-color: var(--color-background) !important;
+}
+
+.product-form__input label.swatch.has-image img {
+  padding: var(--single-swatch-selection-border);
+}
+
+.add-to-cart-container.with-quantity-input {
+  --quantity-width: 120px;
+  gap: 12px;
+  display: grid;
+  grid-template-columns: var(--quantity-width) auto;
+}
+.add-to-cart-container.with-quantity-input quantity-input {
+  width: var(--quantity-width);
+}
+
+.product-form__buttons .product-form__submit{
+  min-height: 48px;
+}
+.product-form__buttons .shopify-payment-button__button {
+  border-radius: var(--button-border-radius) !important;
+  min-height: 48px;
+  overflow: hidden;
+}
+.shopify-payment-button__more-options {
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+.shopify-payment-button__button + .shopify-payment-button__button--hidden {
+  display: none !important;
+}
+
+.product-form__error-message-wrapper .icon-error {
+  width: 18px;
+}
+.product-form__error-message-wrapper .product-form__error-message {
+  font-size: 1.4rem;
+}
+.product-form__error-message-wrapper {
+  gap: 8px;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  background: var(--error);
+  color: var(--error-foreground);
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+/* Limited availability warning (cart type "Page"): warning colors, and the warning icon instead of the error icon */
+.product-form__error-message-wrapper--warning {
+  background: var(--warning);
+  color: var(--warning-foreground);
+}
+.product-form__error-message-wrapper .icon-warning {
+  display: none;
+  width: 18px;
+  height: 18px;
+}
+.product-form__error-message-wrapper--warning .icon-warning {
+  display: block;
+}
+.product-form__error-message-wrapper--warning .icon-error {
+  display: none;
+}
+
+/* Quantity add */
+.js .btn--add-multiplier {
+  padding: 0 1.2rem !important;
+  height: 100%;
+}
+.js .with-add-multipliers {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+}
+.js .with-add-multipliers.single-line .btn {
+  border-radius: 0 !important;
+}
+.js .with-add-multipliers.single-line .btn:first-child {
+  border-top-left-radius: var(--button-border-radius) !important;
+  border-bottom-left-radius: var(--button-border-radius) !important;
+}
+.js .with-add-multipliers.single-line *:last-child .btn {
+  border-top-right-radius: var(--button-border-radius) !important;
+  border-bottom-right-radius: var(--button-border-radius) !important;
+}
+
+.js .with-add-multipliers.stacked {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.js .with-add-multipliers.stacked add-multiplier {
+  flex-grow: 1;
+}
+.js .with-add-multipliers.stacked .btn--add-multiplier {
+  padding: var(--button-padding) !important;
+  padding-left: 1.2rem !important;
+  padding-right: 1.2rem !important;
+  width: 100%;
+}
+
+
+/* Recipient form */
+.recipient-form {
+  /* (2.88[line-height] - 1.6rem) / 2 */
+  --recipient-checkbox-margin-top: 0.64rem;
+
+  display: block;
+  position: relative;
+  max-width: 44rem;
+  margin-bottom: 2.5rem;
+}
+
+.recipient-form-field-label {
+  margin: 0.6rem 0;
+}
+
+.recipient-form-field-label--space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+.recipient-checkbox {
+  flex-grow: 1;
+  font-size: 1.6rem;
+  display: flex;
+  word-break: break-word;
+  align-items: flex-start;
+  max-width: inherit;
+  position: relative;
+  cursor: pointer;
+}
+
+.no-js .recipient-checkbox {
+  display: none;
+}
+
+.recipient-form > input[type='checkbox'] {
+  position: absolute;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin: var(--recipient-checkbox-margin-top) 0;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.recipient-fields__field {
+  margin: 0 0 2rem 0;
+}
+
+.recipient-fields .field__label {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 3.5rem);
+  overflow: hidden;
+}
+
+.recipient-checkbox > svg {
+  margin-top: var(--recipient-checkbox-margin-top);
+  margin-right: 1.2rem;
+  flex-shrink: 0;
+}
+
+.recipient-form .icon-checkmark {
+  visibility: hidden;
+  position: absolute;
+  left: 0.28rem;
+  z-index: 5;
+  top: 0.4rem;
+}
+
+.recipient-form > input[type='checkbox']:checked + label .icon-checkmark {
+  visibility: visible;
+}
+
+.js .recipient-fields {
+  display: none;
+}
+
+.recipient-fields hr {
+  margin: 1.6rem auto;
+}
+
+.recipient-form > input[type='checkbox']:checked ~ .recipient-fields {
+  display: block;
+}
+.recipient-form > input[type='checkbox']:not(:checked, :disabled) ~ .recipient-fields,
+.recipient-email-label {
+  display: none;
+}
+
+.js .recipient-email-label.required,
+.no-js .recipient-email-label.optional {
+  display: inline;
+}
+
+.recipient-form ul {
+  padding-left: 4.4rem;
+  text-align: left;
+}
+
+.recipient-form ul a {
+  display: inline;
+}
+
+.recipient-form .error-message::first-letter {
+  text-transform: capitalize;
+}

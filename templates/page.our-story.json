@@ -1,0 +1,492 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero_7EXkQV": {
+      "type": "hero",
+      "blocks": {
+        "image_wa6iNA": {
+          "type": "image",
+          "settings": {
+            "media_type": "image",
+            "image": "",
+            "external_video_url": "",
+            "external_video_url_mobile": "",
+            "external_video_url_aspect_ratio": "16:9",
+            "external_video_url_mobile_aspect_ratio": "9:16",
+            "external_video_hide_branding": false
+          }
+        },
+        "title_FXCVBk": {
+          "type": "title",
+          "settings": {
+            "title": "Made with purpose",
+            "heading_tag": "h1",
+            "sm_size_multiplier": "sm-size--gigantic",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--huge",
+            "margin_top": 0
+          }
+        }
+      },
+      "block_order": [
+        "image_wa6iNA",
+        "title_FXCVBk"
+      ],
+      "name": "t:sections.hero.name",
+      "settings": {
+        "color_scheme": "default",
+        "overlay_opacity": 36,
+        "media_link": "",
+        "enable_full_width": true,
+        "section_height_desktop": "by_pixels",
+        "section_pixel_height_desktop": 600,
+        "section_fixed_ratio_desktop": "16 / 9",
+        "content_width": "col-sm-max-8",
+        "content_align_desktop": "sm-vertical-center sm-horizontal-center",
+        "desktop_alignment": "sm-text-align-center",
+        "md_padding_top": 0,
+        "md_padding_bottom": 0,
+        "section_height": "by_pixels",
+        "section_pixel_height": 400,
+        "section_fixed_ratio": "3 / 4",
+        "content_align_mobile": "vertical-center horizontal-center",
+        "mobile_alignment": "text-align-center",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "color_scheme": "",
+        "show_title": false,
+        "heading_text_align": "text-align-left",
+        "page_pixel_width_desktop": 800,
+        "sm_size_multiplier": "sm-size--default",
+        "md_padding_top": 40,
+        "md_padding_bottom": 80,
+        "size_multiplier": "size--default",
+        "padding_top": 32,
+        "padding_bottom": 120
+      }
+    },
+    "divider_JHpkzy": {
+      "type": "divider",
+      "name": "t:sections.divider.name",
+      "settings": {
+        "graphic_type": "rolling_curve",
+        "custom_svg": "",
+        "custom_svg_mobile": "",
+        "flip_horizontal": false,
+        "flip_vertical": false,
+        "motion": "scroll",
+        "motion_speed": "slow",
+        "position": "top-previous",
+        "top_color_mode": "transparent",
+        "top_color": "#FFFFFF",
+        "middle_color": "linear-gradient(270deg, rgba(17, 189, 251, 1) 15%, rgba(33, 249, 150, 1) 85%)",
+        "bottom_color_mode": "next",
+        "bottom_color": "#000000",
+        "sm_graphics_height": 0,
+        "sm_graphics_width": 100,
+        "md_padding_top": 0,
+        "md_padding_bottom": 0,
+        "graphics_height": 0,
+        "graphics_width": 100,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "rich_text_ibafez": {
+      "type": "rich-text",
+      "blocks": {
+        "text_NTqrLz": {
+          "type": "text",
+          "settings": {
+            "text": "<p>We started with a simple idea: make fewer things, and make them better. This is the story of how we got here, and what keeps us going.</p>",
+            "read_more": false,
+            "sm_size_multiplier": "sm-size--gigantic",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--huge",
+            "margin_top": 0
+          }
+        }
+      },
+      "block_order": [
+        "text_NTqrLz"
+      ],
+      "name": "t:sections.rich-text.name",
+      "settings": {
+        "color_scheme": "",
+        "text_gradient_color": "",
+        "content_width": 80,
+        "desktop_content_alignment": "center",
+        "desktop_alignment": "sm-text-align-center",
+        "md_padding_top": 64,
+        "md_padding_bottom": 40,
+        "mobile_alignment": "text-align-left",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "multicolumn_zyHpCM": {
+      "type": "multicolumn",
+      "blocks": {
+        "column_agdCjf": {
+          "type": "column",
+          "settings": {
+            "media_type": "image",
+            "image": "",
+            "external_video_aspect_ratio": "16:9",
+            "video_controls": false,
+            "video_autoplay": true,
+            "title": "It started with a question",
+            "text": "<p>Why do so many products ask you to compromise? Good looks or good quality, everyday comfort or lasting durability. We wanted both, and couldn’t find it.</p>",
+            "button_label": "",
+            "button_link": "",
+            "button_style": "",
+            "button_2_label": "",
+            "button_2_link": "",
+            "button_2_style": ""
+          }
+        },
+        "column_UVc4dE": {
+          "type": "column",
+          "settings": {
+            "media_type": "image",
+            "image": "",
+            "external_video_aspect_ratio": "16:9",
+            "video_controls": false,
+            "video_autoplay": true,
+            "title": "Then we found the way",
+            "text": "<p>We spent years learning from makers, testing materials and refining every detail, until our products felt just right in the hands of the people who use them.</p>",
+            "button_label": "",
+            "button_link": "",
+            "button_style": "",
+            "button_2_label": "",
+            "button_2_link": "",
+            "button_2_style": ""
+          }
+        },
+        "column_9g6bmq": {
+          "type": "column",
+          "settings": {
+            "media_type": "image",
+            "image": "",
+            "external_video_aspect_ratio": "16:9",
+            "video_controls": false,
+            "video_autoplay": true,
+            "title": "And made what we wanted",
+            "text": "<p>Today our collection is small on purpose. Every product is designed to be used, loved and kept, without the compromise.</p>",
+            "button_label": "",
+            "button_link": "",
+            "button_style": "",
+            "button_2_label": "",
+            "button_2_link": "",
+            "button_2_style": ""
+          }
+        }
+      },
+      "block_order": [
+        "column_agdCjf",
+        "column_UVc4dE",
+        "column_9g6bmq"
+      ],
+      "custom_css": [
+        ".container {--ideal-width: 1200px;}"
+      ],
+      "name": "t:sections.multicolumn.name",
+      "settings": {
+        "color_scheme": "",
+        "alignment": "left",
+        "media_aspect_ratio": "portrait_alt",
+        "layout_desktop": "grid",
+        "items_per_row_desktop": 3,
+        "md_padding_top": 40,
+        "md_padding_bottom": 40,
+        "enable_full_width": false,
+        "sm_full_width_buttons": false,
+        "heading_sm_size_multiplier": "sm-size--small",
+        "sm_size_multiplier": "sm-size--default",
+        "button_sm_size_multiplier": "sm-size--default",
+        "items_per_row_tablet": 3,
+        "layout_mobile": "grid",
+        "heading_size_multiplier": "size--default",
+        "size_multiplier": "size--default",
+        "button_size_multiplier": "size--default",
+        "padding_top": 40,
+        "padding_bottom": 0,
+        "full_width_buttons": false,
+        "autoplay": false,
+        "autoplay_speed": 5,
+        "sliding_behavior": "all"
+      }
+    },
+    "specs_bar_Pmetdq": {
+      "type": "specs-bar",
+      "blocks": {
+        "spec_AeJxYr": {
+          "type": "spec",
+          "settings": {
+            "title": "Founded",
+            "text": "2019",
+            "tooltip": "<p>Started by a small team with a big idea and a lot of prototypes.</p>"
+          }
+        },
+        "spec_RNUezG": {
+          "type": "spec",
+          "settings": {
+            "title": "Products",
+            "text": "40+",
+            "tooltip": "<p>A focused collection that we keep refining every season.</p>"
+          }
+        },
+        "spec_GNze8Y": {
+          "type": "spec",
+          "settings": {
+            "title": "Countries",
+            "text": "20",
+            "tooltip": "<p>We ship our products to customers in 20 countries.</p>"
+          }
+        },
+        "spec_36fBQF": {
+          "type": "spec",
+          "settings": {
+            "title": "Happy customers",
+            "text": "50k+",
+            "tooltip": "<p>Thank you to everyone who has made our story part of theirs.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "spec_AeJxYr",
+        "spec_RNUezG",
+        "spec_GNze8Y",
+        "spec_36fBQF"
+      ],
+      "name": "t:sections.specs_bar.name",
+      "settings": {
+        "color_scheme": "",
+        "alignment": "center",
+        "show_dividers": false,
+        "items_per_row_desktop": 4,
+        "md_padding_top": 40,
+        "md_padding_bottom": 120,
+        "title_sm_size_multiplier": "sm-size--tiny",
+        "sm_size_multiplier": "sm-size--gigantic",
+        "items_per_row_tablet": 2,
+        "items_per_row_mobile": "1",
+        "title_size_multiplier": "size--tiny",
+        "size_multiplier": "size--huge",
+        "padding_top": 40,
+        "padding_bottom": 64
+      }
+    },
+    "hero_83DwRN": {
+      "type": "hero",
+      "blocks": {
+        "image_D3FiQH": {
+          "type": "image",
+          "settings": {
+            "media_type": "image",
+            "image": "",
+            "external_video_url_aspect_ratio": "16:9",
+            "external_video_url_mobile_aspect_ratio": "9:16",
+            "external_video_hide_branding": false
+          }
+        },
+        "text_akRhCn": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Where it all began</p>",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 12,
+            "size_multiplier": "size--default",
+            "margin_top": 8
+          }
+        }
+      },
+      "block_order": [
+        "image_D3FiQH",
+        "text_akRhCn"
+      ],
+      "name": "t:sections.hero.name",
+      "settings": {
+        "color_scheme": "",
+        "overlay_opacity": 8,
+        "media_link": "",
+        "enable_full_width": false,
+        "section_height_desktop": "by_pixels",
+        "section_pixel_height_desktop": 600,
+        "section_fixed_ratio_desktop": "16 / 9",
+        "content_width": "col-sm-max-8",
+        "content_align_desktop": "sm-vertical-bottom sm-horizontal-left",
+        "desktop_alignment": "sm-text-align-left",
+        "md_padding_top": 0,
+        "md_padding_bottom": 0,
+        "section_height": "by_pixels",
+        "section_pixel_height": 400,
+        "section_fixed_ratio": "3 / 4",
+        "content_align_mobile": "vertical-center horizontal-center",
+        "mobile_alignment": "text-align-center",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "multicolumn_wJfjB7": {
+      "type": "multicolumn",
+      "blocks": {
+        "column_yFqWp7": {
+          "type": "column",
+          "settings": {
+            "media_type": "image",
+            "external_video_aspect_ratio": "16:9",
+            "video_controls": false,
+            "video_autoplay": true,
+            "title": "Less, but better",
+            "text": "<p>A focused collection, with every product designed to do its job really well.</p>",
+            "button_label": "",
+            "button_link": "",
+            "button_style": "",
+            "button_2_label": "",
+            "button_2_link": "",
+            "button_2_style": ""
+          }
+        },
+        "column_edbEtq": {
+          "type": "column",
+          "settings": {
+            "media_type": "image",
+            "external_video_aspect_ratio": "16:9",
+            "video_controls": false,
+            "video_autoplay": true,
+            "title": "Materials that matter",
+            "text": "<p>We choose durable, responsibly sourced materials and keep improving them.</p>",
+            "button_label": "",
+            "button_link": "",
+            "button_style": "",
+            "button_2_label": "",
+            "button_2_link": "",
+            "button_2_style": ""
+          }
+        },
+        "column_rBEN8L": {
+          "type": "column",
+          "settings": {
+            "media_type": "image",
+            "external_video_aspect_ratio": "16:9",
+            "video_controls": false,
+            "video_autoplay": true,
+            "title": "Made to be used",
+            "text": "<p>Every product is tested in real life before it reaches you.</p>",
+            "button_label": "",
+            "button_link": "",
+            "button_style": "",
+            "button_2_label": "",
+            "button_2_link": "",
+            "button_2_style": ""
+          }
+        }
+      },
+      "block_order": [
+        "column_yFqWp7",
+        "column_edbEtq",
+        "column_rBEN8L"
+      ],
+      "custom_css": [
+        ".container {--ideal-width: 1200px;}"
+      ],
+      "name": "t:sections.multicolumn.name",
+      "settings": {
+        "color_scheme": "",
+        "alignment": "left",
+        "media_aspect_ratio": "natural",
+        "layout_desktop": "grid",
+        "items_per_row_desktop": 3,
+        "md_padding_top": 120,
+        "md_padding_bottom": 120,
+        "enable_full_width": false,
+        "sm_full_width_buttons": false,
+        "heading_sm_size_multiplier": "sm-size--small",
+        "sm_size_multiplier": "sm-size--default",
+        "button_sm_size_multiplier": "sm-size--default",
+        "items_per_row_tablet": 3,
+        "layout_mobile": "grid",
+        "heading_size_multiplier": "size--default",
+        "size_multiplier": "size--default",
+        "button_size_multiplier": "size--default",
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "full_width_buttons": false,
+        "autoplay": false,
+        "autoplay_speed": 5,
+        "sliding_behavior": "all"
+      }
+    },
+    "featured_collection_or_products_ChQkGd": {
+      "type": "featured-collection-or-products",
+      "blocks": {
+        "section_header_azkELQ": {
+          "type": "section_header",
+          "disabled": true,
+          "settings": {
+            "subtitle": "",
+            "subtitle_tag": "h6",
+            "title": "Shop the collection",
+            "title_tag": "h2",
+            "text": "",
+            "text_alignment": "text-align-left",
+            "sm_size_multiplier": "sm-size--tiny",
+            "size_multiplier": "size--small"
+          }
+        }
+      },
+      "block_order": [
+        "section_header_azkELQ"
+      ],
+      "settings": {
+        "color_scheme": "default",
+        "collection": "",
+        "product_list": [],
+        "product_limit": 12,
+        "view_all": true,
+        "enable_card_thumbnail": false,
+        "enable_full_width": false,
+        "layout_desktop": "slide",
+        "products_per_row_desktop": 4,
+        "sm_custom_gap": 2,
+        "md_padding_top": 0,
+        "md_padding_bottom": 0,
+        "products_per_row_tablet": 3,
+        "layout_mobile": "slide peek",
+        "products_per_row_mobile": 1,
+        "custom_gap": 2,
+        "padding_top": 16,
+        "padding_bottom": 80,
+        "autoplay": false,
+        "autoplay_speed": 5,
+        "sliding_behavior": "all"
+      }
+    }
+  },
+  "order": [
+    "hero_7EXkQV",
+    "main",
+    "divider_JHpkzy",
+    "rich_text_ibafez",
+    "multicolumn_zyHpCM",
+    "specs_bar_Pmetdq",
+    "hero_83DwRN",
+    "multicolumn_wJfjB7",
+    "featured_collection_or_products_ChQkGd"
+  ]
+}

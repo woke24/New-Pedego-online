@@ -1,0 +1,351 @@
+/* --------------------------------
+  CARD BASE STRUCTURE
+
+  - card
+    - card media
+    - card body
+    - quickbuy
+-------------------------------- */
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--card-border-radius);
+  color: var(--color-card-foreground);
+  background: var(--color-card-background);
+}
+.card-media {
+  position: relative;
+  overflow: hidden;
+  anchor-name: --card-media-anchor;
+}
+.card-media figure {
+  border-radius: calc(var(--card-border-radius) / 1.5);
+  overflow: hidden;
+}
+.card-body {
+  padding: var(--card-body-padding);
+  flex-grow: 1;
+  anchor-name: --card-body-anchor;
+}
+
+.card-media-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding: var(--card-body-padding);
+}
+
+/* Second image on hover */
+.card-hover-images {
+  position: relative;
+  overflow: hidden;
+}
+.card-hover-images > *:last-child {
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.card-number {
+  position: absolute;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1;
+  border-radius: 10rem;
+  background: var(--color-button-background);
+  color: var(--color-button-foreground);
+  border: 1px solid;
+}
+
+@media (hover: hover) {
+  .card .media > * {
+    transition: transform 0.4s ease-in-out;
+  }
+  .card:hover .media > * {
+    transform: scale(1.1);
+  }
+  .card.on-hover:hover .card-hover-images > *:first-child > * {
+    opacity: 0;
+  }
+  .card.on-hover:hover .card-hover-images > *:last-child {
+    opacity: 1;
+  }
+}
+
+/* Color utilities */
+.card.bg-transparent {
+  --color-card-background: transparent;
+}
+.card.bg-alt {
+  --color-card-background: var(--color-background-alt);
+  --color-card-foreground: var(--color-foreground);
+}
+
+
+/* --------------------------------
+  CARD TYPES
+-------------------------------- */
+
+/* Traditional */
+.card--traditional {
+  background: transparent;
+  color: inherit;
+}
+.card--traditional .card-media {
+  border-radius: var(--card-border-radius);
+  background: var(--color-card-background);
+}
+.card--traditional .card-body {
+  padding: var(--card-body-padding) 0;
+}
+
+/* Banner */
+.card--banner .card-media {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+.card--banner .media,
+.card--banner .media img,
+.card--banner .external-video-container {
+  height: 100%;
+}
+.card--banner .external-video-container {
+  width: 100%;
+}
+.card--banner video,
+.card--banner external-video {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+/* Testimonial */
+.card--testimonial .quotation-mark {
+  height: 35%;
+}
+/* Transparent testimonials use the section colors without card padding */
+.card--testimonial.bg-transparent {
+  color: var(--color-foreground);
+}
+.card--testimonial.bg-transparent .card-body {
+  padding: 0;
+}
+
+/* Collection */
+.card--collection .badges {
+  position: absolute;
+  top: var(--card-body-padding);
+}
+.card--collection .vertical-top .badges {
+  top: auto;
+  bottom: var(--card-body-padding);
+}
+
+/* Product */
+.card--product.content--none .card-body,
+.card--product.content--name-only .card-body > *:not(.card-title),
+.card--product.content--name-and-price .card-body > *:not(.card-title, .price) {
+  display: none;
+}
+.card--product .card-title {
+  text-transform: var(--card--product-title-transform);
+}
+
+
+/* --------------------------------
+  CARD THUMBNAIL LAYOUT
+-------------------------------- */
+.layout--thumbnail {
+  --thumbnail-width: 80px;
+  display: grid;
+  grid-template-columns: var(--thumbnail-width) auto;
+  align-items: center;
+}
+
+.layout--thumbnail .card-body {
+  text-align: left;
+  padding: min(16px, var(--card-body-padding));
+}
+.layout--thumbnail .flex {
+  justify-content: flex-start !important;
+}
+.layout--thumbnail .card-media-overlay,
+.layout--thumbnail .card-vendor,
+.layout--thumbnail .swatches {
+  display: none;
+}
+.layout--thumbnail .quick-buy-or-add {
+  margin-top: 0 !important;
+  padding: 0 !important;
+  position: absolute;
+  top: calc(50% - 22px);
+  right: 1.2rem;
+  z-index: 1;
+}
+
+.card-body .badges {
+  margin-bottom: 8px;
+  display: none;
+}
+.layout--thumbnail .card-body .badges {
+  display: flex;
+}
+.card-body ul {
+  list-style: inside disc;
+}
+.card-body ul li::marker {
+  margin-right: 4px;
+}
+
+
+/* --------------------------------
+  VARIANT BUTTONS
+-------------------------------- */
+.options-availability {
+  gap: 8px;
+}
+.variant-option-title {
+  position: relative;
+  padding: 0.2rem 0.6rem;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  text-align: center;
+  min-width: 3rem;
+  border-radius: var(--button-border-radius);
+}
+.card--traditional .variant-option-title {
+  background: var(--color-background-alt);
+}
+.variant-option-title.unavailable {
+  opacity: 0.45;
+}
+.variant-option-title.unavailable::after {
+  display: block;
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  transform: rotate(-45deg);
+  border-left: solid 1px var(--color-foreground);
+ }
+
+
+/* --------------------------------
+  QUICK BUY
+-------------------------------- */
+.quick-buy-icon {
+  display: none;
+}
+.card--product:not(.card--product-upsell) .quick-buy-or-add {
+  margin-top: auto;
+}
+.card--product:not(.card--product-upsell).card--default .quick-buy-or-add {
+  padding: 0 var(--card-body-padding) var(--card-body-padding);
+}
+
+/* Hover */
+.quick-buy--hover .card:not(.layout--thumbnail) .quick-buy-or-add {
+  position: absolute;
+  padding: 0;
+  bottom: calc(anchor(bottom) + var(--card-body-padding));
+  left: var(--card-body-padding);
+  opacity: 0;
+  transform: translateY(50%);
+  transition: all 0.4s ease-in-out;
+  width: calc(100% - var(--card-body-padding) * 2);
+  position-anchor: --card-media-anchor;
+}
+.quick-buy--hover .card:not(.layout--thumbnail):hover .quick-buy-or-add {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (hover: none) and (pointer: coarse) {
+  .quick-buy--hover .card:not(.layout--thumbnail) .quick-buy-or-add {
+    transform: none;
+    opacity: 1;
+    left: auto;
+    right: var(--card-body-padding);
+    width: auto;
+  }
+
+  .quick-buy--hover .card:not(.layout--thumbnail) .quick-buy-or-add .btn {
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .quick-buy--hover .card:not(.layout--thumbnail) .quick-buy-or-add .btn .quick-buy-text {
+    display: none;
+  }
+
+  .quick-buy--hover .card:not(.layout--thumbnail) .quick-buy-or-add .btn .quick-buy-icon {
+    display: block;
+    position: relative;
+  }
+
+  .quick-buy--hover .card:not(.layout--thumbnail) .quick-buy-or-add .btn .quick-buy-icon svg {
+    display: block;
+  }
+
+  .quick-buy--hover .card:not(.layout--thumbnail) .quick-buy-or-add .btn .quick-buy-icon .icon-plus {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    right: 0;
+    bottom: 0;
+    stroke-width: 2px;
+    background: var(--color-button-foreground);
+    color: var(--color-button-background);
+    border-radius: 12px;
+  }
+}
+
+/* Icon button */
+.icon-btn--quick-buy {
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-btn--quick-buy .quick-buy-text {
+  display: none;
+}
+.icon-btn--quick-buy .quick-buy-icon {
+  display: block;
+  position: relative;
+}
+.icon-btn--quick-buy .quick-buy-icon svg {
+  display: block;
+}
+.icon-btn--quick-buy .quick-buy-icon .icon-plus {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  right: 0;
+  bottom: 0;
+  stroke-width: 2px;
+  background: var(--color-button-foreground);
+  color: var(--color-button-background);
+  border-radius: 12px;
+}

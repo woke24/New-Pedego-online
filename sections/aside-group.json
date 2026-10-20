@@ -1,0 +1,65 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:section_groups.aside",
+  "type": "aside",
+  "sections": {
+    "modal-newsletter": {
+      "type": "modal-newsletter",
+      "blocks": {
+        "the-title": {
+          "type": "title",
+          "settings": {
+            "title": "Subscribe to win!"
+          }
+        },
+        "the-image": {
+          "type": "image",
+          "settings": {
+            "image": "",
+            "media_link": "",
+            "aspect_ratio": "natural",
+            "margin_top": 0
+          }
+        },
+        "the-text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Sign up to our newsletter and get a change to win monthly prices. Every month we choose a random winner rom the newsletter subscribers.</p>",
+            "sm_size_multiplier": "sm-size--small",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--default",
+            "margin_top": 8
+          }
+        },
+        "the-newsletter": {
+          "type": "newsletter",
+          "settings": {
+            "margin_top": 8
+          }
+        }
+      },
+      "block_order": [
+        "the-title",
+        "the-image",
+        "the-text",
+        "the-newsletter"
+      ],
+      "settings": {
+        "test_mode": false,
+        "delay": 35,
+        "frequency": "once"
+      }
+    }
+  },
+  "order": [
+    "modal-newsletter"
+  ]
+}

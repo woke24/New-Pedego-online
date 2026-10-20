@@ -1,0 +1,67 @@
+{%- comment -%}
+  Renders ordered language list items or select options.
+
+  Accepts:
+  - format: {String} list | option
+  - link_class: {String} optional classes for list links
+{%- endcomment -%}
+
+{%- liquid
+  assign language_order = settings.language_order | remove: ' ' | split: ','
+  assign priority_language_codes = ','
+-%}
+
+{%- for raw_language_code in language_order -%}
+  {%- assign language_code = raw_language_code | strip | downcase -%}
+  {%- if language_code != blank -%}
+    {%- assign priority_check = ',' | append: language_code | append: ',' -%}
+    {%- unless priority_language_codes contains priority_check -%}
+      {%- for language in localization.available_languages -%}
+        {%- assign available_code = language.iso_code | downcase -%}
+        {%- if available_code == language_code -%}
+          {%- if format == 'option' -%}
+            <option value="{{ language.iso_code }}" lang="{{ language.iso_code }}"{% if language.iso_code == localization.language.iso_code %} selected{% endif %}>
+              {{ language.endonym_name | capitalize }}
+            </option>
+          {%- else -%}
+            <li class="lang--{{ language.iso_code | downcase }}">
+              <a
+                class="localization-link --language{% if link_class != blank %} {{ link_class }}{% endif %}{% if language.iso_code == localization.language.iso_code %} active{% endif %}"
+                href="#"
+                {% if language.iso_code == localization.language.iso_code %}
+                  aria-current="true"
+                {% endif %}
+                data-value="{{ language.iso_code }}"
+              >{{ language.endonym_name | capitalize }}{% render 'loading' %}</a>
+            </li>
+          {%- endif -%}
+          {%- assign priority_language_codes = priority_language_codes | append: language_code | append: ',' -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endunless -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- for language in localization.available_languages -%}
+  {%- assign available_code = language.iso_code | downcase -%}
+  {%- assign check_code = ',' | append: available_code | append: ',' -%}
+  {%- unless priority_language_codes contains check_code -%}
+    {%- if format == 'option' -%}
+      <option value="{{ language.iso_code }}" lang="{{ language.iso_code }}"{% if language.iso_code == localization.language.iso_code %} selected{% endif %}>
+        {{ language.endonym_name | capitalize }}
+      </option>
+    {%- else -%}
+      <li class="lang--{{ language.iso_code | downcase }}">
+        <a
+          class="localization-link --language{% if link_class != blank %} {{ link_class }}{% endif %}{% if language.iso_code == localization.language.iso_code %} active{% endif %}"
+          href="#"
+          {% if language.iso_code == localization.language.iso_code %}
+            aria-current="true"
+          {% endif %}
+          data-value="{{ language.iso_code }}"
+        >{{ language.endonym_name | capitalize }}{% render 'loading' %}</a>
+      </li>
+    {%- endif -%}
+  {%- endunless -%}
+{%- endfor -%}

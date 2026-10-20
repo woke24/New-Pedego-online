@@ -1,0 +1,17 @@
+{%- comment -%}
+  Renders the product page "sku" block. Used in product-template.liquid.
+
+  Accepts:
+  - product: Product object
+  - block: Product section block object
+  - section: Section object
+{%- endcomment -%}
+
+<p
+  class="product__sku js{% if product.selected_or_first_available_variant.sku.size == 0 %} hidden{% endif %}"
+  id="Sku-{{ section.id }}"
+  role="status"
+  {{ block.shopify_attributes }}
+>
+  <span class="visually-hidden">{{ 'products.product.sku' | t }}:</span> {{- product.selected_or_first_available_variant.sku -}}
+</p>

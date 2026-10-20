@@ -1,0 +1,96 @@
+.megamenu-dropdown,
+.megamenu-panel {
+  container-type: inline-size;
+}
+.megamenu {
+  width: 100%;
+}
+
+.megamenu__aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gutter, 1.6rem);
+}
+
+.splitted-nav-part .card--banner {
+  margin-bottom: 1.2rem;
+}
+
+@container (min-width: 1024px) {
+  /* Megamenu layout */
+  .megamenu--columns {
+    display: block;
+  }
+  .megamenu--banners,
+  .megamenu--products {
+    display: flex;
+    gap: var(--gutter, 1.6rem);
+    align-items: start;
+  }
+  .megamenu--aside-full {
+    flex-direction: column;
+  }
+  .megamenu--aside-full .megamenu__nav,
+  .megamenu--aside-full .megamenu__aside {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+  .megamenu--aside-full .megamenu__nav:empty {
+    display: none;
+  }
+  .megamenu__nav,
+  .megamenu--columns .megamenu__nav {
+    flex: 1 1 calc(100% - var(--aside-width, 40%));
+    display: grid;
+    grid-template-columns: repeat(var(--menu-cols), minmax(0, 1fr));
+    gap: 1.2rem var(--gutter, 1.6rem);
+    min-width: 0;
+  }
+  .megamenu--columns .megamenu__nav {
+    width: 100%;
+    flex: none;
+  }
+  .megamenu__aside {
+    flex: 0 0 var(--aside-width, 40%);
+    display: grid;
+    grid-template-columns: repeat(var(--aside-cols, 2), minmax(0, 1fr));
+    gap: var(--gutter, 1.6rem);
+    min-width: 0;
+  }
+}
+
+/* Megamenu in drawer/single column */
+@container (max-width: 1023px) {
+  .megamenu-panel .megamenu {
+    width: 100%;
+
+    .megamenu__nav-column {
+      margin-bottom: 1.6rem;
+    }
+
+    .splitted-nav-part:not(:last-child):after {
+      content: '';
+      display: block;
+      width: calc(100% + var(--drawer-padding) * 2);
+      border-bottom: 1px solid var(--color-borders);
+      margin: var(--drawer-padding) calc(-1 * var(--drawer-padding));
+    }
+  }
+}
+/* Banner heading above or below the image */
+.megamenu-banner--outside {
+  --color-card-background: transparent;
+  --color-card-foreground: var(--color-foreground);
+  border-radius: 0;
+  overflow: visible;
+}
+.megamenu-banner--outside .card-media {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  height: auto;
+  overflow: visible;
+}
+.megamenu-banner--outside .media {
+  border-radius: var(--br-img);
+}

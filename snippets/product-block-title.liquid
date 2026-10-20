@@ -1,0 +1,14 @@
+{%- comment -%}
+  Renders the product page "title" block. Used in product-template.liquid.
+
+  Accepts:
+  - product: Product object
+{%- endcomment -%}
+
+<h1 class="h1">
+  {%- if product.title != blank -%}
+    {{ product.title | escape }}
+  {%- else -%}
+    {{ 'onboarding.product_title' | t }}
+  {%- endif -%}
+</h1>

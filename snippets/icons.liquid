@@ -1,0 +1,56 @@
+{%- comment -%}
+  Renders an icon based on the icon name.
+
+  Accepts:
+  - icon_name: {String} The icon name
+
+  Used in:
+  - sections/price-transparency.liquid: The price transparency section
+{%- endcomment -%}
+
+{% liquid
+  case icon_name
+  when 'icon-caret__right'
+    render 'icon-caret', direction: 'right'
+  when 'icon-caret__down'
+    render 'icon-caret', direction: 'down'
+  when 'icon-feather'
+    render 'icon-feather'
+  when 'icon-gift'
+    render 'icon-gift'
+  when 'icon-heart'
+    render 'icon-heart'
+  when 'icon-truck'
+    render 'icon-truck'
+  when 'icon-package'
+    render 'icon-package'
+  when 'icon-plant'
+    render 'icon-plant'
+  when 'icon-shoe'
+    render 'icon-shoe'
+  when 'icon-map-pin'
+    render 'icon-map-pin'
+  when 'icon-t-shirt'
+    render 'icon-t-shirt'
+  when 'icon-ruler'
+    render 'icon-ruler'
+  when 'icon-chart-pie'
+    render 'icon-chart-pie'
+  when 'icon-credit-card'
+    render 'icon-credit-card'
+  when 'icon-building'
+    render 'icon-building'
+  when 'icon-scissors'
+    render 'icon-scissors'
+  when 'icon-shield'
+    render 'icon-shield'
+  when 'icon-chart-bar'
+    render 'icon-chart-bar'
+  when 'icon-swatch'
+    render 'icon-swatch'
+  when 'icon-calculator'
+    render 'icon-calculator'
+  when 'icon-zap'
+    render 'icon-zap'
+  endcase
+%}

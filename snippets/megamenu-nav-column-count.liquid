@@ -1,0 +1,18 @@
+{% comment %}
+  Echoes effective menu column count from ||| split markers or setting fallback.
+
+  accepts:
+    - links: {Array} sub-level menu links
+    - menu_columns: {Number} theme setting fallback
+{% endcomment %}
+{%- assign split_count = 0 -%}
+{%- for link in links -%}
+  {%- if link.title contains '|||' -%}
+    {%- assign split_count = split_count | plus: 1 -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- if split_count > 0 -%}
+  {{- split_count | plus: 1 -}}
+{%- else -%}
+  {{- menu_columns -}}
+{%- endif -%}

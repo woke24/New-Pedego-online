@@ -1,0 +1,118 @@
+{%- comment -%}
+  Renders an embedded iframe for external YouTube or Vimeo videos.
+  Converts various URL formats to proper embed URLs with configurable playback options.
+
+  Accepts:
+  - default_external_video: {String} The default video URL in any common format (required)
+  - mobile_external_video: {String} The mobile video URL in any common format (required)
+  - default_external_video_aspect_ratio: {String} The default video aspect ratio (optional)
+  - mobile_external_video_aspect_ratio: {String} The mobile video aspect ratio (optional)
+  - controls: {Boolean} Show controls (optional) - if not provided, defaults to false
+  - autoplay: {Boolean} Autoplay video (optional) - if not provided, defaults to true and if controls are false, autoplay is forced to true
+  - hide_branding: {Boolean} Hide YouTube player's branding related items from view by adding overflow area to the top and bottom of the video (optional) - if not provided, defaults to false
+
+  Usage:
+  {%- render 'extarnal-video',
+    default_external_video: 'https://www.youtube.com/watch?v=VIDEO_ID',
+    mobile_external_video: 'https://www.youtube.com/watch?v=VIDEO_ID',
+    default_external_video_aspect_ratio: '16:9',
+    mobile_external_video_aspect_ratio: '9:16'
+  -%}
+
+  Notes:
+  - YouTube URLs are normalized from watch?v= or youtu.be/ formats to embed URLs
+  - Controls boolean affects autoplay boolean, if controls are false, autoplay is forced to true
+  - Autoplay boolean affects muted boolean, if autoplay is true, muted is forced to true
+  - Vimeo uses background mode when controls are false, replaced via liquid filter to the attributes string
+  - Vimeo uses attribute muted instead of mute, replaced via liquid filter to the attributes string
+  - Hide branding reset to false if controls are true
+{%- endcomment -%}
+
+{{ 'component-external-video.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  # Check if default video is provided
+  assign has_default_video = false
+  if default_external_video != blank
+    assign has_default_video = true
+  endif
+
+  # Check if mobile video is provided and if it is the same type as the default video and if it is not the same id
+  assign has_mobile_video = false
+  if mobile_external_video != blank and mobile_external_video.type == default_external_video.type and mobile_external_video.id != default_external_video.id
+    assign has_mobile_video = true
+  endif
+
+  # Parse player width and height by aspect ratio
+  assign video_width = 16
+  assign video_height = 9
+  if default_external_video_aspect_ratio != blank
+    assign video_width = default_external_video_aspect_ratio | split: ':' | first
+    assign video_height = default_external_video_aspect_ratio | split: ':' | last
+  endif
+
+  # Formatting video src
+  if default_external_video.type == 'youtube'
+    assign video_src = 'https://www.youtube.com/embed/[video_id]?enablejsapi=1&playsinline=1&playlist=[video_id]&disablekb=1&iv_load_policy=3&showinfo=0&rel=0' | replace: '[video_id]', default_external_video.id
+  elsif default_external_video.type == 'vimeo'
+    assign video_src = 'https://player.vimeo.com/video/[video_id]?playsinline=1' | replace: '[video_id]', default_external_video.id
+    assign hide_branding = false
+  endif
+
+  # Default autoplay
+  if autoplay == null or controls == false
+    assign autoplay = true
+  endif
+
+  if controls and autoplay
+    assign attributes = attributes | append: '&controls=1&autoplay=1&loop=1&mute=1'
+    assign hide_branding = false
+  elsif controls
+    assign attributes = attributes | append: '&controls=1&autoplay=0&loop=0&mute=0'
+    assign hide_branding = false
+  else
+    assign attributes = attributes | append: '&controls=0&autoplay=1&loop=1&mute=1'
+  endif
+%}
+<external-video
+  {% if hide_branding %}class="has-overflow"{% endif %}
+  style="--video-width: {{ video_width }}; --video-height: {{ video_height }};"
+>
+{%- if has_default_video and default_external_video.type == 'youtube' -%}
+  <iframe
+    src="{{ video_src }}{{ attributes }}"
+    class="js-youtube"
+    data-type="youtube"
+    allow="autoplay; encrypted-media"
+    data-has-mobile-video="{{ has_mobile_video }}"
+    {% if has_mobile_video %}
+    data-default-video-id="{{ default_external_video.id }}"
+    data-mobile-video-id="{{ mobile_external_video.id }}"
+    {% endif %}
+    {% if autoplay %}data-autoplay{% endif %}
+    allowfullscreen
+    frameborder="0"
+  ></iframe>
+{%- elsif has_default_video and default_external_video.type == 'vimeo' -%}
+  <iframe
+    src="{{ video_src }}{{ attributes | replace: '&controls=0&autoplay=1&loop=1&mute=1', '&background=1' | replace: 'mute', 'muted' }}"
+    class="js-vimeo"
+    data-type="vimeo"
+    allow="autoplay; encrypted-media"
+    data-has-mobile-video="{{ has_mobile_video }}"
+    {% if has_mobile_video %}
+    data-default-video-id="{{ default_external_video.id }}"
+    data-mobile-video-id="{{ mobile_external_video.id }}"
+    {% endif %}
+    {% if autoplay %}data-autoplay{% endif %}
+    allowfullscreen
+    frameborder="0"
+  ></iframe>
+{%- else -%}
+    <div class="external-video-placeholder">
+      {% render 'icon-youtube' %}
+      <span class="size--tiny">/</span>
+      {% render 'icon-vimeo' %}
+    </div>
+{%- endif -%}
+</external-video>

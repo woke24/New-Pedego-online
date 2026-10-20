@@ -1,0 +1,80 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:section_groups.header",
+  "type": "header",
+  "sections": {
+    "announcements-bar": {
+      "type": "announcements-bar",
+      "blocks": {
+        "announcement-1": {
+          "type": "announcement",
+          "settings": {
+            "title": "Use announcements for promotions."
+          }
+        },
+        "announcement-2": {
+          "type": "announcement",
+          "settings": {
+            "title": "Check out the latest Taiga features!"
+          }
+        },
+        "announcement-3": {
+          "type": "announcement",
+          "settings": {
+            "title": "Use announcements for general info."
+          }
+        },
+        "announcement-4": {
+          "type": "announcement",
+          "settings": {
+            "title": "Free standard shipping to all orders!"
+          }
+        }
+      },
+      "block_order": [
+        "announcement-1",
+        "announcement-2",
+        "announcement-3",
+        "announcement-4"
+      ],
+      "settings": {
+        "color_scheme": "alternative-1",
+        "announcement_font": "base",
+        "announcement_font_scaling_property": 12,
+        "announcement_letter_spacing": 2,
+        "announcement_uppercase": false,
+        "autoplay_speed": 3,
+        "sliding_behavior": "single"
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "drawer_menu": "main-menu",
+        "enable_full_width": false,
+        "header_layout": "logo-left__menu-center",
+        "header_sticky_behavior": "scroll",
+        "header_uses_icons": true,
+        "region_menu": "country_flag",
+        "header_shadow": false,
+        "logo_max_width_desktop": 110,
+        "logo_padding_desktop": 30,
+        "logo_max_width": 90,
+        "logo_padding": 25,
+        "overlay_index": true
+      }
+    }
+  },
+  "order": [
+    "announcements-bar",
+    "header"
+  ]
+}

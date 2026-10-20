@@ -1,0 +1,86 @@
+{% comment %}
+  Video snippet that used for CDN videos not for external videos.
+  Supports separate video sources for mobile and desktop.
+  By default autoplay, loop and mute the video. Controls are disabled by default.
+
+  Accepts:
+  - video_default: {VideoDrop} Video object (required)
+  - video_mobile: {VideoDrop} Video object for mobile use (optional)
+  - controls: {Boolean} Show controls (optional)
+  - image_size: {String} Poster image size (optional)
+  - aspect_ratio: {String} 'portrait', 'landscape', 'square' (optional)
+  - sizing_rule: {String} 'cover', 'contain' (optional)
+  - class: {String} Additional classes for the video element (optional)
+  - controls: {Boolean} Show controls (optional)
+  - autoplay: {Boolean} Autoplay video (optional)
+
+  Notes:
+  - Controls not supported if video_mobile is provided. -> controls: false
+  - Autoplay not supported if video_mobile is provided. -> autoplay: true
+  - If video_mobile is provided, the video's poster attribute is replaced with a responsive poster image
+    (.video-frame__poster) using each video's preview image, so the desktop poster doesn't show on mobile.
+  - If video_mobile is provided, each video's aspect ratio is passed as --video-aspect-ratio and
+    --video-mobile-aspect-ratio to keep the natural height stable before the video loads.
+
+{% endcomment %}
+
+{% liquid
+  # Default values
+  if autoplay == null
+    assign autoplay = true
+  endif
+  assign controls = controls | default: false
+  assign muted = muted | default: true
+  assign image_size = image_size | default: 'x720'
+  assign sizing_rule = sizing_rule | default: 'cover'
+  assign aspect_ratio = aspect_ratio | default: 'natural'
+  assign class = class | append: ' media media--video' | append: ' ' | append: sizing_rule | append: ' ' | append: aspect_ratio | strip
+
+  # Force autoplay if controls are disabled
+  unless controls
+    assign autoplay = true
+  endunless
+
+  # Unmute if autoplay is disabled
+  unless autoplay
+    assign muted = false
+  endunless
+
+  # Has video check
+  assign has_video = false
+  if video_default != blank
+    assign has_video = true
+  endif
+
+  # Mobile video check
+  assign has_both_videos = false
+  if has_video and video_mobile != blank
+    assign has_both_videos = true
+  endif
+%}
+
+<video-frame class="{{ class }}" {% if has_both_videos %}data-responsive-video style="--video-aspect-ratio: {{ video_default.aspect_ratio | default: 1.7778 }}; --video-mobile-aspect-ratio: {{ video_mobile.aspect_ratio | default: 1.7778 }};"{% endif %}>
+{%- if has_both_videos -%}
+  {% assign video_default_tag = video_default | video_tag: image_size: image_size, controls: false, autoplay: true, loop: true, muted: muted %}
+  {% assign mobile_video_tag_source = video_mobile | video_tag: controls: false, autoplay: true, loop: true, muted: muted | split: '<source ' | last | split: '>' | first | prepend: '<source data-mobile-video ' | append: ' media="(max-width: 767px)"><source data-default-video ' %}
+
+  {% comment %} Remove the desktop-only poster so it doesn't flash on mobile. A responsive poster is rendered instead. {% endcomment %}
+  {% assign poster_url = video_default_tag | split: ' poster="' | last | split: '"' | first %}
+  {% assign poster_attr = ' poster="' | append: poster_url | append: '"' %}
+  {% assign video_default_tag = video_default_tag | remove_first: poster_attr %}
+
+  {%- if video_default.preview_image != blank -%}
+    <div class="video-frame__poster">
+      {%- render 'img', src: video_default.preview_image, src_mobile: video_mobile.preview_image, alt: '', wrapped: false -%}
+    </div>
+  {%- endif -%}
+
+  {{ video_default_tag |  replace: '<source ', mobile_video_tag_source | replace: '<img ', '<img loading="lazy" ' }}
+{%- elsif has_video -%}
+  {{ video_default | video_tag: image_size: image_size, controls: controls, autoplay: autoplay, loop: true, muted: muted, controlslist: 'nodownload noremoteplayback' | replace: '<img ', '<img loading="lazy" ' }}
+{%- else -%}
+  <video class="{{ class }} media--empty" playsinline="playsinline" loop="loop" {% if muted %} muted="muted"{% endif %}{% if autoplay %} autoplay{% endif %}{% if controls %} controls controlslist="nodownload noremoteplayback"{% endif %} preload="metadata" poster="{{ 'placeholder_video.png' | asset_img_url: 'x720' }}">
+      <source src="{{ 'placeholder_video.mp4' | asset_url }}" type="video/mp4">
+  </video>
+{%- endif -%}
+</video-frame>

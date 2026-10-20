@@ -1,0 +1,109 @@
+{%- assign menu_items_looped = 0 -%}
+
+<nav class="header-shortlinks">
+  {%- for menu_item in shortcut_menu.links -%}
+    {%- liquid
+      if menu_items_looped == section.settings.shortcut_limit
+        break
+      endif
+
+      if menu_item.title contains '---'
+        # '---' stands for a separator so skip this menu item
+        continue
+      elsif menu_item.title contains ':::'
+        assign menu_item_split = menu_item.title | split: ':::'
+        assign menu_item_title = menu_item_split[0] | strip
+        assign menu_item_style = 'hover-style--navigation style--badge-' | append: menu_item_split[1] | downcase | strip
+      elsif menu_item.title contains '***'
+        assign menu_item_title = menu_item.title | remove: '***' | strip
+        assign menu_item_style = 'hover-style--navigation style--emphasize'
+      else
+        assign menu_item_title = menu_item.title
+        assign menu_item_style = 'hover-style--navigation style--link'
+      endif
+
+      assign menu_items_looped = menu_items_looped | plus: 1
+
+      if menu_item.links != blank or content_menu_titles contains menu_item_title
+        assign has_subitems = true
+      else
+        assign has_subitems = false
+      endif
+
+      assign megamenu_block = nil
+      for block in section.blocks
+        unless block.type contains 'megamenu-'
+          continue
+        endunless
+        if block.settings.menu_parent == menu_item_title
+          assign megamenu_block = block
+          break
+        endif
+      endfor
+
+      assign panel_id = 'panel-main-' | append: menu_item.handle | append: '-js' | handleize
+    -%}
+
+    {%- if desktop_submenu_type == 'dropdown' and has_subitems -%}
+      {% liquid
+        assign menu_item_col_count = 1
+
+        if megamenu_block
+          assign menu_item_col_count = megamenu_block.settings.menu_columns
+        endif
+      %}
+      {%- capture effective_menu_columns_output -%}
+        {%- render 'megamenu-nav-column-count', links: menu_item.links, menu_columns: menu_item_col_count -%}
+      {%- endcapture -%}
+      {%- assign effective_menu_columns = effective_menu_columns_output | strip | plus: 0 -%}
+      {%- liquid
+        assign dropdown_background = blank
+        if megamenu_block
+          assign dropdown_background = megamenu_block.settings.dropdown_background
+        endif
+      -%}
+      <header-dropdown>
+        <details class="header-dropdown {% if megamenu_block == nil and effective_menu_columns == 1 %}--single{% endif %}" data-no-accordion-logic>
+          <summary class="header-main-menu-link --with-submenu {{ menu_item_style }}" aria-expanded="false">
+            {{ menu_item_title }} {% render 'icon-chevron-down--small' %}
+          </summary>
+          <div class="sub-menu-content scrollbar--hide {% if megamenu_block or effective_menu_columns != 1 %}--full container megamenu-dropdown{% else %}--single{% endif %}"{% if dropdown_background != blank %} style="background: {{ dropdown_background }};"{% endif %}>
+            {%- if megamenu_block -%}
+              {% render 'megamenu', block: megamenu_block, menu_item: menu_item, context: 'dropdown', section: section %}
+            {%- else -%}
+              {%- if effective_menu_columns > 1 -%}
+                <div class="megamenu__nav" style="--menu-cols: {{ effective_menu_columns }};">
+                  {%- for col in (1..effective_menu_columns) -%}
+                    <div class="megamenu__nav-column">
+                      {% render 'megamenu-nav-links',
+                        links: menu_item.links,
+                        column_index: col,
+                        menu_columns: effective_menu_columns
+                      %}
+                    </div>
+                  {%- endfor -%}
+                </div>
+              {%- else -%}
+                {% render 'megamenu-nav-links', links: menu_item.links %}
+              {%- endif -%}
+            {%- endif -%}
+          </div>
+        </details>
+      </header-dropdown>
+    {%- elsif has_subitems -%}
+      <button class="header-main-menu-link {{ menu_item_style }} --with-submenu js" role="link" aria-label="{{ 'accessibility.navigate_to_something' | t: something: menu_item_title }}"  data-drawer-submenu-open="{{ panel_id }}">{{ menu_item_title }} {% render 'icon-chevron-down--small' %}</button>
+      <noscript>
+        <a role="button" class="header-main-menu-link --with-submenu no-js" href="{{ menu_item.url }}">{{ menu_item_title }}</a>
+      </noscript>
+    {%- else -%}
+      {%- if menu_item.links.size > 0 or content_menu_titles contains menu_item_title -%}
+        <button class="header-main-menu-link header-shortlink js flex center-center {{ menu_item_style }}" role="link" aria-label="{{ 'accessibility.navigate_to_something' | t: something: menu_item_title }}" style="gap:4px" data-drawer-submenu-open="{{ panel_id }}">{{ menu_item_title }} {% render 'icon-chevron-down--small' %}</button>
+        <noscript>
+          <a role="button" class="header-shortlink flex center-center no-js" href="{{ menu_item.url }}">{{ menu_item_title }}</a>
+        </noscript>
+      {%- else -%}
+        <a class="header-main-menu-link header-shortlink flex center-center {{ menu_item_style }}" href="{{ menu_item.url }}" aria-label="{{ 'accessibility.navigate_to_something' | t: something: menu_item_title }}">{{ menu_item_title }}</a>
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+</nav>

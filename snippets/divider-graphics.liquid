@@ -1,0 +1,190 @@
+{%- comment -%}
+  Renders a built-in divider shape. Part colors come from CSS (section-divider.css):
+  .top-part, .middle-part and .bottom-part use --divider-top-fill, --divider-middle-fill and --divider-bottom-fill.
+
+  Animated graphics (rolling_curve, glitch, chevrons, mountains) always draw the middle part, and only move when
+  the Divider section adds a motion class (divider-motion-continuous or divider-motion-scroll).
+  Rolling curve and Mountains draw each moving layer as its own <svg>, two periods (2880) wide, which slides by
+  half its width. Moving the whole <svg> lets the browser animate it without repainting the shapes.
+  Shapes run a little past the viewBox (the layers don't clip), so no seam shows at the edges while they move.
+  Middle parts drawn under the bottom part stop 2 units above the bottom edge. When both parts end on the same edge,
+  their anti-aliased pixels blend and the middle color shows as a hairline.
+
+  The top part's lower edge follows the middle part's top edge (2 units lower, under the middle part), so the flips turn
+  Curve into an outward or inward curve.
+
+  Accepts:
+  - graphics: {String} curve | jagged | tilted | wave | waves | fold | rolling_curve | glitch | chevrons | mountains
+  - id: {String} unique id, used for the svg and the middle part gradient (see divider-gradient.liquid)
+  - middle_part_color: {String} optional solid color or CSS gradient; static shapes only draw the middle part when set
+  - height, width, sm_height, sm_width: {Number} mobile and desktop size (height 0 keeps the aspect ratio)
+{%- endcomment -%}
+{%- liquid
+  case graphics
+    when 'fold'
+      assign view_height = 170
+    when 'glitch'
+      assign view_height = 200
+    when 'mountains'
+      assign view_height = 140
+    else
+      assign view_height = 120
+  endcase
+-%}
+{%- capture gradient_definition -%}
+  {%- render 'divider-gradient', id: id, middle_part_color: middle_part_color -%}
+{%- endcapture -%}
+{%- if gradient_definition != blank -%}
+  {%- comment -%}
+    Moving layers repeat every 1440 units, so a gradient is drawn as a repeating pattern that loops seamlessly:
+    each period shows the gradient and its mirror image. Glitch rows only jitter, so it gets one gradient over the full width.
+  {%- endcomment -%}
+  {%- capture gradient_pattern -%}
+    {%- if graphics == 'glitch' -%}
+      <pattern id="{{ id }}-pattern" patternUnits="userSpaceOnUse" x="-80" width="1600" height="{{ view_height }}">
+        <rect width="1600" height="{{ view_height }}" fill="url(#{{ id }}-gradient)"/>
+      </pattern>
+    {%- else -%}
+      <pattern id="{{ id }}-pattern" patternUnits="userSpaceOnUse" width="1440" height="{{ view_height }}">
+        <rect width="720" height="{{ view_height }}" fill="url(#{{ id }}-gradient)"/>
+        <rect width="720" height="{{ view_height }}" fill="url(#{{ id }}-gradient)" transform="matrix(-1 0 0 1 1440 0)"/>
+      </pattern>
+    {%- endif -%}
+  {%- endcapture -%}
+  {%- capture layer_defs -%}
+    <defs>{{ gradient_definition }}{{ gradient_pattern }}</defs>
+  {%- endcapture -%}
+  {%- assign pattern_fill = ' style="--divider-middle-fill: url(#' | append: id | append: '-pattern)"' -%}
+{%- endif -%}
+
+{% style %}
+  #{{ id }}-svg {
+    width: {{ width }}%;
+    height: {% if height > 0 %}{{ height }}px{% else %}auto{% endif %};
+  }
+  @media only screen and (min-width: 768px) {
+    #{{ id }}-svg {
+      width: {{ sm_width }}%;
+      height: {% if sm_height > 0 %}{{ sm_height }}px{% else %}auto{% endif %};
+    }
+  }
+{% endstyle %}
+
+{%- case graphics -%}
+  {%- when 'rolling_curve' -%}
+    <div id="{{ id }}-svg" class="divider-box divider-box--rolling-curve">
+      {%- comment -%} Top and middle move together at half the speed of the bottom part, so the waves roll past each other. {%- endcomment -%}
+      <svg class="divider-layer divider-slide" style="--slide-duration: 48s; --slide-loops: 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2880 120" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        {{ layer_defs }}
+        <path class="top-part" d="M0 0V70C360 70 360 20 720 20S1080 70 1440 70S1800 20 2160 20S2520 70 2880 70S3240 20 3600 20V0Z"/>
+        <path class="middle-part"{{ pattern_fill }} d="M0 118V69C360 69 360 19 720 19S1080 69 1440 69S1800 19 2160 19S2520 69 2880 69S3240 19 3600 19V118Z"/>
+      </svg>
+      <svg class="divider-layer divider-slide" style="--slide-duration: 24s; --slide-loops: 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2880 120" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path class="bottom-part" d="M0 120V94C360 94 360 44 720 44S1080 94 1440 94S1800 44 2160 44S2520 94 2880 94S3240 44 3600 44V120Z"/>
+      </svg>
+    </div>
+  {%- when 'mountains' -%}
+    <div id="{{ id }}-svg" class="divider-box divider-box--mountains">
+      {%- comment -%} Three ridges, far to near. Nearer ridges move faster, so they pass over the ones behind. {%- endcomment -%}
+      <svg class="divider-layer divider-slide" style="--slide-duration: 120s; --slide-loops: 0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2880 140" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        {{ layer_defs }}
+        <path class="middle-part"{{ pattern_fill }} fill-opacity="0.4" d="M-10 138L-10 63.4Q0 63.8 8.8 59L45.4 39Q54.2 34.3 62.8 39.4L99.7 61.4Q108.3 66.6 116.3 60.6L144 39.8Q152 33.8 161.7 36.1L202.5 46Q212.2 48.3 221.1 43.7L238.7 34.6Q247.6 30 256.1 35.3L265.6 41.4Q274.1 46.8 283.7 44.1L325.3 32.7Q334.9 30 344.6 32.6L381.6 42.5Q391.2 45.1 400.5 48.7L412.7 53.5Q422 57.1 431 61.5L447 69.4Q456 73.8 465.9 75.2L505.2 80.6Q515.1 82 523.8 77L553 60.1Q561.6 55.1 570.9 51.3L614.1 33.8Q623.4 30 632.9 33L673.8 45.6Q683.3 48.6 692.4 44.3L706.6 37.6Q715.7 33.4 723.9 39L744.8 53Q753.1 58.6 762.5 55.1L795.5 42.7Q804.9 39.2 814.2 42.9L852.7 58.1Q862 61.8 870.5 56.5L897.8 39.6Q906.3 34.3 916.1 36.2L959.5 44.8Q969.3 46.8 979.1 44.7L1017.6 36.5Q1027.4 34.4 1035.9 39.6L1058.8 53.8Q1067.3 59.1 1076 64.1L1086.4 70.1Q1095.1 75.1 1104.9 77.1L1118.8 80Q1128.6 82 1138.1 79L1180.8 65.4Q1190.4 62.4 1199.6 66.3L1227.1 78.1Q1236.3 82 1246.3 82L1280.8 82Q1290.8 82 1297.2 74.3L1311.7 56.9Q1318.1 49.2 1327.1 44.8L1348.1 34.4Q1357.1 30 1364.8 36.4L1388.3 55.9Q1396 62.3 1406 62.7L1430 63.4Q1440 63.8 1448.8 59L1485.4 39Q1494.2 34.3 1502.8 39.4L1539.7 61.4Q1548.3 66.6 1556.3 60.6L1584 39.8Q1592 33.8 1601.7 36.1L1642.5 46Q1652.2 48.3 1661.1 43.7L1678.7 34.6Q1687.6 30 1696.1 35.3L1705.6 41.4Q1714.1 46.8 1723.7 44.1L1765.3 32.7Q1774.9 30 1784.6 32.6L1821.6 42.5Q1831.2 45.1 1840.5 48.7L1852.7 53.5Q1862 57.1 1871 61.5L1887 69.4Q1896 73.8 1905.9 75.2L1945.2 80.6Q1955.1 82 1963.8 77L1993 60.1Q2001.6 55.1 2010.9 51.3L2054.1 33.8Q2063.4 30 2072.9 33L2113.8 45.6Q2123.3 48.6 2132.4 44.3L2146.6 37.6Q2155.7 33.4 2163.9 39L2184.8 53Q2193.1 58.6 2202.5 55.1L2235.5 42.7Q2244.9 39.2 2254.2 42.9L2292.7 58.1Q2302 61.8 2310.5 56.5L2337.8 39.6Q2346.3 34.3 2356.1 36.2L2399.5 44.8Q2409.3 46.8 2419.1 44.7L2457.6 36.5Q2467.4 34.4 2475.9 39.6L2498.8 53.8Q2507.3 59.1 2516 64.1L2526.4 70.1Q2535.1 75.1 2544.9 77.1L2558.8 80Q2568.6 82 2578.1 79L2620.8 65.4Q2630.4 62.4 2639.6 66.3L2667.1 78.1Q2676.3 82 2686.3 82L2720.8 82Q2730.8 82 2737.2 74.3L2751.7 56.9Q2758.1 49.2 2767.1 44.8L2788.1 34.4Q2797.1 30 2804.8 36.4L2828.3 55.9Q2836 62.3 2846 62.7L2870 63.4Q2880 63.8 2888.8 59V138Z"/>
+      </svg>
+      <svg class="divider-layer divider-slide" style="--slide-duration: 80s; --slide-loops: 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2880 140" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path class="middle-part"{{ pattern_fill }} fill-opacity="0.8" d="M-13.9 138L-13.9 74.8Q0 76.3 13.5 80.1L36.4 86.5Q49.9 90.2 62.7 84.4L115.8 60.1Q128.5 54.3 139.3 63.3L160.5 81Q171.3 90 184.7 86.2L220.5 76.1Q234 72.3 247.5 75.9L306.7 91.6Q320.3 95.2 331.2 86.5L352.4 69.9Q363.4 61.2 376 67.2L418.4 87.3Q431 93.3 443.9 87.8L499.1 64.1Q512 58.6 525.8 60.9L582.3 70.7Q596.1 73.1 608.7 67.1L631.8 56Q644.5 50 658.5 50L695.8 50Q709.8 50 723.5 53.3L790.9 69.6Q804.5 72.9 818 69.1L871.9 53.8Q885.4 50 898.9 53.4L934.4 62.1Q948 65.5 961.8 63.3L1029.5 52.2Q1043.3 50 1056.7 54L1097.9 66.1Q1111.3 70.1 1123.6 76.8L1154.2 93.3Q1166.5 100 1179 93.6L1214.3 75.5Q1226.8 69.1 1240 73.8L1292.5 92.4Q1305.7 97.1 1318.3 91L1353.4 74.2Q1366 68.2 1379.9 69.7L1426.1 74.8Q1440 76.3 1453.5 80.1L1476.4 86.5Q1489.9 90.2 1502.7 84.4L1555.8 60.1Q1568.5 54.3 1579.3 63.3L1600.5 81Q1611.3 90 1624.7 86.2L1660.5 76.1Q1674 72.3 1687.5 75.9L1746.7 91.6Q1760.3 95.2 1771.2 86.5L1792.4 69.9Q1803.4 61.2 1816 67.2L1858.4 87.3Q1871 93.3 1883.9 87.8L1939.1 64.1Q1952 58.6 1965.8 60.9L2022.3 70.7Q2036.1 73.1 2048.7 67.1L2071.8 56Q2084.5 50 2098.5 50L2135.8 50Q2149.8 50 2163.5 53.3L2230.9 69.6Q2244.5 72.9 2258 69.1L2311.9 53.8Q2325.4 50 2338.9 53.4L2374.4 62.1Q2388 65.5 2401.8 63.3L2469.5 52.2Q2483.3 50 2496.7 54L2537.9 66.1Q2551.3 70.1 2563.6 76.8L2594.2 93.3Q2606.5 100 2619 93.6L2654.3 75.5Q2666.8 69.1 2680 73.8L2732.5 92.4Q2745.7 97.1 2758.3 91L2793.4 74.2Q2806 68.2 2819.9 69.7L2866.1 74.8Q2880 76.3 2893.5 80.1V138Z"/>
+      </svg>
+      <svg class="divider-layer divider-slide" style="--slide-duration: 30s; --slide-loops: 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2880 140" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path class="bottom-part" d="M-23.9 140L-23.9 109.3Q0 107.4 23.8 104.6L115.3 93.8Q139.1 90.9 162.8 94.9L250.4 109.7Q274.1 113.7 297.9 110.7L374.9 101.2Q398.8 98.2 422.3 103L491.5 117.2Q515.1 122 538.9 119.2L641 107.2Q664.8 104.3 688.6 107.3L784.8 119.1Q808.6 122 832.2 117.5L939.3 97.3Q962.9 92.9 986.5 97L1106.9 117.9Q1130.5 122 1154.5 122L1229.4 122Q1253.4 122 1277.4 120.1L1416.1 109.3Q1440 107.4 1463.8 104.6L1555.3 93.8Q1579.1 90.9 1602.8 94.9L1690.4 109.7Q1714.1 113.7 1737.9 110.7L1814.9 101.2Q1838.8 98.2 1862.3 103L1931.5 117.2Q1955.1 122 1978.9 119.2L2081 107.2Q2104.8 104.3 2128.6 107.3L2224.8 119.1Q2248.6 122 2272.2 117.5L2379.3 97.3Q2402.9 92.9 2426.5 97L2546.9 117.9Q2570.5 122 2594.5 122L2669.4 122Q2693.4 122 2717.4 120.1L2856.1 109.3Q2880 107.4 2903.8 104.6V140Z"/>
+      </svg>
+    </div>
+  {%- when 'chevrons' -%}
+    {%- comment -%}
+      Chevrons in the middle color (solid or gradient) on the bottom part color, which can be transparent.
+      The track is masked to the chevron shape and moves one chevron width per loop. The fill inside it moves back by the
+      same amount, so the gradient stays in place while the chevrons march through it. The outer layer fades the edges.
+    {%- endcomment -%}
+    <div id="{{ id }}-svg" class="divider-box divider-box--chevrons" style="--divider-middle-background: {{ middle_part_color }}">
+      <div class="divider-chevrons-fade"><div class="divider-chevrons-track"><div class="divider-chevrons-fill"></div></div></div>
+    </div>
+  {%- else -%}
+<svg id="{{ id }}-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 {{ view_height }}" preserveAspectRatio="none">
+  {% if gradient_definition != blank %}
+  <defs>{{ gradient_definition }}{% if graphics == 'glitch' %}{{ gradient_pattern }}{% endif %}</defs>
+  {% endif %}
+{%- case graphics -%}
+  {%- when 'curve' -%}
+    <path class="top-part" d="M0 0H1440V67C1294.84 81.76 1026.74 92 720 92S145.16 81.76 0 67Z"/>
+    {% if middle_part_color != blank %}<path class="middle-part" d="M720 90C413.26 90 145.16 79.76 0 65v21c145.16 14.76 413.26 25 720 25s574.84-10.24 720-25V65c-145.16 14.76-413.26 25-720 25"/>{% endif %}
+    <path class="bottom-part" d="M0 85v35h1440V85c-145.16 14.9-413.26 25-720 25S145.16 99.9 0 85"/>
+  {%- when 'jagged' -%}
+    <path class="top-part" d="M0 0v78.7L30 50l21.1 8.5L70 50l24.2 6.9L130 20l30 30h40l61 34.9 21.5-2.7L350 40l60 10 50-30 32.9 23.5L500 40l39.2 24.5L580 40l61.9 27.5L690 50l29.1 9 20.9-9 87.5 35L850 70l6.2 6.2L910 30l118.2 45.5 13.7 3.2L1080 52l30 7 30-49 48.9 30.6L1210 30l42.3 12.1L1310 10l52 52 18-12 14 6.8 46-25.4V0z"/>
+    {% if middle_part_color != blank %}<path class="middle-part" d="M0 78.7 30 50l51 20.6L130 20l30 30h40l70 40 80-50 60 10 50-30 70 50 50-30 90 40 70-30 100 40 70-60 130 50 40-28 30 7 30-49 80 50 90-50 60 60 70-38.6V120H0z" style="transform: scaleY(0.98); transform-origin: center center;"/>{% endif %}
+    <path class="bottom-part" d="M0 81.5 70 50l70 20 50-10 30 30 80-10 20 20 30-30 70 10 80-40 80 50 110-40 130 40 30-20 30 30 40-50 170 40 120-60 140 40 30-20 60 28.9V120H0z"/>
+  {%- when 'tilted' -%}
+    <path class="top-part" d="M1440 0v90L0 10V0z"/>
+    {% if middle_part_color != blank %}<path class="middle-part" d="m0 31 1440 80V90L0 9z"/>{% endif %}
+    <path class="bottom-part" d="M0 120V30l1440 80V120z"/>
+  {%- when 'wave' -%}
+    <path class="top-part" d="M0 0v50c0 0 150 40 400 40s650-120 1040-70V0H0z"/>
+    {% if middle_part_color != blank %}<path class="middle-part" d="M0 49s150 40 400 40S1050-31 1440 19v72c-473-102-739.17 25.42-1140 10C40 91 0 81 0 81v-32Z"/>{% endif %}
+    <path class="bottom-part" d="M300 100C40 90 0 80 0 80v40h1440V90C967-12 700 115 300 100z"/>
+  {%- when 'waves' -%}
+    <path class="top-part" d="M0 0v90.2c107.7-32.1 183.1-60.1 366.3-3.6 201.3 62.2 314 13.5 444.5-54.4s122.3 68.5 282 61.9 179.7-58.3 306.6-41.8c15.8 2 29.2 4 40.5 5.8V0H0z"/>
+    {% if middle_part_color != blank %}<path class="middle-part" d="M1094.6 67.8c-220.1 62.2-249-14-412.9-29.1s-158.2 62.1-333 55.5S159.2 29 20.5 45.5c-7.3.9-14.1 1.7-20.5 2.6V120h1440V61.6c-94.5-23.1-199.4-35.1-345.4 6.2z" style="transform: scaleY(0.98); transform-origin: center center;"/>{% endif %}
+    <path class="bottom-part" d="M1399.5 52.3c-126.8-16.5-146.8 35.2-306.6 41.8s-151.5-129.8-282-61.9-243.3 116.6-444.6 54.5C183.1 30.1 107.7 58.1 0 90.2V120h1440V58.1c-11.4-1.8-24.8-3.8-40.5-5.8z"/>
+  {%- when 'fold' -%}
+    <path class="top-part" d="M0 0L476 109.8L1440 0Z"/>
+    {% if middle_part_color != blank %}<path class="middle-part" d="M0 0L476 109.8L1440 0V66.9L476 120.3L0 66.9Z"/>{% endif %}
+    <path class="bottom-part" d="M0 66.9L476 120.3L1440 66.9V170H0Z"/>
+  {%- when 'glitch' -%}
+    {%- comment -%} Rows with divider-glitch snap sideways now and then (--gx distance, --d duration, --delay offset, --i snaps per scroll pass). {%- endcomment -%}
+    <g class="middle-part"{{ pattern_fill }}>
+    <g class="divider-glitch" style="--gx: 33px; --d: 5.28s; --delay: -3.14s; --i: 3.41"><rect x="718" y="12" width="59" height="8"/></g>
+    <rect x="929" y="31" width="69" height="3"/>
+    <rect x="848" y="41" width="78" height="11"/><rect x="898" y="43" width="58" height="5"/>
+    <rect x="120" y="51" width="88" height="6"/><rect x="423" y="53" width="91" height="6"/>
+    <g class="divider-glitch" style="--gx: -27px; --d: 4.52s; --delay: -0.02s; --i: 3.98"><rect x="742" y="61" width="99" height="8"/><rect x="1136" y="61" width="16" height="3"/><rect x="1392" y="61" width="61" height="3"/></g>
+    <rect x="-98" y="66" width="101" height="6"/><rect x="308" y="66" width="101" height="4"/><rect x="255" y="67" width="53" height="2"/>
+    <rect x="1150" y="70" width="138" height="4"/><rect x="1284" y="70" width="61" height="3"/>
+    <rect x="200" y="74" width="18" height="7"/><rect x="1271" y="73" width="65" height="7"/>
+    <g class="divider-glitch" style="--gx: 24px; --d: 3.99s; --delay: -3.67s; --i: 4.51"><rect x="-73" y="78" width="29" height="4"/><rect x="438" y="80" width="71" height="5"/><rect x="724" y="79" width="115" height="3"/><rect x="879" y="79" width="113" height="5"/><rect x="1054" y="79" width="92" height="5"/><rect x="1314" y="80" width="36" height="5"/><rect x="1485" y="80" width="4" height="4"/></g>
+    <g class="divider-glitch" style="--gx: 14px; --d: 2.91s; --delay: -1.38s; --i: 6.19"><rect x="239" y="85" width="21" height="9"/><rect x="344" y="85" width="163" height="8"/><rect x="546" y="85" width="138" height="10"/><rect x="914" y="85" width="117" height="8"/></g>
+    <g class="divider-glitch" style="--gx: 23px; --d: 4.76s; --delay: -0.2s; --i: 3.78"><rect x="-79" y="91" width="36" height="14"/><rect x="784" y="92" width="133" height="13"/><rect x="1019" y="92" width="42" height="13"/><rect x="1212" y="93" width="131" height="12"/><rect x="1343" y="91" width="86" height="13"/></g>
+    <g class="divider-glitch" style="--gx: 21px; --d: 3.52s; --delay: -3.39s; --i: 5.11"><rect x="-44" y="103" width="135" height="6"/><rect x="507" y="105" width="92" height="4"/><rect x="1364" y="105" width="115" height="6"/><rect x="1543" y="104" width="1" height="6"/></g>
+    <rect x="41" y="107" width="177" height="8"/><rect x="1313" y="107" width="83" height="8"/><rect x="1380" y="108" width="66" height="8"/><rect x="1477" y="107" width="28" height="6"/>
+    <rect x="175" y="114" width="46" height="12"/><rect x="586" y="115" width="167" height="11"/><rect x="725" y="115" width="224" height="10"/><rect x="1067" y="115" width="85" height="12"/>
+    <g class="divider-glitch" style="--gx: -30px; --d: 3.78s; --delay: -1.6s; --i: 4.76"><rect x="-104" y="125" width="98" height="6"/><rect x="49" y="125" width="232" height="6"/><rect x="315" y="125" width="240" height="6"/><rect x="994" y="124" width="89" height="6"/><rect x="1152" y="123" width="13" height="8"/></g>
+    <rect x="879" y="133" width="132" height="6"/>
+    <g class="divider-glitch" style="--gx: -29px; --d: 3.33s; --delay: -1.29s; --i: 5.41"><rect x="-54" y="137" width="82" height="4"/><rect x="25" y="139" width="121" height="6"/><rect x="343" y="138" width="278" height="6"/><rect x="718" y="138" width="149" height="4"/></g>
+    <g class="divider-glitch" style="--gx: 46px; --d: 3.32s; --delay: -1.58s; --i: 5.42"><rect x="273" y="144" width="16" height="11"/><rect x="1150" y="144" width="193" height="10"/><rect x="1341" y="143" width="71" height="10"/></g>
+    <rect x="201" y="155" width="53" height="9"/><rect x="592" y="157" width="91" height="9"/>
+    <rect x="95" y="165" width="200" height="9"/><rect x="1217" y="165" width="214" height="8"/><rect x="1500" y="164" width="4" height="7"/>
+    </g>
+    <g class="bottom-part">
+    <rect x="53" y="12" width="96" height="8"/><rect x="735" y="12" width="68" height="8"/>
+    <rect x="-80" y="20" width="20" height="12"/><rect x="148" y="20" width="97" height="12"/>
+    <rect x="822" y="32" width="87" height="3"/><rect x="909" y="32" width="83" height="3"/>
+    <rect x="1026" y="35" width="14" height="8"/>
+    <g class="divider-glitch" style="--gx: 41px; --d: 5.15s; --delay: -4.2s; --i: 3.50"><rect x="-44" y="43" width="158" height="10"/><rect x="114" y="43" width="98" height="10"/><rect x="778" y="43" width="92" height="10"/><rect x="870" y="43" width="129" height="10"/></g>
+    <g class="divider-glitch" style="--gx: 17px; --d: 5.39s; --delay: -0.11s; --i: 3.34"><rect x="-34" y="53" width="82" height="6"/><rect x="48" y="53" width="50" height="6"/><rect x="98" y="53" width="118" height="6"/><rect x="432" y="53" width="125" height="6"/><rect x="1389" y="53" width="80" height="6"/></g>
+    <rect x="758" y="61" width="98" height="6"/>
+    <g class="divider-glitch" style="--gx: -17px; --d: 2.62s; --delay: -0.35s; --i: 6.87"><rect x="-80" y="67" width="116" height="4"/><rect x="329" y="67" width="169" height="4"/></g>
+    <rect x="63" y="71" width="101" height="3"/><rect x="622" y="71" width="104" height="3"/><rect x="1156" y="71" width="147" height="3"/><rect x="1303" y="71" width="78" height="3"/>
+    <rect x="178" y="74" width="23" height="6"/><rect x="693" y="74" width="44" height="6"/><rect x="737" y="74" width="181" height="6"/><rect x="1216" y="74" width="31" height="6"/><rect x="1279" y="74" width="62" height="6"/>
+    <rect x="-80" y="80" width="38" height="3"/><rect x="426" y="80" width="72" height="3"/><rect x="547" y="80" width="165" height="3"/><rect x="712" y="80" width="117" height="3"/><rect x="893" y="80" width="174" height="3"/><rect x="1067" y="80" width="115" height="3"/><rect x="1332" y="80" width="51" height="3"/><rect x="1513" y="80" width="7" height="3"/>
+    <g class="divider-glitch" style="--gx: 23px; --d: 2.53s; --delay: -2.36s; --i: 7.11"><rect x="264" y="85" width="28" height="8"/><rect x="366" y="85" width="206" height="8"/><rect x="572" y="85" width="165" height="8"/><rect x="905" y="85" width="160" height="8"/></g>
+    <rect x="-61" y="93" width="42" height="12"/><rect x="-19" y="93" width="223" height="12"/><rect x="357" y="93" width="201" height="12"/><rect x="765" y="93" width="143" height="12"/><rect x="954" y="93" width="46" height="12"/><rect x="1000" y="93" width="70" height="12"/><rect x="1181" y="93" width="19" height="12"/><rect x="1200" y="93" width="161" height="12"/><rect x="1361" y="93" width="83" height="12"/><rect x="1444" y="93" width="76" height="12"/>
+    <rect x="-80" y="105" width="44" height="4"/><rect x="-36" y="105" width="179" height="4"/><rect x="277" y="105" width="204" height="4"/><rect x="481" y="105" width="151" height="4"/><rect x="730" y="105" width="111" height="4"/><rect x="986" y="105" width="22" height="4"/><rect x="1087" y="105" width="187" height="4"/><rect x="1349" y="105" width="123" height="4"/><rect x="1472" y="105" width="46" height="4"/><rect x="1518" y="105" width="2" height="4"/>
+    <rect x="-37" y="109" width="63" height="6"/><rect x="26" y="109" width="164" height="6"/><rect x="190" y="109" width="93" height="6"/><rect x="283" y="109" width="199" height="6"/><rect x="482" y="109" width="194" height="6"/><rect x="676" y="109" width="214" height="6"/><rect x="1288" y="109" width="102" height="6"/><rect x="1390" y="109" width="93" height="6"/><rect x="1483" y="109" width="37" height="6"/>
+    <rect x="-1" y="115" width="168" height="10"/><rect x="167" y="115" width="51" height="10"/><rect x="258" y="115" width="41" height="10"/><rect x="469" y="115" width="21" height="10"/><rect x="566" y="115" width="173" height="10"/><rect x="739" y="115" width="243" height="10"/><rect x="1039" y="115" width="116" height="10"/><rect x="1155" y="115" width="32" height="10"/><rect x="1200" y="115" width="244" height="10"/><rect x="1444" y="115" width="66" height="10"/>
+    <rect x="-80" y="125" width="146" height="6"/><rect x="66" y="125" width="245" height="6"/><rect x="343" y="125" width="248" height="6"/><rect x="591" y="125" width="116" height="6"/><rect x="707" y="125" width="114" height="6"/><rect x="1022" y="125" width="137" height="6"/><rect x="1159" y="125" width="21" height="6"/><rect x="1180" y="125" width="258" height="6"/><rect x="1438" y="125" width="82" height="6"/>
+    <rect x="90" y="133" width="95" height="6"/><rect x="265" y="133" width="155" height="6"/><rect x="420" y="133" width="142" height="6"/><rect x="562" y="133" width="167" height="6"/><rect x="812" y="133" width="95" height="6"/><rect x="907" y="133" width="156" height="6"/><rect x="1063" y="133" width="215" height="6"/><rect x="1278" y="133" width="110" height="6"/><rect x="1388" y="133" width="132" height="6"/>
+    <g class="divider-glitch" style="--gx: 56px; --d: 5.59s; --delay: -3.24s; --i: 3.22"><rect x="-80" y="139" width="115" height="4"/><rect x="35" y="139" width="126" height="4"/><rect x="190" y="139" width="91" height="4"/><rect x="331" y="139" width="256" height="4"/><rect x="587" y="139" width="143" height="4"/><rect x="730" y="139" width="221" height="4"/><rect x="1013" y="139" width="107" height="4"/><rect x="1120" y="139" width="245" height="4"/><rect x="1365" y="139" width="155" height="4"/></g>
+    <g class="divider-glitch" style="--gx: -38px; --d: 3.47s; --delay: -1.39s; --i: 5.19"><rect x="-42" y="145" width="294" height="10"/><rect x="252" y="145" width="27" height="10"/><rect x="279" y="145" width="226" height="10"/><rect x="505" y="145" width="89" height="10"/><rect x="649" y="145" width="201" height="10"/><rect x="903" y="145" width="265" height="10"/><rect x="1168" y="145" width="184" height="10"/><rect x="1352" y="145" width="72" height="10"/><rect x="1424" y="145" width="96" height="10"/></g>
+    <rect x="-80" y="157" width="142" height="8"/><rect x="81" y="157" width="137" height="8"/><rect x="218" y="157" width="58" height="8"/><rect x="301" y="157" width="103" height="8"/><rect x="404" y="157" width="26" height="8"/><rect x="430" y="157" width="145" height="8"/><rect x="575" y="157" width="125" height="8"/><rect x="700" y="157" width="88" height="8"/><rect x="788" y="157" width="297" height="8"/><rect x="1085" y="157" width="86" height="8"/><rect x="1171" y="157" width="137" height="8"/><rect x="1308" y="157" width="60" height="8"/><rect x="1368" y="157" width="152" height="8"/>
+    <rect x="-80" y="165" width="152" height="7"/><rect x="72" y="165" width="222" height="7"/><rect x="294" y="165" width="303" height="7"/><rect x="597" y="165" width="40" height="7"/><rect x="637" y="165" width="296" height="7"/><rect x="933" y="165" width="65" height="7"/><rect x="998" y="165" width="214" height="7"/><rect x="1212" y="165" width="27" height="7"/><rect x="1239" y="165" width="221" height="7"/><rect x="1460" y="165" width="54" height="7"/><rect x="1514" y="165" width="6" height="7"/>
+    <rect x="-80" y="172" width="1600" height="28"/>
+    </g>
+{% endcase %}
+</svg>
+{%- endcase -%}

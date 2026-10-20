@@ -1,0 +1,254 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero_wkKtQt": {
+      "type": "hero",
+      "blocks": {
+        "image_gAN66F": {
+          "type": "image",
+          "settings": {
+            "media_type": "image",
+            "image": "",
+            "external_video_url": "",
+            "external_video_url_mobile": "",
+            "external_video_url_aspect_ratio": "16:9",
+            "external_video_url_mobile_aspect_ratio": "9:16",
+            "external_video_hide_branding": false
+          }
+        },
+        "title_CYVQRy": {
+          "type": "title",
+          "settings": {
+            "title": "{{ page.title }}",
+            "heading_tag": "h1",
+            "sm_size_multiplier": "sm-size--gigantic",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--huge",
+            "margin_top": 0
+          }
+        }
+      },
+      "block_order": [
+        "image_gAN66F",
+        "title_CYVQRy"
+      ],
+      "name": "t:sections.hero.name",
+      "settings": {
+        "color_scheme": "",
+        "overlay_opacity": 30,
+        "media_link": "",
+        "enable_full_width": true,
+        "section_height_desktop": "by_pixels",
+        "section_pixel_height_desktop": 600,
+        "section_fixed_ratio_desktop": "16 / 9",
+        "content_width": "col-sm-max-8",
+        "content_align_desktop": "sm-vertical-center sm-horizontal-center",
+        "desktop_alignment": "sm-text-align-center",
+        "md_padding_top": 0,
+        "md_padding_bottom": 0,
+        "section_height": "by_pixels",
+        "section_pixel_height": 400,
+        "section_fixed_ratio": "3 / 4",
+        "content_align_mobile": "vertical-center horizontal-center",
+        "mobile_alignment": "text-align-center",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "color_scheme": "",
+        "show_title": true,
+        "heading_text_align": "text-align-left",
+        "page_pixel_width_desktop": 650,
+        "sm_size_multiplier": "sm-size--default",
+        "md_padding_top": 40,
+        "md_padding_bottom": 40,
+        "size_multiplier": "size--default",
+        "padding_top": 32,
+        "padding_bottom": 32
+      }
+    },
+    "faq_TWdcpB": {
+      "type": "faq",
+      "blocks": {
+        "section_header_DCFKeJ": {
+          "type": "section_header",
+          "settings": {
+            "title": "",
+            "text": "<p>Have a question? You’ll find answers about our products, orders, delivery and returns below. Pick a topic to narrow things down. If you can’t find what you’re looking for, our team is happy to help. <a href=\"/pages/contact\" title=\"Contact\">Get in touch</a>.</p>",
+            "text_alignment": "left",
+            "header_position": "column_questions"
+          }
+        },
+        "subheading_qTVqdK": {
+          "type": "subheading",
+          "settings": {
+            "title": "Products"
+          }
+        },
+        "question_R7hyfe": {
+          "type": "question",
+          "settings": {
+            "title": "Where are your products made?",
+            "text": "<p>Our products are designed in-house and made together with carefully selected partners who share our standards for quality and responsible production.</p>",
+            "custom_liquid": "",
+            "media_type": "image"
+          }
+        },
+        "question_Q93gCm": {
+          "type": "question",
+          "settings": {
+            "title": "How do I choose the right product?",
+            "text": "<p>Each product page has a detailed description, materials and care information. If you’re still unsure, send us a message and we’ll help you find the right fit.</p>",
+            "custom_liquid": "",
+            "media_type": "image"
+          }
+        },
+        "question_jX3gUq": {
+          "type": "question",
+          "settings": {
+            "title": "Will a sold-out product come back?",
+            "text": "<p>Most of our products are restocked regularly. Sign up for our newsletter to hear first when popular items are back in stock.</p>",
+            "custom_liquid": "",
+            "media_type": "image"
+          }
+        },
+        "question_QQiTUU": {
+          "type": "question",
+          "settings": {
+            "title": "How do I care for my products?",
+            "text": "<p>You’ll find care instructions on each product page and on the product label. Following them helps your product look and feel great for longer.</p>",
+            "custom_liquid": "",
+            "media_type": "image"
+          }
+        },
+        "subheading_rdhT8J": {
+          "type": "subheading",
+          "settings": {
+            "title": "Sizing"
+          }
+        },
+        "question_i6tjEw": {
+          "type": "question",
+          "settings": {
+            "title": "How do your sizes run?",
+            "text": "<p>Our products fit true to size for most people. If you’re between sizes, we recommend choosing the larger one.</p>",
+            "custom_liquid": "",
+            "media_type": "image"
+          }
+        },
+        "question_BT66cX": {
+          "type": "question",
+          "settings": {
+            "title": "Where can I find the size guide?",
+            "text": "<p>Products with sizes have a size guide link next to the size options on the product page.</p>",
+            "custom_liquid": "",
+            "media_type": "image"
+          }
+        },
+        "subheading_EwV7Ch": {
+          "type": "subheading",
+          "settings": {
+            "title": "Orders & shipping"
+          }
+        },
+        "question_fRjMGK": {
+          "type": "question",
+          "settings": {
+            "title": "How long does delivery take?",
+            "text": "<p>Orders are usually delivered within 2–5 business days. You’ll get a tracking link by email as soon as your order ships.</p>",
+            "custom_liquid": "",
+            "media_type": "image"
+          }
+        },
+        "question_kpLhBr": {
+          "type": "question",
+          "settings": {
+            "title": "Do you ship internationally?",
+            "text": "<p>Yes, we ship to most countries. Shipping costs and delivery times are shown at checkout before you pay.</p>",
+            "custom_liquid": "",
+            "media_type": "image"
+          }
+        },
+        "question_QVHnLp": {
+          "type": "question",
+          "settings": {
+            "title": "Can I change or cancel my order?",
+            "text": "<p>Get in touch as soon as possible. If your order hasn’t shipped yet, we’ll do our best to update or cancel it.</p>",
+            "custom_liquid": "",
+            "media_type": "image"
+          }
+        },
+        "subheading_MkpG3i": {
+          "type": "subheading",
+          "settings": {
+            "title": "Returns & exchanges"
+          }
+        },
+        "question_mcwHGQ": {
+          "type": "question",
+          "settings": {
+            "title": "What’s your return policy?",
+            "text": "<p>You can return unused products in their original packaging within 30 days of delivery for a full refund.</p>",
+            "custom_liquid": "",
+            "media_type": "image"
+          }
+        },
+        "question_ReEV8X": {
+          "type": "question",
+          "settings": {
+            "title": "How do I exchange a product?",
+            "text": "<p>Start a return from your account and choose exchange. We’ll send the replacement as soon as we receive the original item.</p>",
+            "custom_liquid": "",
+            "media_type": "image"
+          }
+        }
+      },
+      "block_order": [
+        "section_header_DCFKeJ",
+        "subheading_qTVqdK",
+        "question_R7hyfe",
+        "question_Q93gCm",
+        "question_jX3gUq",
+        "question_QQiTUU",
+        "subheading_rdhT8J",
+        "question_i6tjEw",
+        "question_BT66cX",
+        "subheading_EwV7Ch",
+        "question_fRjMGK",
+        "question_kpLhBr",
+        "question_QVHnLp",
+        "subheading_MkpG3i",
+        "question_mcwHGQ",
+        "question_ReEV8X"
+      ],
+      "name": "t:sections.faq.name",
+      "settings": {
+        "color_scheme": "",
+        "title_style": "h3",
+        "enable_full_width": false,
+        "media_position": "media_first",
+        "md_padding_top": 56,
+        "md_padding_bottom": 80,
+        "padding_top": 24,
+        "padding_bottom": 120
+      }
+    }
+  },
+  "order": [
+    "hero_wkKtQt",
+    "main",
+    "faq_TWdcpB"
+  ]
+}

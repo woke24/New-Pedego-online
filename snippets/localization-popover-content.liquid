@@ -1,0 +1,58 @@
+{%- liquid
+  assign show_language = show_language | default: false
+  assign show_country = show_country | default: false
+  assign language_form_id = form_id_prefix | append: 'LanguageForm'
+  assign language_form_noscript_id = form_id_prefix | append: 'LanguageFormNoScript'
+  assign country_form_id = form_id_prefix | append: 'CountryForm'
+  assign country_form_noscript_id = form_id_prefix | append: 'CountryFormNoScript'
+-%}
+
+<div class="localization-popover__scroll scrollbar--hide">
+  {%- if show_language -%}
+    <localization-form>
+      {%- form 'localization', id: language_form_id, class: 'localization-form' -%}
+        <h2 class="localization-heading h6 mb-12">{{ 'localization.language_label' | t }}</h2>
+        <ul class="localization-languages size--small">
+          {%- render 'localization-languages', format: 'list', link_class: 'js' -%}
+        </ul>
+        <input type="hidden" name="locale_code" value="{{ localization.language.iso_code }}">
+      {%- endform -%}
+    </localization-form>
+    <noscript>
+      {%- form 'localization', id: language_form_noscript_id, class: 'localization-form' -%}
+        <h2 class="visually-hidden" id="{{ form_id_prefix }}LanguageLabelNoScript">{{ 'localization.language_label' | t }}</h2>
+        <select class="btn btn--full" name="locale_code" aria-labelledby="{{ form_id_prefix }}LanguageLabelNoScript">
+          {%- render 'localization-languages', format: 'option' -%}
+        </select>
+        <button class="btn btn--primary btn--full mt-8">{{ 'localization.update_language' | t }}</button>
+      {%- endform -%}
+    </noscript>
+  {%- endif -%}
+
+  {%- if show_country -%}
+    <localization-form>
+      {%- form 'localization', id: country_form_id, class: 'localization-form' -%}
+        <h2 class="localization-heading h6 mb-12">{{ 'localization.country_label' | t }}</h2>
+        <ul class="localization-countries size--small">
+          {%- render 'localization-countries', format: 'list', link_class: 'js' -%}
+        </ul>
+        <input type="hidden" name="country_code" value="{{ localization.country.iso_code }}">
+      {%- endform -%}
+    </localization-form>
+    <noscript>
+      {%- form 'localization', id: country_form_noscript_id, class: 'localization-form' -%}
+        <h2 class="visually-hidden" id="{{ form_id_prefix }}CountryLabelNoScript">{{ 'localization.country_label' | t }}</h2>
+        <select class="btn btn--full" name="country_code" aria-labelledby="{{ form_id_prefix }}CountryLabelNoScript">
+          {%- render 'localization-countries', format: 'option' -%}
+        </select>
+        <button class="btn btn--primary btn--full mt-8">{{ 'localization.update_country' | t }}</button>
+      {%- endform -%}
+    </noscript>
+  {%- endif -%}
+
+  {%- if settings.localization_info != blank -%}
+    <div class="localization-info size--tiny style--subdued">
+      {{ settings.localization_info }}
+    </div>
+  {%- endif -%}
+</div>

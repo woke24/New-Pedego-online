@@ -1,0 +1,148 @@
+/* Product grid in search and collections */
+/* Note: Basic grid structures defined in component-grid.css */
+
+/* Special sidebar layout */
+@media only screen and (max-width: 1023px) {
+  .grid--products-and-sidebar{
+    grid-gap: 0 !important;
+  }
+  .col-sidebar,
+  .col-products {
+    grid-column: span 12;
+  }
+}
+
+@media only screen and (min-width: 1023px) {
+  .grid--products-and-sidebar {
+    grid-template-columns: min(25%, 300px) 1fr !important;
+  }
+
+  .col-sidebar{
+    grid-column: span 1;
+  }
+
+  /* Offset by the sticky header while it's shown. The variable is only set when the header is sticky. */
+  .product-grid-sidebar {
+    position: sticky;
+    top: calc(var(--sticky-header-margin-top, 0px) + var(--gutter));
+    transition: top 0.2s linear;
+  }
+  html.sticky-header-hide .product-grid-sidebar {
+    top: var(--gutter);
+  }
+
+  /* Product and results count aligned to the left in the sidebar */
+  .col-sidebar .product-grid-actions--for-sidebar > .products-count {
+    grid-column: 1 / -1;
+    justify-self: start;
+    text-align: left;
+  }
+
+}
+
+/* Collection template */
+.collection-header-background {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+.collection-header-background .media,
+.collection-header-background img {
+  height: 100%;
+}
+
+/* Collection and Search template */
+/* Top bar: filters button (left), product count (center) and sorting (right).
+   Each item keeps its own column, so one or two visible items stay where they are with all three. */
+.product-grid-actions,
+.product-grid-actions--for-sidebar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+:is(.product-grid-actions, .product-grid-actions--for-sidebar) > .filters-button {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+}
+:is(.product-grid-actions, .product-grid-actions--for-sidebar) > .products-count {
+  grid-column: 2;
+  grid-row: 1;
+  text-align: center;
+}
+:is(.product-grid-actions, .product-grid-actions--for-sidebar) > .sort-by {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+}
+/* On mobile the count gets its own row when all three are shown */
+@media only screen and (max-width: 767px) {
+  :is(.product-grid-actions, .product-grid-actions--for-sidebar).items-count-3 > .products-count {
+    grid-column: 1 / -1;
+  }
+  :is(.product-grid-actions, .product-grid-actions--for-sidebar).items-count-3 > :is(.filters-button, .sort-by) {
+    grid-row: 2;
+  }
+}
+.active-filters {
+  margin-left: calc(var(--container-margin) * -1);
+  margin-right: calc(var(--container-margin) * -1);
+  padding: 0 var(--container-margin);
+  scroll-padding: var(--container-margin);
+}
+.active-filters a.btn {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+.filters-button {
+  text-decoration: none;
+  margin-left: -1.2rem;
+  margin-right: auto;
+  padding-left: 1.2rem !important;
+  padding-right: 1.2rem !important;
+}
+.sort-by {
+  margin-left: auto;
+  margin-right: -1.2rem;
+  position: relative;
+  max-width: 100%;
+}
+.sort-by select {
+  text-decoration: none;
+  -webkit-appearance: none;
+  text-align: right !important;
+  padding-left: 1.2rem !important;
+  padding-right: 4.2rem !important;
+  text-overflow: ellipsis;
+  text-wrap: nowrap;
+  max-width: 100%;
+}
+.sort-by select option {
+  text-align: right !important;
+}
+.sort-by .link-icon {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  right: 1.2rem;
+  transform: translateY(-50%);
+}
+
+@media only screen and (min-width: 768px) {
+  .filters-button {
+    margin-left: -1.2rem;
+    margin-right: auto;
+  }
+  .sort-by {
+    margin-left: auto;
+    margin-right: -1.2rem;
+  }
+  .product-grid-actions {
+    margin: 0;
+  }
+}

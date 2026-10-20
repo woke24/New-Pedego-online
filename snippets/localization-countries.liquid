@@ -1,0 +1,59 @@
+{%- comment -%}
+  Renders ordered country list items or select options.
+
+  Accepts:
+  - format: {String} list | option
+  - link_class: {String} optional classes for list links
+{%- endcomment -%}
+
+{%- liquid
+  assign country_order = settings.country_order | remove: ' ' | split: ','
+  assign priority_country_codes = ','
+-%}
+
+{%- for raw_country_code in country_order -%}
+  {%- assign country_code = raw_country_code | strip | upcase -%}
+  {%- if country_code != blank -%}
+    {%- assign priority_check = ',' | append: country_code | append: ',' -%}
+    {%- unless priority_country_codes contains priority_check -%}
+      {%- for country in localization.available_countries -%}
+        {%- assign available_code = country.iso_code | upcase -%}
+        {%- if available_code == country_code -%}
+          {%- if format == 'option' -%}
+            <option value="{{ country.iso_code }}"{% if country.iso_code == localization.country.iso_code %} selected{% endif %}>
+              {{ country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol }})
+            </option>
+          {%- else -%}
+            <li class="country--{{ country.iso_code | downcase }}">
+              <a class="localization-link --country{% if link_class != blank %} {{ link_class }}{% endif %}{% if country.iso_code == localization.country.iso_code %} active{% endif %}" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code }}">
+                {{ country | image_url: width: 32 | image_tag | replace: '<img', '<img class="country-flag" loading="lazy" alt=""' }} <span class="country-name">{{ country.name }}</span> <span class="country-currency">{{ country.currency.iso_code }} {{ country.currency.symbol }}</span>
+                {% render 'loading' %}
+              </a>
+            </li>
+          {%- endif -%}
+          {%- assign priority_country_codes = priority_country_codes | append: country_code | append: ',' -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endunless -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- for country in localization.available_countries -%}
+  {%- assign available_code = country.iso_code | upcase -%}
+  {%- assign check_code = ',' | append: available_code | append: ',' -%}
+  {%- unless priority_country_codes contains check_code -%}
+    {%- if format == 'option' -%}
+      <option value="{{ country.iso_code }}"{% if country.iso_code == localization.country.iso_code %} selected{% endif %}>
+        {{ country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol }})
+      </option>
+    {%- else -%}
+      <li class="country--{{ country.iso_code | downcase }}">
+        <a class="localization-link --country{% if link_class != blank %} {{ link_class }}{% endif %}{% if country.iso_code == localization.country.iso_code %} active{% endif %}" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code }}">
+          {{ country | image_url: width: 32 | image_tag | replace: '<img', '<img class="country-flag" loading="lazy" alt=""' }} <span class="country-name">{{ country.name }}</span> <span class="country-currency">{{ country.currency.iso_code }} {{ country.currency.symbol }}</span>
+          {% render 'loading' %}
+        </a>
+      </li>
+    {%- endif -%}
+  {%- endunless -%}
+{%- endfor -%}

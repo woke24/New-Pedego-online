@@ -1,0 +1,275 @@
+{%- liquid
+  #  Renders a product card for upsell products.
+  #  Used in product template Upsell products block.
+  #
+  #  ** Parameters **
+  #  product       =>  OPTIONAL | product object
+  #  lazyload      =>  OPTIONAL | boolean | default: true | layload images
+  #  aspect_ratio  =>  OPTIONAL | string | default: settings.product_card_aspect_ratio | 'natural','portrait','landscape','square'
+  #  text_align    =>  OPTIONAL | string | default: settings.product_card_text_alignment | product card text align class
+  #  class         =>  OPTIONAL | string | 'sm-item-span-2'
+  #  cart_recommendations =>  OPTIONAL | boolean | default: false | if true, forces variant_selection_method to 'quick_buy' and upsell_behavior to 'separate'
+  #
+  #  ** Block Settings **
+  #  variant_selection_method  =>  Controls how variants are selected:
+  #                               'dropdown' (default): Shows dropdown selector for variants
+  #                               'quick_buy': Shows "Quick view" button that opens quick-buy modal
+
+  if lazyload == null
+    assign lazyload = true
+  endif
+
+  assign aspect_ratio = aspect_ratio | default: settings.product_card_aspect_ratio
+  assign sizing_rule = sizing_rule | default: settings.product_card_fill_rule
+
+  if cart_recommendations == true
+    assign upsell_behavior = 'separate'
+    assign variant_selection_method = 'quick_buy'
+    assign block_id = section.id
+  else
+    assign upsell_behavior = block.settings.upsell_behavior
+    assign variant_selection_method = block.settings.variant_selection_method
+    assign block_id = block.id
+  endif
+
+  unless sizes
+    assign sizes = '72px'
+  endunless
+
+  # If there are 250 or more variants, always use quick buy modal to ensure working with Shopify high variant count
+  # If there is only 1 variant and quick buy selection method is used, force behavior to 'separate'
+  if variant_selection_method == 'quick_buy'
+    assign upsell_behavior = 'separate'
+    if product.variants.size > 1
+      assign quick_buy_modal = true
+    else
+      assign quick_buy_modal = false
+    endif
+  elsif product.variants.size >= 250
+    assign quick_buy_modal = true
+  else
+    assign quick_buy_modal = false
+  endif
+
+  # See component-product-form.js and onSubmitHandler() to see add to cart behavior for "default"
+  # "separate" does not require Javascript to submit the form
+  assign upsell_id_selector = 'upsell-id'
+  assign upsell_quantity_selector = 'upsell-quantity'
+  assign upsell_product_form_id = product_form_id
+
+  if upsell_behavior == 'separate'
+    assign upsell_id_selector = 'upsell-id-separate'
+    assign upsell_quantity_selector = 'upsell-quantity-separate'
+    assign upsell_product_form_id = 'product-form-' | append: block_id | append: '-upsell-' | append: product.id
+  endif
+-%}
+
+{%- if product and product != empty -%}
+  <upsell-card
+    class="card card--product card--product-upsell card--default layout--thumbnail {{ class }}{%- if cart_recommendations %} cart-recommendation-item{%- endif -%}"
+    data-form="{{ upsell_product_form_id }}"
+    {%- if cart_recommendations %} data-cart="true"{%- endif -%}
+  >
+    <a href="{{ product.url }}" class="card-media">
+      <figure class="media {{ aspect_ratio }} {{ sizing_rule }} br-img">
+        {% if product.featured_image %}
+          <img width="90" height="90" loading="lazy" src="{{ product.featured_image | image_url: width: 128 }}">
+        {% else %}
+          {{ 'image' | placeholder_svg_tag: 'placeholder-svg no-product-image' }}
+        {% endif %}
+      </figure>
+    </a>
+
+    {%- capture card_body -%}
+      <div class="card-body">
+        {%- if upsell_behavior == 'separate' -%}
+          <div form="{{ upsell_product_form_id }}" class="product-form__error-message-wrapper flex horizontal vertical-center mb-16 mt-16" role="alert" hidden>
+            <svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-error" viewBox="0 0 13 13">
+              <circle cx="6.5" cy="6.50049" r="5.5" stroke="white" stroke-width="2"/>
+              <circle cx="6.5" cy="6.5" r="5.5" fill="#EB001B" stroke="#EB001B" stroke-width="0.7"/>
+              <path d="M5.87413 3.52832L5.97439 7.57216H7.02713L7.12739 3.52832H5.87413ZM6.50076 9.66091C6.88091 9.66091 7.18169 9.37267 7.18169 9.00504C7.18169 8.63742 6.88091 8.34917 6.50076 8.34917C6.12061 8.34917 5.81982 8.63742 5.81982 9.00504C5.81982 9.37267 6.12061 9.66091 6.50076 9.66091Z" fill="white"/>
+              <path d="M5.87413 3.17832H5.51535L5.52424 3.537L5.6245 7.58083L5.63296 7.92216H5.97439H7.02713H7.36856L7.37702 7.58083L7.47728 3.537L7.48617 3.17832H7.12739H5.87413ZM6.50076 10.0109C7.06121 10.0109 7.5317 9.57872 7.5317 9.00504C7.5317 8.43137 7.06121 7.99918 6.50076 7.99918C5.94031 7.99918 5.46982 8.43137 5.46982 9.00504C5.46982 9.57872 5.94031 10.0109 6.50076 10.0109Z" fill="white" stroke="#EB001B" stroke-width="0.7">
+            </svg>
+            {%- render 'icon-warning' -%}
+            <span class="product-form__error-message"></span>
+          </div>
+        {%- endif -%}
+        <h3 class="card-title font-body"><a href="{{ product.url }}">{{ product.title }}</a></h3>
+          {%- liquid
+            assign price_classes = 'size--small mt-4'
+            if settings.product_card_price_font_weight == 'bold'
+              assign price_classes = price_classes | append: ' price--bold'
+            elsif settings.product_card_price_font_weight == 'bold_sale'
+              assign price_classes = price_classes | append: ' price--bold-sale'
+            endif
+          -%}
+        {% if product.has_only_default_variant %}
+          {%- render 'price', product: product, price_class: price_classes -%}
+        {% elsif quick_buy_modal and product.variants.size > 1 %}
+          {% liquid
+            assign money_price = product.price_min | money
+            assign money_compare_price = product.compare_at_price_min | money
+            if settings.currency_code_enabled
+              assign money_price = product.price_min | money_with_currency
+              assign money_compare_price = product.compare_at_price_min | money_with_currency
+            endif
+            # "From" only when the variants' prices differ, as in price.liquid
+            if product.price_varies
+              assign money_price = 'products.product.price.from_price_html' | t: price: money_price
+            endif
+            if product.compare_at_price_varies
+              assign money_compare_price = 'products.product.price.from_price_html' | t: price: money_compare_price
+            endif
+            assign show_compare_price = false
+            if product.compare_at_price_min > product.price_min
+              assign show_compare_price = true
+            endif
+          %}
+          <div class="price {{ price_classes }}{% if show_compare_price %} price--on-sale{% endif %}">
+            {%- capture upsell_current_price_html -%}
+              <span class="price__current">
+                {%- if show_compare_price -%}
+                  <span class="visually-hidden">{{ 'products.product.price.sale_price' | t }}</span>
+                {%- endif -%}
+                <span class="price-item price-item--sale">{{ money_price }}</span>
+              </span>
+            {%- endcapture -%}
+            {%- if show_compare_price -%}
+              <div class="price__sale">
+                {%- capture upsell_compare_price_html -%}
+                  <span class="price__compare">
+                    <span class="visually-hidden">{{ 'products.product.price.regular_price' | t }}</span>
+                    <s class="price-item price-item--regular style--subdued">{{ money_compare_price }}</s>
+                  </span>
+                {%- endcapture -%}
+                {%- if settings.sale_price_order == 'sale_first' -%}
+                  {{- upsell_current_price_html -}}
+                  {{- upsell_compare_price_html -}}
+                {%- else -%}
+                  {{- upsell_compare_price_html -}}
+                  {{- upsell_current_price_html -}}
+                {%- endif -%}
+              </div>
+            {%- else -%}
+              {{- upsell_current_price_html -}}
+            {%- endif -%}
+          </div>
+        {% endif %}
+        {%- if settings.enable_swatches and quick_buy_modal == false -%}
+          {%- render 'product-card-swatches', product: product -%}
+        {%- endif -%}
+
+        {%- unless quick_buy_modal -%}
+          <div class="upsell-variant">
+            {% if product.has_only_default_variant %}
+              <input type="hidden" name="id" class="{{ upsell_id_selector }}" value="{{ product.selected_or_first_available_variant.id }}">
+            {% elsif product.variants.size == 1 %}
+              <input type="hidden" name="id" class="{{ upsell_id_selector }}" value="{{ product.selected_or_first_available_variant.id }}">
+              <div class="price {{ price_classes }}">
+              {% liquid
+                assign money_price = product.price | money
+                if settings.currency_code_enabled
+                  assign money_price = product.price | money_with_currency
+                endif %}
+              {{ product.variants[0].title }} - {{ money_price }}
+              </div>
+            {% else %}
+              <div class="select size--tiny mt-8">
+                <select name="id" class="select__select {{ upsell_id_selector }}">
+                {%- for variant in product.variants -%}
+                  <option
+                    {% if variant.featured_image %}
+                      data-variant-img-src="{{ variant.featured_image | image_url: width: 128 }}"
+                    {% endif %}
+                    {% if variant == product.selected_or_first_available_variant %}
+                      selected="selected"
+                    {% endif %}
+                    {% if variant.available == false %}
+                      disabled
+                    {% endif %}
+                    value='{{ variant.id }}'>
+                    {{ variant.title }}
+                    {%- if variant.available == false %}
+                      -
+                      {{ 'products.product.sold_out' | t }}
+                    {% endif %}
+                    {% liquid
+                      assign money_price = variant.price | money
+                      if settings.currency_code_enabled
+                        assign money_price = variant.price | money_with_currency
+                      endif
+                    %}
+                    -
+                    {{ money_price }}
+                  </option>
+                {%- endfor -%}
+                </select>
+                {%- render 'icon-chevron-down--small' -%}
+              </div>
+            {% endif %}
+          </div>
+        {%- endunless -%}
+      </div>
+
+      {% if quick_buy_modal %}
+        <div class="card-actions">
+          <quick-buy data-product="{{ product.id }}" data-url="{{ product.url }}" class="js quick-buy">
+            <a class="btn btn--primary icon-btn--quick-buy for-modal" data-product-handle="{{ product.handle }}" href="{{ '#modal-' | append: product.id | append: '-product' }}" aria-haspopup="dialog" aria-label="{{ 'accessibility.open_quick_buy_modal' | t: product: product.title }}">
+              <span class="quick-buy-text visually-hidden">{{ 'products.quick_buy_label' | t }}</span>
+              <span class="quick-buy-icon">
+                {%- render 'icon-cart' -%}
+                {%- render 'icon-plus' -%}
+              </span>
+              {% render 'loading' %}
+            </a>
+          </quick-buy>
+        </div>
+      {% elsif upsell_behavior == 'separate' %}
+        <div class="card-actions">
+          <input type="hidden" name="quantity" value="1" disabled/>
+          {%- if is_preorder -%}
+            <input type="hidden" name="attributes[_preorder]" value="true">
+          {%- endif -%}
+          <button type="submit" name="add" class="btn btn--primary icon-btn--quick-buy for-submit" {% if product.selected_or_first_available_variant.available == false %}disabled{% endif %}>
+            <span class="quick-buy-text visually-hidden">
+              {%- if product.selected_or_first_available_variant.available -%}
+                {%- if is_preorder -%}
+                  {{ 'products.product.preorder.preorder' | t }}
+                {%- else -%}
+                  {{ 'products.product.add_to_cart' | t }}
+                {%- endif -%}
+              {%- else -%}
+                {{ 'products.product.sold_out' | t }}
+              {%- endif -%}
+            </span>
+            <span class="quick-buy-icon">
+              {%- render 'icon-cart' -%}
+              {%- render 'icon-plus' -%}
+              </span>
+            {% render 'loading' %}
+          </button>
+        </div>
+      {% elsif upsell_behavior == 'default' %}
+        {% render 'quantity-input', class: 'small', input_class: upsell_quantity_selector %}
+      {% endif %}
+    {%- endcapture -%}
+
+    {%- if quick_buy_modal or upsell_behavior == 'default' -%}
+      <div class="upsell-body">
+        {{ card_body }}
+      </div>
+    {%- else -%}
+      <product-form class="product-form">
+        {%- form 'product',
+          product,
+          id: upsell_product_form_id,
+          class: 'form upsell-body',
+          novalidate: 'novalidate',
+          data-type: 'add-to-cart-form'
+        -%}
+          {{ card_body }}
+        {%- endform -%}
+      </product-form>
+    {%- endif -%}
+  </upsell-card>
+{%- endif -%}

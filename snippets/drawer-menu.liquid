@@ -1,0 +1,114 @@
+{%- liquid
+  assign drawer_menu = linklists[section.settings.drawer_menu.handle]
+  assign drawer_secondary_menu = linklists[section.settings.drawer_secondary_menu.handle]
+
+  case section.settings.drawer_logo
+    when 'header'
+      assign drawer_logo_image = section.settings.logo_default
+    when 'overlay'
+      if section.settings.logo_with_background_color != blank
+        assign drawer_logo_image = section.settings.logo_with_background_color
+      else
+        assign drawer_logo_image = section.settings.logo_default
+      endif
+    when 'custom'
+      assign drawer_logo_image = section.settings.drawer_logo_image
+  endcase
+-%}
+
+<drawer-menu id="drawer-menu" class="drawer drawer-menu{% if section.settings.desktop_submenu_type == 'drawer' and section.settings.desktop_submenu_width == 'single_column' %} drawer-submenu--single-column{% endif %}" data-drawer data-parent style="opacity: 0; display: none;">
+  <div class="drawer-panel user-select-none color-{{ settings.color_scheme_drawers }}" data-contents>
+    <header class="drawer-header">
+      {%- if section.settings.drawer_logo != 'none' -%}
+        <a class="drawer-header-logo" href="{{ routes.root_url }}" style="--drawer-logo-width: {{ section.settings.drawer_logo_max_width }}px;">
+          {%- if drawer_logo_image -%}
+            <img class="site-logo" width="{{ drawer_logo_image.width }}" height="{{ drawer_logo_image.height }}" src="{{ drawer_logo_image | image_url: width: 600 }}" alt="{{ shop.name }}"/>
+          {%- else -%}
+            <span class="site-logo h6 --text">{{ shop.name }}</span>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+      <a role="button" href="#" class="close" data-close aria-label="{{ 'accessibility.close_navigation' | t }}">{%- render 'icon-close' -%}</a>
+    </header>
+    <nav class="drawer-menu-nav drawer-content scrollbar--hide">
+      <div class="main-menu">
+        {% for menu_item in drawer_menu.links %}
+          {% assign hide_on_desktop = false %}
+          {% if section.settings.desktop_submenu_type == 'dropdown' and forloop.index <= section.settings.shortcut_limit %}
+            {% assign hide_on_desktop = true %}
+          {% endif %}
+          {% render 'drawer-menu-items',
+            menu_item: menu_item,
+            current_level: 1,
+            context: 'js',
+            section: section,
+            content_menu_titles: content_menu_titles,
+            menu_scope: 'main',
+            hide_on_desktop: hide_on_desktop
+          -%}
+        {% endfor %}
+      </div>
+
+      {% if drawer_secondary_menu != blank %}
+      <div class="secondary-menu">
+        {% if drawer_menu != blank %}
+          <hr class="drawer-menu-divider {%- if section.settings.desktop_submenu_type == 'dropdown' and section.settings.shortcut_limit >= drawer_menu.links.size %} medium-up--hide{% endif %}">
+        {% endif %}
+        {% for menu_item in drawer_secondary_menu.links %}
+          {% render 'drawer-menu-items',
+            menu_item: menu_item,
+            current_level: 1,
+            context: 'js',
+            section: section,
+            content_menu_titles: content_menu_titles,
+            menu_scope: 'secondary'
+          -%}
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <noscript>
+        {% for menu_item in drawer_menu.links %}
+          {% render 'drawer-menu-items',
+            menu_item: menu_item,
+            current_level: 1,
+            context: 'no-js',
+            section: section,
+            content_menu_titles: content_menu_titles,
+            menu_scope: 'main'
+          -%}
+        {% endfor %}
+
+        {% for menu_item in drawer_secondary_menu.links %}
+          {% render 'drawer-menu-items',
+            menu_item: menu_item,
+            current_level: 1,
+            context: 'no-js',
+            section: section,
+            content_menu_titles: content_menu_titles,
+            menu_scope: 'secondary'
+          -%}
+        {% endfor %}
+      </noscript>
+    </nav>
+
+    {%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
+      <footer class="drawer-footer medium-up--hide">
+        {% render 'drawer-menu-localization' %}
+      </footer>
+    {%- endif -%}
+  </div>
+
+  {% comment %} Background, click to close {% endcomment %}
+  <a href="#" class="page-overlay color-{{ settings.color_scheme_drawers }}" data-overlay tabindex="-1"></a>
+
+  {%- comment -%} Clipping mask for drawer animations {%- endcomment -%}
+  <svg class="drawer-clip" width="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 100 100" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <defs>
+      <clipPath id="drawer-clip">
+        <rect x="0" y="0" width="2000" height="2000" style="height: 100dvh;"></rect>
+      </clipPath>
+    </defs>
+  </svg>
+</drawer-menu>
+<script src="{{ 'component-drawer-menu.js' | asset_url }}" defer></script>

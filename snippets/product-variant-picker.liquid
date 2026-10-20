@@ -1,0 +1,205 @@
+{%- liquid
+  # ** PURPOSE **
+  # Renders product variant-picker. Picker style, cross out, selected value and the
+  # advanced option lists come from Theme settings > Variant picker, shared by the product page and quick view.
+  # On the product page the Variant picker block can override them for its template.
+
+  # ** PARAMETERS **
+  # product                 =>  REQUIRED | image object
+  # section_id              =>  (REQUIRED) | string | is_modal uses product.id as section_id
+  # product_form_id         =>  REQUIRED | string | unique ID that is used to match options and inputs to a certain form
+  # is_modal                =>  OPTIONAL | boolean | true in the quick view modal | default: false
+  # shopify_attributes      =>  OPTIONAL | block.shopify_attributes
+  # size_guide_button       =>  OPTIONAL | string | size guide button HTML
+  # size_guide_options      =>  OPTIONAL | array | lowercase option names that show the size guide button
+  # block                   =>  OPTIONAL | variant_picker block | its *_override settings replace the theme settings
+
+  # ** SNIPPETS **
+  # - product-variant-options
+  # - icon-caret
+
+  assign picker_type_setting = settings.variant_picker_type | default: 'button'
+  assign cross_out_unavailable = settings.variant_picker_cross_out_unavailable
+  assign show_selected_value = settings.variant_picker_show_selected_value | default: 'all'
+  assign dropdown_options_setting = settings.variant_picker_dropdown_options
+  assign button_options_setting = settings.variant_picker_button_options
+
+  # Block overrides: 'theme' or an empty list keeps the theme setting
+  if block
+    if block.settings.picker_type_override != blank and block.settings.picker_type_override != 'theme'
+      assign picker_type_setting = block.settings.picker_type_override
+    endif
+    case block.settings.cross_out_override
+      when 'yes'
+        assign cross_out_unavailable = true
+      when 'no'
+        assign cross_out_unavailable = false
+    endcase
+    if block.settings.selected_value_override != blank and block.settings.selected_value_override != 'theme'
+      assign show_selected_value = block.settings.selected_value_override
+    endif
+    if block.settings.dropdown_options_override != blank
+      assign dropdown_options_setting = block.settings.dropdown_options_override
+    endif
+    if block.settings.button_options_override != blank
+      assign button_options_setting = block.settings.button_options_override
+    endif
+  endif
+  assign button_width = settings.variant_picker_button_width | default: 'fit'
+  assign selected_style = settings.variant_picker_selected_style | default: 'hairline'
+  assign color_swatch_identifiers = 'products.product.color_swatch_identifiers' | t | downcase
+  if is_modal
+    assign section_id = product.id
+  else
+    assign is_modal = false
+  endif
+
+  # The advanced option lists take option names separated by commas or line breaks, matched case-insensitively.
+  assign dropdown_option_names = ''
+  assign dropdown_list = dropdown_options_setting | newline_to_br | replace: '<br />', ',' | split: ','
+  for list_name in dropdown_list
+    assign clean_name = list_name | strip | downcase
+    if clean_name != blank
+      assign dropdown_option_names = dropdown_option_names | append: clean_name | append: '||'
+    endif
+  endfor
+  assign dropdown_picker_options = dropdown_option_names | split: '||'
+
+  assign button_option_names = ''
+  assign button_list = button_options_setting | newline_to_br | replace: '<br />', ',' | split: ','
+  for list_name in button_list
+    assign clean_name = list_name | strip | downcase
+    if clean_name != blank
+      assign button_option_names = button_option_names | append: clean_name | append: '||'
+    endif
+  endfor
+  assign button_picker_options = button_option_names | split: '||'
+-%}
+
+{%- unless product.has_only_default_variant -%}
+  <variant-selects
+    id="variant-selects-{{ section_id }}"
+    class="js"
+    data-cross-unavailable="{{ cross_out_unavailable }}"
+    data-section="{{ section_id }}"
+    data-product-id="{{ product.id }}"
+    data-url="{{ product.url }}"
+    data-modal="{{ is_modal }}"
+    data-is-preorder="{{ is_preorder | default: false }}"
+    data-variant-images="{{ variant_images_mode | default: 'all' }}"
+    {% if shopify_attributes != blank -%}
+      {{ shopify_attributes }}
+    {%- endif -%}
+  >
+    {%- for option in product.options_with_values -%}
+      {%- assign option_key = option.name | downcase -%}
+      {% if button_picker_options contains option_key %}
+        {% assign picker_type = 'button' %}
+      {% elsif dropdown_picker_options contains option_key %}
+        {% assign picker_type = 'dropdown' %}
+      {% else %}
+        {% assign picker_type = picker_type_setting %}
+      {% endif %}
+        {%- if picker_type == 'dropdown' -%}
+          <div class="product-form__input product-form__input--dropdown picker-for--{{ option.name | handleize }}">
+            <div class="field select" style="max-width: 250px; --font-size: inherit;">
+              <label class="field__label" for="Option-{{ product_form_id }}-{{ forloop.index0 }}">
+                {{ option.name }}
+              </label>
+              <select
+                style="max-width: 250px;"
+                id="Option-{{ product_form_id }}-{{ forloop.index0 }}"
+                class="field__input"
+                name="options[{{ option.name | escape }}]"
+                form="{{ product_form_id }}"
+              >
+                {%- render 'product-variant-options',
+                  product: product,
+                  product_form_id: product_form_id,
+                  option: option,
+                  picker_type: picker_type
+                -%}
+              </select>
+              {%- render 'icon-caret', direction: 'down' -%}
+            </div>
+            {% if size_guide_options contains option_key %}
+              {{ size_guide_button }}
+            {% endif %}
+          </div>
+      {%- else -%}
+        <fieldset class="js product-form__input picker-for--{{ option.name | handleize }}">
+          <legend
+            class="form__label js"
+            data-legend="{{ option.name }}"
+          >
+            <div>
+              {%- liquid
+                assign show_option_value = true
+                if show_selected_value == 'none'
+                  assign show_option_value = false
+                elsif show_selected_value == 'swatches'
+                  assign option_downcase_name = option.name | downcase
+                  unless color_swatch_identifiers contains option_downcase_name
+                    assign show_option_value = false
+                  endunless
+                endif
+              -%}
+              {%- if show_option_value -%}
+                <span>{{ 'products.product.option_label' | t: name: option.name }}</span>
+                <strong data-variant-legend>
+                  {{- option.selected_value -}}
+                </strong>
+              {%- else -%}
+                <span>{{ option.name }}</span>
+              {%- endif -%}
+            </div>
+            {% if size_guide_options contains option_key %}
+              {{ size_guide_button }}
+            {% endif %}
+          </legend>
+          {%- liquid
+            # Equal width columns fit the longest value. Color swatches keep their round shape and selected style.
+            assign is_swatch_option = false
+            assign option_downcase_name = option.name | downcase
+            if color_swatch_identifiers contains option_downcase_name
+              assign is_swatch_option = true
+            endif
+            assign equal_width = false
+            if button_width == 'equal' and is_swatch_option == false
+              assign equal_width = true
+            endif
+            assign solid_selected = false
+            if selected_style == 'solid' and is_swatch_option == false
+              assign solid_selected = true
+            endif
+            assign longest_value = 1
+            if equal_width
+              for value in option.values
+                assign value_length = value | size
+                if value_length > longest_value
+                  assign longest_value = value_length
+                endif
+              endfor
+            endif
+          -%}
+          <div
+            class="option-buttons{% if equal_width %} option-buttons--equal{% endif %}{% if solid_selected %} option-buttons--solid{% endif %}"
+            data-option-name="{{ option.name | handleize }}"
+            data-option-position="{{ option.position }}"
+            {% if equal_width %}style="--option-chars: {{ longest_value }};"{% endif %}
+          >
+            {%- render 'product-variant-options',
+              product: product,
+              product_form_id: product_form_id,
+              option: option,
+              picker_type: picker_type
+            -%}
+          </div>
+        </fieldset>
+      {%- endif -%}
+    {%- endfor -%}
+    <script type="application/json" data-selected-variant>
+      {{ product.selected_or_first_available_variant | json }}
+    </script>
+  </variant-selects>
+{%- endunless -%}

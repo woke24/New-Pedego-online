@@ -1,0 +1,28 @@
+{%- comment -%}
+  Renders the <linearGradient> or <radialGradient> for a divider's middle part, parsed from a CSS gradient.
+  Used by divider-graphics.liquid, and by the Divider section for custom SVGs.
+
+  Accepts:
+  - id: {String} section id; the gradient id is "{id}-gradient"
+  - middle_part_color: {String} CSS linear-gradient() or radial-gradient()
+{%- endcomment -%}
+{%- if middle_part_color contains 'linear-gradient' -%}
+  {% assign gradient_params = middle_part_color | remove_first: 'linear-gradient(' | remove_last: ')'  | split: ', rgba' %}
+  {% assign angle = gradient_params[0] %}
+
+    <linearGradient id="{{ id }}-gradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientTransform="rotate({{ angle | remove: 'deg' | minus: 90 }} 0.5 0.5)">
+      {% for stop in gradient_params %}
+        {% if forloop.index == 1 %}{% continue %}{% endif %}
+        {% assign stop_values = stop | remove: '(' | split: ') ' %}
+        <stop offset="{{ stop_values[1] | default: 0 }}" stop-color="rgba({{ stop_values[0] | remove: ')'}})" />
+      {% endfor %}
+    </linearGradient>
+{%- elsif middle_part_color contains 'radial-gradient' -%}
+  {% assign gradient_params = middle_part_color | remove_first: 'radial-gradient(rgba' | remove_last: ')'  | split: ', rgba' %}
+    <radialGradient id="{{ id }}-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+    {% for stop in gradient_params %}
+      {% assign stop_values = stop | remove: '(' | split: ') ' %}
+        <stop offset="{{ stop_values[1] | default: 0 }}" stop-color="rgba({{ stop_values[0] | remove: ')'}})" />
+    {% endfor %}
+  </radialGradient>
+{%- endif -%}

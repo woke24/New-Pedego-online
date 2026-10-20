@@ -1,0 +1,362 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "the-sticky-buy-bar": {
+          "type": "sticky_buy_bar",
+          "settings": {
+            "color_scheme": "",
+            "overlay_str": 35,
+            "border_radius": 16
+          }
+        },
+        "badges_hkajpr": {
+          "type": "badges",
+          "settings": {
+            "badges_position": "over-media",
+            "margin_top": 8
+          }
+        },
+        "the-title": {
+          "type": "title",
+          "settings": {
+            "margin_top": 8
+          }
+        },
+        "the-price": {
+          "type": "price",
+          "settings": {
+            "margin_top": 8,
+            "font_weight": "normal",
+            "sm_size_multiplier": "sm-size--large",
+            "size_multiplier": "size--default"
+          }
+        },
+        "sibling_products_dtbBGm": {
+          "type": "sibling_products",
+          "settings": {
+            "variant_option_name": "Color",
+            "margin_top": 24
+          }
+        },
+        "the-variant-picker": {
+          "type": "variant_picker",
+          "settings": {
+            "margin_top": 24
+          }
+        },
+        "the-quantity-selector": {
+          "type": "quantity_selector",
+          "settings": {
+            "next_to_add_to_cart": true,
+            "margin_top": 24
+          }
+        },
+        "the-buy-buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": false,
+            "show_gift_card_recipient": true,
+            "add_multipliers": "",
+            "add_multipliers_layout": "single-line",
+            "margin_top": 28
+          }
+        },
+        "the-inventory-status": {
+          "type": "inventory_status",
+          "settings": {
+            "inventory_threshold": 10,
+            "show_available_quantity": false,
+            "inventory_transfers_enable": true,
+            "additional__in_stock": "",
+            "additional__few_on_stock": "",
+            "additional__out_of_stock": "",
+            "additional__out_of_stock_continue_selling": "",
+            "margin_top": 20
+          }
+        },
+        "the-description": {
+          "type": "description",
+          "settings": {
+            "enable_collapsible": false,
+            "collapsible_type": "collapsible",
+            "margin_top": 24
+          }
+        },
+        "the-pickup-availability": {
+          "type": "pickup_availability",
+          "settings": {
+            "margin_top": 24
+          }
+        },
+        "collapsible_tab_nGyj9k": {
+          "type": "collapsible_tab",
+          "settings": {
+            "title": "Made to endure",
+            "open_as_drawer": false,
+            "icon": "icon-caret__right",
+            "content": "<p>The majority of materials we use for our commercial production are the same which we use in equipment for the Finnish Defence Forces and other defence and security clients. Our most commonly used fabric in load carrying equipment is extremely wear resistant 1000D Cordura, as per FDF specs, with polyurethane coating on the inside. The webbing and edge tape we use are, again as per FDF specs, strong polyester webbing in various widths and thicknesses for different applications.</p><p>Our green and M05 camouflage materials and accessories are by default compliant with strict FDF specs for NIR reflection levels, as should be since these same materials are used in official military equipment.</p>",
+            "page": "",
+            "margin_top": 24
+          }
+        },
+        "collapsible_tab_7UEcPg": {
+          "type": "collapsible_tab",
+          "settings": {
+            "title": "Technical specs",
+            "open_as_drawer": false,
+            "icon": "icon-caret__right",
+            "content": "<ul><li>Exact dimensions</li><li>Weight</li><li>Compatibility (e.g., tech specs, supported devices)</li><li>Certifications (e.g., organic, CE, ISO)</li></ul><h6>Why It Matters:</h6><ul><li>Enables comparison and decision-making</li><li>Crucial for high-involvement purchases&nbsp;</li></ul><p>Utilize metafield (connect to dynamic source) to make the content dynamic.</p>",
+            "page": "",
+            "margin_top": 0
+          }
+        },
+        "collapsible_tab_bDkCcD": {
+          "type": "collapsible_tab",
+          "settings": {
+            "title": "Shipping & Returns",
+            "open_as_drawer": false,
+            "icon": "icon-truck",
+            "content": "<ul><li>Shipping methods and estimated delivery dates</li><li>Shipping cost or free shipping info</li><li>Return policy summary</li><li>Country-specific shipping details<br/></li></ul>",
+            "page": "",
+            "margin_top": 0
+          }
+        }
+      },
+      "block_order": [
+        "the-sticky-buy-bar",
+        "badges_hkajpr",
+        "the-title",
+        "the-price",
+        "sibling_products_dtbBGm",
+        "the-variant-picker",
+        "the-quantity-selector",
+        "the-buy-buttons",
+        "the-inventory-status",
+        "the-description",
+        "the-pickup-availability",
+        "collapsible_tab_nGyj9k",
+        "collapsible_tab_7UEcPg",
+        "collapsible_tab_bDkCcD"
+      ],
+      "settings": {
+        "show_breadcrumb": true,
+        "product_image_aspect_ratio": "square",
+        "media_fill_rule": "cover",
+        "variant_images": "all",
+        "color_scheme": "color-main",
+        "custom_background_colors": true,
+        "section_bg": "linear-gradient(135deg, rgba(63, 63, 63, 1), rgba(51, 51, 51, 1) 100%)",
+        "media_col_bg": "",
+        "content_col_bg": "",
+        "border_radius": 20,
+        "product_media_bg": "rgba(0,0,0,0)",
+        "media_border_radius": 12,
+        "enable_full_width": false,
+        "sm-p": 32,
+        "media_layout": "traditional-below",
+        "media_col_width": "medium",
+        "sm_media_zoom": "column",
+        "sm_media_gap": 24,
+        "md_padding_top": 0,
+        "md_padding_bottom": 0,
+        "enable_slider_peek": false,
+        "show_thumbnails_sm_down": true,
+        "media_zoom": "column",
+        "media_gap": 3,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "4aa46e6a-2da7-414f-9d9e-c8e2129a8545": {
+      "type": "image-with-text",
+      "blocks": {
+        "template--16867142107374__4aa46e6a-2da7-414f-9d9e-c8e2129a8545-image-1": {
+          "type": "image",
+          "settings": {
+            "media_aspect_ratio": "square",
+            "media_link": "",
+            "media_type": "image",
+            "external_video_url": "",
+            "external_video_aspect_ratio": "16:9",
+            "video_controls": false,
+            "video_autoplay": true
+          }
+        },
+        "template--16867142107374__4aa46e6a-2da7-414f-9d9e-c8e2129a8545-title-1": {
+          "type": "title",
+          "settings": {
+            "title": "Made to endure",
+            "heading_tag": "h2",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--default",
+            "margin_top": 0
+          }
+        },
+        "template--16867142107374__4aa46e6a-2da7-414f-9d9e-c8e2129a8545-text-1": {
+          "type": "text",
+          "settings": {
+            "text": "<p>The majority of materials we use for our commercial production are the same which we use in equipment for the Finnish Defence Forces and other defence and security clients. Our most commonly used fabric in load carrying equipment is extremely wear resistant 1000D Cordura, as per FDF specs, with polyurethane coating on the inside.</p>",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 12,
+            "size_multiplier": "size--default",
+            "margin_top": 0
+          }
+        },
+        "template--16867142107374__4aa46e6a-2da7-414f-9d9e-c8e2129a8545-button-1": {
+          "type": "button",
+          "disabled": true,
+          "settings": {
+            "button_label": "Button label",
+            "button_link": "",
+            "button_style": "",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 24,
+            "size_multiplier": "size--default",
+            "margin_top": 24
+          }
+        }
+      },
+      "block_order": [
+        "template--16867142107374__4aa46e6a-2da7-414f-9d9e-c8e2129a8545-image-1",
+        "template--16867142107374__4aa46e6a-2da7-414f-9d9e-c8e2129a8545-title-1",
+        "template--16867142107374__4aa46e6a-2da7-414f-9d9e-c8e2129a8545-text-1",
+        "template--16867142107374__4aa46e6a-2da7-414f-9d9e-c8e2129a8545-button-1"
+      ],
+      "settings": {
+        "color_scheme": "color-main",
+        "enable_full_width": false,
+        "media_position": "media_first",
+        "content_width": "col-sm-max-4",
+        "desktop_alignment": "sm-text-align-left",
+        "sm_full_width_buttons": false,
+        "md_padding_top": 40,
+        "md_padding_bottom": 40,
+        "mobile_alignment": "text-align-left",
+        "full_width_buttons": false,
+        "padding_top": 0,
+        "padding_bottom": 24
+      }
+    },
+    "the-product-recommendations": {
+      "type": "product-recommendations",
+      "blocks": {
+        "section_header_JiGjrd": {
+          "type": "section_header",
+          "settings": {
+            "subtitle": "",
+            "subtitle_tag": "h3",
+            "title": "You might also like",
+            "title_tag": "h2",
+            "text": "<p>These products might also interest you.</p>",
+            "text_alignment": "text-align-left",
+            "sm_size_multiplier": "sm-size--default",
+            "size_multiplier": "size--default"
+          }
+        }
+      },
+      "block_order": [
+        "section_header_JiGjrd"
+      ],
+      "settings": {
+        "product_limit": 10,
+        "color_scheme": "color-main",
+        "enable_card_thumbnail": false,
+        "enable_full_width": false,
+        "layout_desktop": "slide",
+        "products_per_row_desktop": 4,
+        "sm_custom_gap": -1,
+        "md_padding_top": 40,
+        "md_padding_bottom": 40,
+        "products_per_row_tablet": 3,
+        "layout_mobile": "slide",
+        "products_per_row_mobile": 1,
+        "custom_gap": -1,
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "autoplay": false,
+        "autoplay_speed": 5,
+        "sliding_behavior": "single"
+      }
+    },
+    "testimonials_MHLU94": {
+      "type": "testimonials",
+      "blocks": {
+        "testimonial_h9G3CD": {
+          "type": "testimonial",
+          "settings": {
+            "stars": 5,
+            "title": "Perfect daypack for everyday carry",
+            "testimonial": "<p>I’ve been using this backpack as my daily carry bag, and it’s absolutely brilliant. Compact, tough, and surprisingly spacious for its size. It fits my water bottle, lunch, tools, and even a small tablet with no problem. The MOLLE webbing makes it super customizable. Can’t recommend it enough for urban or light outdoor use!</p>",
+            "author": "Marko Mäkinen"
+          }
+        },
+        "testimonial_hiwA6r": {
+          "type": "testimonial",
+          "settings": {
+            "stars": 5,
+            "title": "Ideal for short hikes and versatile use",
+            "testimonial": "<p>This backpack its the sweet spot between size and functionality. I’ve taken it on weekend hikes and as a travel companion—it performs flawlessly. It’s built like a tank, comfortable to wear for long stretches, and the internal frame adds excellent support. Definitely worth every penny!</p>",
+            "author": "Just Me"
+          }
+        },
+        "testimonial_Hkp7Kp": {
+          "type": "testimonial",
+          "settings": {
+            "stars": 5,
+            "title": "Serious gear for serious adventures",
+            "testimonial": "<p>I’ve used this backpack on multi-day treks and it’s a beast. The build quality is outstanding—everything from the zippers to the straps feels durable and reliable. The side pouch system and internal organization make packing efficient. It’s the best large pack I’ve ever owned for backcountry trips.</p>",
+            "author": "Mike Hiker"
+          }
+        },
+        "testimonial_JQrJFV": {
+          "type": "testimonial",
+          "settings": {
+            "stars": 5,
+            "title": "The ultimate load hauler",
+            "testimonial": "<p>If you need a pack that can handle serious gear and harsh conditions, this is it. I use it for hunting and winter expeditions—it swallows everything I throw at it and distributes weight beautifully. The modular design lets me adapt it to any mission. Truly a professional-grade backpack.</p>",
+            "author": "Author's name"
+          }
+        }
+      },
+      "block_order": [
+        "testimonial_h9G3CD",
+        "testimonial_hiwA6r",
+        "testimonial_Hkp7Kp",
+        "testimonial_JQrJFV"
+      ],
+      "name": "t:sections.testimonials.name",
+      "settings": {
+        "color_scheme": "default",
+        "autoplay": true,
+        "autoplay_speed": 4,
+        "alignment": "center",
+        "icon": "stars",
+        "enable_full_width": false,
+        "items_per_row_desktop": 1,
+        "md_padding_top": 40,
+        "md_padding_bottom": 40,
+        "items_per_row_tablet": 2,
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    }
+  },
+  "order": [
+    "main",
+    "4aa46e6a-2da7-414f-9d9e-c8e2129a8545",
+    "the-product-recommendations",
+    "testimonials_MHLU94"
+  ]
+}

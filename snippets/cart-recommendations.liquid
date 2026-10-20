@@ -1,0 +1,89 @@
+{%- if settings.show_cart_recommendations -%}
+  {% liquid
+    # Hand-picked products: the same list for every cart (Theme settings > Cart). Related and complementary products
+    # come from the Search & Discovery app through the product recommendations API, with the intent.
+    assign handpicked = false
+    if settings.cart_recommendations_content == 'handpicked'
+      assign handpicked = true
+    endif
+    assign recommendations_intent = settings.cart_recommendations_content
+    assign grid_layout_class = 'grid-cols-1 upsell-products'
+    assign product_form_id = 'product-form-' | append: section.id
+
+    if context == 'template' and settings.cart_recommendations_type == 'product_card'
+      assign grid_layout_class = 'grid-cols-1 sm-grid-cols-2 upsell-products'
+    elsif context == 'template' and settings.cart_recommendations_type == 'product_link'
+      assign grid_layout_class = 'grid-cols-3 sm-grid-cols-6 type--links'
+    elsif context == 'drawer' and settings.cart_recommendations_type == 'product_link'
+      assign grid_layout_class = 'grid-cols-3 type--links'
+    endif
+  %}
+
+{{ 'component-cart-recommendations.css' | asset_url | stylesheet_tag }}
+{% if settings.cart_recommendations_type == 'product_card' %}
+  {{ 'component-upsell-products.css' | asset_url | stylesheet_tag }}
+{% endif %}
+<cart-recommendations
+  class="recommendations{% if cart.item_count == 0 %} hide{% endif %}"
+  data-url="{{ routes.product_recommendations_url }}?limit={{ settings.cart_recommendations_limit }}"
+  data-product-id="{{ cart.items.first.product.id }}"
+  data-section-id="{{ section.id }}"
+  {% if handpicked %}data-handpicked{% else %}data-intent="{{ recommendations_intent }}"{% endif %}
+>
+  <div class="cart-recommendations-container">
+    {%- liquid
+      if handpicked
+        assign recommended_products = settings.cart_recommendations_products
+      elsif recommendations.performed
+        assign recommended_products = recommendations.products
+      endif
+      # Hand-picked products already in the cart, or sold out, are left out; the limit applies to what's left
+      assign cart_product_ids = cart.items | map: 'product_id'
+      assign shown_count = 0
+    -%}
+    {%- capture recommendation_items -%}
+      {%- for recommendation in recommended_products -%}
+        {%- if handpicked -%}
+          {%- if shown_count >= settings.cart_recommendations_limit -%}{%- break -%}{%- endif -%}
+          {%- if recommendation.available == false or cart_product_ids contains recommendation.id -%}{%- continue -%}{%- endif -%}
+          {%- assign shown_count = shown_count | plus: 1 -%}
+        {%- endif -%}
+        {%- if settings.cart_recommendations_type == 'product_link' -%}
+          <div class="card card--product">
+            <a href="{{ recommendation.url }}" title="{{ recommendation.title | escape }}" class="card-media">
+              <figure class="media {{ settings.product_card_aspect_ratio }} {{ settings.product_card_fill_rule }}">
+                <img width="300" height="300" src="{{ recommendation.featured_image | image_url: width: 300 }}" loading="lazy" alt="{{ recommendation.title | escape }}" />
+              </figure>
+            </a>
+            <div class="card-body text-align-center" style="--card-body-padding: 8px;">
+              <h3 class="card-title font-body size--small"><a href="{{ recommendation.url }}">{{ recommendation.title }}</a></h3>
+            </div>
+          </div>
+        {%- elsif settings.cart_recommendations_type == 'product_card' -%}
+          {%- liquid
+            assign is_preorder = false
+            if recommendation.tags contains 'Preorder' or recommendation.tags contains 'preorder'
+              assign is_preorder = true
+            endif
+          -%}
+          {%- render 'card-product-upsell',
+            product: recommendation,
+            product_form_id: product_form_id,
+            is_preorder: is_preorder,
+            section: section,
+            cart_recommendations: true
+          -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+
+    {%- comment -%} The heading is only rendered with products, so an empty result shows nothing (cart.js hides the block). {%- endcomment -%}
+    {%- if recommendation_items != blank -%}
+      <h6 class="cart-recommendations__title subheading mt-24 mb-12">{{ 'sections.cart.you_might_like' | t }}</h6>
+      <div class="grid {{ grid_layout_class }}" data-products-ajax>
+        {{- recommendation_items -}}
+      </div>
+    {%- endif -%}
+  </div>
+</cart-recommendations>
+{%- endif -%}

@@ -1,0 +1,83 @@
+{% comment %}
+  Renders submenu link groups for megamenu nav zone.
+
+  accepts:
+    - links: {Array} linklist.links from parent menu item
+    - column_index: {Number} optional 1-based column; requires menu_columns
+    - menu_columns: {Number} optional column count for filtered render
+{% endcomment %}
+{%- liquid
+  assign column_split_count = 0
+  for link in links
+    if link.title contains '|||'
+      assign column_split_count = column_split_count | plus: 1
+    endif
+  endfor
+
+  assign use_manual_column_splits = false
+  if column_split_count > 0
+    assign use_manual_column_splits = true
+    assign menu_columns = column_split_count | plus: 1
+  endif
+-%}
+{%- for sub_menu_item in links -%}
+  {%- if menu_columns != blank and column_index != blank -%}
+    {%- if use_manual_column_splits -%}
+      {%- assign current_link_index = forloop.index0 -%}
+      {%- assign link_column = 0 -%}
+      {%- for link in links -%}
+        {%- if link.title contains '|||' -%}
+          {%- assign link_column = link_column | plus: 1 -%}
+        {%- endif -%}
+        {%- if forloop.index0 == current_link_index -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- else -%}
+      {%- assign link_column = forloop.index0 | times: menu_columns | divided_by: links.size -%}
+    {%- endif -%}
+    {%- assign target_column = column_index | minus: 1 -%}
+    {%- unless link_column == target_column -%}
+      {%- continue -%}
+    {%- endunless -%}
+  {%- endif -%}
+  {%- liquid
+    assign sub_menu_item_title_raw = sub_menu_item.title | remove: '|||' | strip
+
+    if sub_menu_item_title_raw contains '---'
+      echo '<hr class="menu-divider --sub-menu"/>'
+      continue
+    elsif sub_menu_item_title_raw contains ':::'
+      assign sub_menu_item_split = sub_menu_item_title_raw | split: ':::'
+      assign sub_menu_item_title = sub_menu_item_split[0] | strip
+      assign sub_menu_item_style = 'style--badge-' | append: sub_menu_item_split[1] | downcase | strip
+    elsif sub_menu_item_title_raw contains '***'
+      assign sub_menu_item_title = sub_menu_item_title_raw | remove: '***' | strip
+      assign sub_menu_item_style = 'style--emphasize'
+    else
+      assign sub_menu_item_title = sub_menu_item_title_raw
+      assign sub_menu_item_style = 'style--link'
+    endif
+  -%}
+
+  <a class="sub-menu-link {{ sub_menu_item_style }}" href="{{ sub_menu_item.url }}"><span>{{ sub_menu_item_title }}</span></a>
+  {% if sub_menu_item.links != empty %}
+    <div class="sub-sub-menu mb-12">
+      {%- for sub_sub_menu_item in sub_menu_item.links -%}
+        {%- liquid
+        if sub_sub_menu_item.title contains ':::'
+          assign sub_sub_menu_item_split = sub_sub_menu_item.title | split: ':::'
+          assign sub_sub_menu_item_title = sub_sub_menu_item_split[0] | strip
+          assign sub_sub_menu_item_style = 'style--badge-' | append: sub_sub_menu_item_split[1] | downcase | strip
+        elsif sub_sub_menu_item.title contains '***'
+          assign sub_sub_menu_item_title = sub_sub_menu_item.title | remove: '***' | strip
+          assign sub_sub_menu_item_style = 'style--emphasize'
+        else
+          assign sub_sub_menu_item_title = sub_sub_menu_item.title | strip
+          assign sub_sub_menu_item_style = 'style--link'
+        endif -%}
+        <a class="sub-sub-menu-link size--small {{ sub_sub_menu_item_style }}" href="{{ sub_sub_menu_item.url }}"><span>{{ sub_sub_menu_item_title }}</span></a>
+      {%- endfor -%}
+    </div>
+  {% endif %}
+{%- endfor -%}

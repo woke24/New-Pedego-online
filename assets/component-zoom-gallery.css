@@ -1,0 +1,190 @@
+.gallery-zoom-link {
+  cursor: var(--css-icon-zoom-in) 22 22, auto;
+  /* cursor: zoom-in; */
+}
+.zoom-gallery .gridy-track.grid {
+  --gap: 0;
+}
+.zoom-gallery {
+  --text-space: 8rem;
+}
+
+/* Figure grid: media row + caption row (in-flow, all display modes) */
+.zoom-gallery .zoom-media {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  width: 100%;
+  min-height: 0;
+}
+.zoom-gallery .zoom-media > :not(.media-caption) {
+  min-height: 0;
+  place-content: center;
+}
+.zoom-gallery .media-caption {
+  --caption-background: var(--color-background);
+  --caption-color: var(--color-foreground);
+}
+
+/* Gallery modal - SLIDER */
+@media only screen and (max-width:767px) {
+  .type-slider .modal-body {
+    max-width: 100dvw;
+    max-height: 100dvh;
+  }
+  .type-slider .zoom-item {
+    display: grid;
+    grid-template-rows: var(--text-space) 1fr;
+    text-align: center;
+  }
+  .type-slider .zoom-item .zoom-media {
+    height: calc(100dvh - var(--text-space));
+    grid-template-rows: 1fr var(--text-space);
+    min-height: 0;
+  }
+  .type-slider .zoom-item .zoom-media img,
+  .type-slider .zoom-item .zoom-media video,
+  .type-slider .zoom-item .zoom-media video-frame {
+    object-fit: contain;
+    height: 100%;
+    width: 100%;
+    max-height: 100%;
+    border-radius: var(--br-img);
+    margin: 0 auto;
+    object-position: center center !important;
+  }
+  .type-slider .zoom-item .zoom-media img {
+    width: auto;
+  }
+}
+
+@media only screen and (min-width:768px) {
+  .sm-type-slider .modal-body {
+    max-width: 100dvw;
+    max-height: 100dvh;
+  }
+  .sm-type-slider .zoom-item {
+    display: grid;
+    grid-template-rows: var(--text-space) 1fr;
+    text-align: center;
+  }
+  .sm-type-slider .zoom-item .zoom-media {
+    height: calc(100dvh - var(--text-space));
+    grid-template-rows: 1fr var(--text-space);
+    min-height: 0;
+  }
+  .sm-type-slider .zoom-item .zoom-media img,
+  .sm-type-slider .zoom-item .zoom-media video,
+  .sm-type-slider .zoom-item .zoom-media video-frame {
+    object-fit: contain;
+    max-height: 100%;
+    border-radius: var(--br-img);
+    margin: 0 auto;
+  }
+  .sm-type-slider .zoom-item .zoom-media img {
+    width: auto;
+    height: 100%;
+  }
+}
+
+/* Gallery modal - COLUMN */
+@media only screen and (max-width:767px) {
+  .type-column .gridy-track {
+    max-height: 100dvh;
+    overflow-y: scroll;
+  }
+  .type-column .modal-dialog {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0 !important;
+  }
+  .type-column .modal-body {
+    padding: 0;
+  }
+  .type-column .modal-close {
+    position: fixed;
+    top: 1.2rem;
+    right: 1.2rem;
+    padding: 1.2rem;
+    z-index: 100000 !important;
+  }
+  .type-column .modal-body {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    display: grid;
+  }
+
+  .type-column .zoom-item {
+    position: relative;
+    border-top: 1px solid var(--color-borders);
+  }
+  .type-column .zoom-item:first-child {
+    border: none;
+  }
+  .type-column .item-number {
+    position: absolute;
+    z-index: 1;
+    padding: 0.8rem 1.2rem;
+    border-radius: min(12px, var(--card-border-radius));
+    background-color: var(--color-background);
+    max-width: calc(100vw - 2.4rem);
+    top: 1.2rem;
+    left: 1.2rem;
+  }
+  .type-column .zoom-media {
+    width: 100%;
+  }
+}
+
+@media only screen and (min-width:768px) {
+  .sm-type-column .gridy-track {
+    max-height: 100dvh;
+    overflow-y: scroll;
+  }
+  .sm-type-column .modal-dialog {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0 !important;
+  }
+  .sm-type-column .modal-body {
+    padding: 0;
+  }
+  .sm-type-column .modal-close {
+    position: fixed;
+    top: 4rem;
+    right: 4rem;
+    padding: 1.2rem;
+    z-index: 100000 !important;
+  }
+  .sm-type-column .modal-body {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    display: grid;
+  }
+
+  .sm-type-column .zoom-item {
+    position: relative;
+    border-top: 1px solid var(--color-borders);
+  }
+  .sm-type-column .zoom-item:first-child {
+    border: none;
+  }
+  .sm-type-column .item-number {
+    position: absolute;
+    z-index: 1;
+    padding: 0.8rem 1.2rem;
+    border-radius: min(12px, var(--card-border-radius));
+    background-color: var(--color-background);
+    max-width: calc(100vw - 8rem);
+    top: 4rem;
+    left: 4rem;
+  }
+  .sm-type-column .zoom-media {
+    width: 100%;
+  }
+}

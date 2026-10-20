@@ -1,0 +1,452 @@
+/* NOTES:
+/* Edit the '--drawer-animation' and '--drawer-position' variables to change the position */
+
+/* Drawer container - not actual drawer panel */
+.drawer {
+  --drawer-animation: all 0.3s ease-in-out;
+  --drawer-padding: 24px;
+  --drawer-size: min(92vw, 375px);
+
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  visibility: hidden;
+  opacity: 1 !important;
+  z-index: 70;
+
+  display: block !important;
+  pointer-events: auto !important;
+}
+
+.drawer-content {
+  padding: var(--drawer-padding);
+}
+.drawer-menu .drawer-menu-nav {
+  padding: var(--drawer-padding) 0 15svh 0;
+}
+
+/* Drawer panels */
+.drawer-panel {
+  box-shadow: var(--drawers-box-shadow);
+}
+.drawer-panel,
+html.js .drawer-submenu__panel {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  inset: 0;
+  width: var(--drawer-size);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  opacity: 0;
+  z-index: 10;
+
+  transform: translateX(var(--drawer-position));
+}
+
+html.no-js .drawer-panel {
+  --drawer-animation: transform 0.3s ease-in-out; /* for non-JS users only animate transform to avoid flash of opacity on page load */
+}
+html.js .drawer-submenu__panel {
+  --drawer-animation: all 0.3s ease-in-out; /* Default (mobile) animation properties */
+  background-color: var(--color-background);
+}
+
+/* set position of origin for different types of drawers */
+.drawer-panel:not(.slide-from-right), html.js .drawer-submenu__panel {
+  --drawer-original-position: -100%;
+  --drawer-position: var(--drawer-original-position);
+}
+.drawer-panel.slide-from-right {
+  --drawer-original-position: 100vw;
+  --drawer-position: var(--drawer-original-position);
+}
+
+/* Apply transition only when drawer is initialized to avoid them flashing on page load */
+html.js .initialized .drawer-panel,
+html.no-js .drawer-panel,
+html.js .initialized .drawer-submenu__panel {
+  transition: var(--drawer-animation);
+}
+
+/* Only allow pointer-events for container when drawer is open */
+html.no-js .drawer:target,
+html.js .drawer.is-open {
+  opacity: 1 !important;
+  visibility: visible;
+}
+
+/* Set opacity for backdrop when panel is open */
+html.no-js .drawer:target > .page-overlay,
+html.js .drawer.is-open > .page-overlay {
+  z-index: 1;
+  opacity: 1;
+}
+html.js .is-open > .page-overlay {
+  cursor: var(--css-icon-close) 22 22, auto;
+}
+
+/* Set opacity and position for open panel element */
+html.no-js .drawer:target .drawer-panel:not(.slide-from-right),
+html.js .drawer.is-open .drawer-panel:not(.slide-from-right),
+html.js .drawer-submenu__panel {
+  --drawer-position: 0;
+  opacity: 1;
+}
+html.no-js .drawer:target .drawer-panel.slide-from-right,
+html.js .drawer.is-open .drawer-panel.slide-from-right {
+  --drawer-position: calc(100vw - var(--drawer-size));
+  opacity: 1;
+}
+
+/* Drawer panel header section */
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--drawer-padding) * 0.6) var(--drawer-padding);
+  border-bottom: 1px solid var(--color-borders);
+}
+
+/* Drawer panel close icons */
+.drawer-header .close,
+.drawer-header .close--submenu {
+  display: grid;
+  place-content: center;
+
+  min-height: 4.8rem;
+  min-width: 4.8rem;
+  cursor: pointer;
+  margin: 0 calc(var(--drawer-padding) * -0.5);
+  border-radius: var(--button-border-radius);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: color-mix(in srgb, currentColor 15%, transparent);
+    }
+  }
+}
+@media only screen and (min-width: 1024px) {
+  .close--submenu {
+    order: 2;
+  }
+}
+
+.drawer-header-logo .site-logo {
+  width: var(--drawer-logo-width);
+  height: auto;
+  max-width: 100%;
+}
+
+.drawer-header-logo .site-logo.--text {
+  width: auto;
+}
+.drawer-header svg {
+  display: block;
+}
+
+/* Drawer panel content section */
+.drawer-content {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 15svh;
+  display: block;
+}
+
+/* Drawer panel footer section */
+.drawer-footer {
+  padding: var(--drawer-padding);
+  align-self: flex-end;
+  width: 100%;
+  border-top: 1px solid var(--color-borders);
+}
+
+.drawer img {
+  display: none;
+}
+.drawer.is-open img {
+  display: block;
+}
+
+/* -------------------- Drawer MENU RELATED -------------------- */
+.drawer-menu {
+  --level-1-item-padding: calc(var(--drawer-padding) * 0.4) calc(var(--drawer-padding)*1.2);
+  --level-2-item-padding: calc(var(--drawer-padding) * 0.3) calc(var(--drawer-padding)*1.2);
+
+  .sub-menu-link,
+  .sub-sub-menu-link {
+    display: flex;
+    align-items: center;
+    min-height: 4rem;
+  }
+}
+.drawer-menu__item.--drilldown {
+  overflow: unset;
+}
+
+/* Drawer submenu panel default styles */
+html.js .drawer-submenu__panel-container {
+  width: 100%;
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: var(--drawer-size);
+  display: flex;
+  flex-direction: row;
+  width: var(--drawer-size);
+}
+
+/* Drawer menu trigger */
+button.drawer-menu-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  cursor: pointer;
+}
+
+html.no-js .drawer-menu__details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+html.no-js .drawer-menu__details > summary::-webkit-details-marker {
+  display: none;
+}
+html.no-js .drawer-menu__details[open] > [data-accordion-panel] {
+  max-height: none;
+  visibility: visible;
+}
+
+/* Show submenu panel container (replaces input:checked ~ [data-accordion-panel] from component-accordions.css) */
+html.js .drawer-menu [data-accordion-item].is-open > [data-accordion-panel] {
+  max-height: none;
+  visibility: visible;
+}
+
+/* Set styles for submenu item panel when it's open */
+html.no-js .drawer:target .drawer-menu__details[open] .drawer-submenu__panel,
+html.js [data-accordion-item].is-open .drawer-submenu__panel {
+  --drawer-position: 0 !important;
+  z-index: 9;
+  opacity: 1;
+}
+
+/* Set dropdown item paddings for non-JS users */
+html.no-js .drawer-submenu__panel-container,
+html.no-js .drawer-subsubmenu__panel {
+  padding-left: 1rem !important;
+}
+
+/* Drawer media close - hidden for mobile */
+.drawer-media__close {
+  display: none;
+}
+
+@media only screen and (max-width: 1023px) {
+  /* SVG used to clip animations */
+  .drawer-clip {
+    display: none;
+  }
+  .drawer-clip rect {
+    transform: translateY(-100%);
+  }
+  .drawer-panel {
+    overflow-x: hidden;
+  }
+  html.js .drawer-submenu__panel{
+    --drawer-position: var(--drawer-size) !important;
+  }
+}
+
+/* Desktop submenu panel - open styles */
+@media only screen and (min-width: 1024px) {
+  /* Set initial desktop positions and sizes for navigation drawer */
+  .drawer {
+    --drawer-size: min(40vw, 400px);
+  }
+  .drawer.drawer--wide {
+    --drawer-size: min(45vw, 520px);
+  }
+  /* SVG used to clip animations */
+  .drawer-clip {
+    position: fixed;
+    top: 0;
+    left: var(--drawer-size);
+  }
+  .drawer-media__close {
+    position:absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    padding: 2.4rem 4.8rem;
+    display: grid;
+    opacity: 0;
+  }
+  .drawer-panel,
+  html.js .drawer-submenu__panel {
+    --drawer-padding: 30px;
+  }
+  html.js .drawer-panel .drawer-submenu__panel {
+    --drawer-size: min(40vw, 400px);
+    --drawer-position: calc(var(--drawer-size) * 0);
+  }
+  html.js .drawer-submenu__panel-container {
+    justify-content: flex-end;
+    overflow: hidden;
+    clip-path: url("#drawer-clip");
+  }
+
+  /* Desktop submenu item panel - open styles */
+  html.no-js .drawer:target .drawer-menu__details[open] .drawer-submenu__panel,
+  html.js [data-accordion-item].is-open .drawer-submenu__panel {
+    --drawer-position: var(--drawer-size) !important;
+    transition: var(--drawer-animation);
+  }
+}
+
+/* Desktop submenu full content panel - open styles */
+@media only screen and (min-width: 1500px) {
+  html.js .drawer-menu:not(.drawer-submenu--single-column) .drawer-submenu__panel-container.--content,
+  html.js .drawer-menu:not(.drawer-submenu--single-column) .drawer-panel .--content .drawer-submenu__panel {
+    width: calc(100vw - var(--drawer-size));
+    max-width: var(--ideal-width);
+    --drawer-position: calc(-100vw  + var(--drawer-size));
+  }
+}
+
+/* Drawer menu spacing, hover and other visual styles */
+.drawer-menu-divider {
+  border-top: 1px solid var(--color-borders);
+  margin: var(--drawer-padding) 0;
+  position: relative;
+
+  &.--full {
+    margin: var(--drawer-padding) calc(var(--drawer-padding) * -1);
+  }
+}
+.drawer-menu-nav > .drawer-menu-divider {
+  margin: var(--drawer-padding);
+}
+
+.drawer-menu-item > .menu-link {
+  display: flex;
+  padding: calc(var(--drawer-padding) * 0.4) var(--drawer-padding);
+  align-items: center;
+  min-height: 5.2rem;
+  transition: all 0.2s ease-in-out;
+
+  &:focus-visible {
+    outline: none !important;
+    box-shadow: inset 0 0 0 3pt #2158ee !important;
+    opacity: 1;
+  }
+
+  &:not([class*="style--badge"]) {
+    border-radius: var(--button-border-radius) 0 0 var(--button-border-radius) ;
+  }
+
+  > svg {
+    transition: all 0.2s ease-in-out;
+    opacity: 0.35;
+  }
+
+  span {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      height: 1px;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      background: var(--color-foreground);
+      transition: width 0.2s ease-in-out;
+    }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      span::after {
+        width: 100%;
+      }
+      > svg {
+        opacity: 1;
+      }
+    }
+  }
+
+}
+.drawer-menu-item > [class*="style--badge"] {
+  margin: 0 calc(var(--drawer-padding) / 2);
+  width: calc(100% - var(--drawer-padding));
+  padding-left: calc(var(--drawer-padding) / 2);
+  padding-right: calc(var(--drawer-padding) / 2);
+}
+
+.drawer-subsubmenu__item + .drawer-submenu__item {
+  margin-top: calc(var(--drawer-padding, 1rem) * 0.8);
+}
+
+/* Menu item and panel animations */
+@media only screen and (min-width: 1024px) {
+  .drawer-panel.has-open-submenu {
+    background-color: var(--color-background-alt);
+  }
+  .has-open-submenu .drawer-menu-nav .is-open {
+    > .menu-link {
+      transform: translateX(calc(var(--drawer-padding) / 2));
+      border-radius: var(--button-border-radius) 0 0 var(--button-border-radius) ;
+
+      &:not([class*="style--badge"]) {
+        background: var(--color-background);
+      }
+
+      svg {
+        opacity: 1;
+        transform: rotate3d(0, 1, 0, 180deg);
+      }
+    }
+  }
+  .has-open-submenu .drawer-menu-item:not(.is-open) .menu-link {
+    opacity: 0.35;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+/* Drawer menu secondary menu */
+.drawer-menu div:is(.secondary-menu, .main-menu) > .drawer-menu-divider {
+  margin: var(--drawer-padding);
+}
+
+/* Drawer menu footer */
+.drawer-menu .drawer-footer {
+  padding: 0;
+}
+
+/* Filters drawer */
+.drawer-filters {
+  .drawer-panel {
+    overflow: hidden;
+  }
+  .drawer-footer {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    .btn--primary {
+      flex-grow: 1;
+    }
+  }
+}

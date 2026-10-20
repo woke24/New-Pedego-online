@@ -1,0 +1,235 @@
+{%- liquid
+
+  #  ** Parameters **
+  #  product       =>  OPTIONAL | product object
+  #  lazyload      =>  OPTIONAL | boolean | default: true | layload images
+  #  aspect_ratio  =>  OPTIONAL | string | default: settings.product_card_aspect_ratio | 'natural','portrait','landscape','square'
+  #  text_align    =>  OPTIONAL | string | default: settings.product_card_text_alignment | product card text align class
+  #  class         =>  OPTIONAL | string | 'sm-item-span-2'
+  #  quick_buy     =>  OPTIONAL | boolean | default: settings.product_card_quick_buy
+  #  sizes         =>  OPTIONAL | string | used to image sizes="" attribute
+
+  # if nil check used that may have false value set. Since the default filter will overwrite on false values.
+  if lazyload == nil
+    assign lazyload = true
+  endif
+  if quick_buy == nil
+    assign quick_buy = settings.product_card_quick_buy
+  endif
+
+  if quick_buy
+    assign quick_buy_mode = settings.product_card_quick_buy_mode
+    assign quick_add_availability = true
+    assign quick_add_variant = ''
+
+    if product.variants.size > 1
+      assign quick_buy_mode = 'quick_view'
+    else
+      assign quick_add_availability = product.available
+      assign quick_add_variant = product.selected_or_first_available_variant.id
+    endif
+  endif
+
+  assign aspect_ratio = aspect_ratio | default: settings.product_card_aspect_ratio
+  assign text_align = text_align | default: settings.product_card_text_alignment
+  assign sizing_rule = sizing_rule | default: settings.product_card_fill_rule
+  assign card_type = card_type | default: settings.product_card_options
+  assign price_class = 'mt-8 ' | append: settings.product_card_price_size_multiplier | append: ' ' | append: settings.product_card_price_sm_size_multiplier
+
+  # Card media
+	capture card_images
+    render 'img', src: product.featured_media, aspect_ratio: aspect_ratio, lazyload: lazyload, sizes: sizes, placeholder: 'product-1', sizing_rule: sizing_rule
+    if product.media.size > 1 and settings.product_card_show_secondary_image == true
+      assign secondary_image = product.media[1]
+      render 'img', src: secondary_image, aspect_ratio: aspect_ratio, lazyload: true, sizes: sizes, placeholder: 'product-2', sizing_rule: sizing_rule
+    endif
+  endcapture
+
+  # Product badges
+  if settings.product_card_badges
+    capture product_badges
+      render 'product-badges', product: product, current_variant: product.selected_or_first_available_variant
+    endcapture
+  endif
+
+  assign is_preorder = false
+  if product.tags contains 'Preorder' or product.tags contains 'preorder'
+    assign is_preorder = true
+  endif
+ -%}
+
+{%- if product and product != empty -%}
+  <div class="card card--product card--{{ card_type }}{% if is_thumbnail %} layout--thumbnail{% endif %}{% if secondary_image %} on-hover{% endif %} {{ class }}">
+    <a href="{{ product.url }}" class="card-media {% unless is_thumbnail %}p-{{ settings.image_padding }}{% endunless %}" aria-hidden="true" tabindex="-1">
+      {%- if number != blank -%}
+        <span class="card-number size--tiny">
+          {{- number -}}
+        </span>
+      {%- endif -%}
+      {%- if secondary_image -%}
+        <div class="card-hover-images">{{ card_images }}</div>
+      {%- else -%}
+        {{ card_images }}
+      {%- endif -%}
+
+      <div class="card-media-overlay flex {{ settings.product_card_badges_position }}">
+        {{ product_badges }}
+      </div>
+    </a>
+    <div class="card-body {{ text_align }}">
+      {% if is_thumbnail %}
+        {{ product_badges }}
+      {% endif %}
+      {%- if settings.product_card_show_vendor -%}
+        <span class="card-vendor size--tiny">{{ product.vendor }}</span>
+      {%- endif -%}
+      <h3 class="card-title {{ settings.product_card_title_font }} {{ settings.product_card_title_size_multiplier }} {{ settings.product_card_title_sm_size_multiplier }}"><a href="{{ product.url }}">{{ product.title }}</a></h3>
+      {%- render 'price', product: product, price_class: price_class, font_weight: settings.product_card_price_font_weight -%}
+      {%- if settings.enable_swatches -%}
+        {%- render 'product-card-swatches', product: product -%}
+      {%- endif -%}
+
+      {%- if settings.show_variant_availability -%}
+        {% render 'product-option-availability', product: product %}
+      {%- endif -%}
+
+      {%- if settings.product_card_custom_fields != blank -%}
+        {% assign fields_array = settings.product_card_custom_fields | remove: ' ' | split: ',' %}
+        {%- capture custom_fields -%}
+          {%- for field in fields_array -%}
+            {%- if field contains '|' -%}
+              {%- assign field_title = field | split: '|' | first -%}
+              {%- assign field_namespace = field | split: '|' | last | split: '.' | first -%}
+              {%- assign field_key = field | split: '|' | last | split: '.' | last -%}
+            {%- else -%}
+              {%- assign field_title = false -%}
+              {%- assign field_namespace = field | split: '.' | first -%}
+              {%- assign field_key = field | split: '.' | last -%}
+            {%- endif -%}
+
+            {%- assign the_metafield = product.metafields[field_namespace][field_key] -%}
+
+            {%- if the_metafield != blank -%}
+            <div class="custom-field metafield--{{ field_namespace }}-{{ field_key }} type--{{ the_metafield.type | handleize }} size--tiny mt-8">
+              {%- if field_title -%}
+              <span class="custom-field-title style--subdued">{{ field_title }}: </span>
+              {%- endif -%}
+              {{- the_metafield | metafield_tag -}}
+            </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+        {%- if custom_fields != blank -%}
+          <div class="card-custom-fields mt-16">
+            {{ custom_fields }}
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if settings.product_card_show_rating -%}
+        {% render 'rating', product: product %}
+      {%- endif -%}
+    </div>
+    {%- if quick_buy and quick_buy_mode == 'quick_view' -%}
+    <quick-buy data-product="{{ product.id }}" data-url="{{ product.url }}" class="js quick-buy quick-buy-or-add {{ text_align }}">
+      <a class="btn size--small btn--{{ settings.quick_buy_button_style }} quick-buy-link btn--full{% if is_thumbnail %} icon-btn--quick-buy{% endif %}" data-product-handle="{{ product.handle }}" href="{{ '#modal-' | append: product.id | append: '-product' }}" aria-haspopup="dialog" aria-label="{{ 'accessibility.open_quick_buy_modal' | t: product: product.title }}">
+        <span class="quick-buy-text">{{ 'products.quick_buy_label' | t }}</span>
+        <span class="quick-buy-icon">
+          {%- render 'icon-cart' -%}
+          {%- render 'icon-plus' -%}
+        </span>
+        {% render 'loading' %}
+      </a>
+    </quick-buy>
+    {%- elsif quick_buy and quick_buy_mode == 'add' and quick_add_availability -%}
+      <quick-add data-variant-id="{{ quick_add_variant }}" data-product-id="{{ product.id }}" data-product-image="{{ product.featured_media | image_url: width: 120 }}" class="js quick-add quick-buy-or-add {{ text_align }}">
+        <button type="button" class="btn size--small btn--{{ settings.quick_buy_button_style }} btn--full{% if is_thumbnail %} icon-btn--quick-buy{% endif %}" aria-label="{{ 'accessibility.quick_add' | t: product: product.title }}">
+          <span class="quick-buy-text">
+            {% if is_preorder %}
+              {{ 'products.product.preorder.preorder' | t }}
+            {% else %}
+              {{ 'products.quick_add_label' | t }}
+            {% endif %}
+          </span>
+          <span class="quick-buy-icon">
+            {%- render 'icon-cart' -%}
+            {%- render 'icon-plus' -%}
+          </span>
+          {% render 'loading' %}
+        </button>
+      </quick-add>
+    {%- elsif quick_buy -%}
+      <div class="quick-add-unavailable quick-buy-or-add {{ text_align }}">
+        <button class="btn size--small btn--{{ settings.quick_buy_button_style }} btn--full{% if is_thumbnail %} icon-btn--quick-buy{% endif %}" disabled>
+          {% if is_thumbnail == false or is_thumbnail == nil %}
+            <span class="quick-add-text">{{- 'products.product.unavailable' | t -}}</span>
+          {% elsif is_thumbnail %}
+            <span class="quick-buy-icon">
+              {%- render 'icon-cart' -%}
+              {%- render 'icon-plus' -%}
+            </span>
+          {% endif %}
+        </button>
+      </div>
+    {%- endif -%}
+  </div>
+{%- else -%}
+  <div class="card card--product card--{{ card_type }}{% if is_thumbnail %} layout--thumbnail{% endif %}">
+    <div class="card-media">
+      <figure class="media media--empty">
+        {%- assign svg_name = svg_name | default: 'product-1' -%}
+        {{ svg_name | placeholder_svg_tag: 'placeholder-svg' }}
+      </figure>
+    </div>
+    <div class="card-body {{ text_align }}">
+      {%- if settings.product_card_show_vendor -%}
+        <span class="card-vendor size--tiny">{{ 'products.product.vendor' | t }}</span>
+      {%- endif -%}
+      <h3 class="card-title {{ settings.product_card_title_font }} {{ settings.product_card_title_size_multiplier }} {{ settings.product_card_title_sm_size_multiplier }}">{{ 'onboarding.product_title' | t }}</h3>
+      {%- liquid
+        assign placeholder_price_cents = 1999
+        assign placeholder_money_price = placeholder_price_cents | money
+        if settings.currency_code_enabled
+          assign placeholder_money_price = placeholder_price_cents | money_with_currency
+        endif
+      -%}
+      <div class="price
+        {%- if price_class %} {{ price_class }}{% endif -%}
+        {%- if settings.product_card_price_font_weight == 'bold' %} price--bold{% endif -%}">
+        <div class="flex">
+          <div class="price__regular">
+            <span class="visually-hidden">
+              {{- 'products.product.price.regular_price' | t -}}
+            </span>
+            <span class="price-item price-item--regular">
+              {{- placeholder_money_price -}}
+            </span>
+          </div>
+          <div class="price__sale"></div>
+        </div>
+      </div>
+      {%- if settings.product_card_custom_liquid != blank -%}
+        {{ settings.product_card_custom_liquid }}
+      {%- endif -%}
+    </div>
+    {% if quick_buy %}
+      <div class="quick-buy-or-add {{ text_align }}">
+        <button type="button" class="btn size--tiny btn--{{ settings.quick_buy_button_style }} btn--full{% if is_thumbnail %} icon-btn--quick-buy{% endif %}" aria-label="{{ 'accessibility.quick_add_placeholder' | t }}">
+          <span class="quick-buy-text">
+            {% if quick_buy_mode == 'add' and is_preorder == false %}
+              {{ 'products.quick_add_label' | t }}
+            {% elsif quick_buy_mode == 'add' and is_preorder == true %}
+              {{ 'products.product.preorder.preorder' | t }}
+            {% elsif quick_buy_mode == 'quick_view' %}
+              {{ 'products.quick_buy_label' | t }}
+            {% endif %}
+          </span>
+          <span class="quick-buy-icon">
+            {%- render 'icon-cart' -%}
+            {%- render 'icon-plus' -%}
+          </span>
+        </button>
+      </div>
+    {% endif %}
+  </div>
+{%- endif -%}

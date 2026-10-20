@@ -1,0 +1,176 @@
+.section--divider {
+  z-index: 2;
+  /* Neighboring section backgrounds. Set per color scheme in css-settings-and-variables.liquid;
+     a neighbor without a color scheme falls back to the page background. */
+  --divider-previous-bg: var(--color-background);
+  --divider-next-bg: var(--color-background);
+}
+.divider-graphics {
+  width: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  margin-top: -1px;
+  margin-bottom: -1px;
+}
+.divider-graphics svg {
+  display: block;
+}
+.divider-graphics .divider-gradient-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+/* Part colors, set on .divider-graphics in sections/divider.liquid. Custom SVGs can use the same classes. */
+.divider-graphics .top-part {
+  fill: var(--divider-top-fill, transparent);
+}
+.divider-graphics .middle-part {
+  fill: var(--divider-middle-fill, transparent);
+}
+.divider-graphics .bottom-part {
+  fill: var(--divider-bottom-fill, transparent);
+}
+.divider-graphics.top-previous,
+.divider-graphics.top-next {
+  position: absolute;
+  z-index: 100;
+}
+
+.divider-graphics.top-previous { bottom: 0px }
+.divider-graphics.top-next { top: 0px }
+
+/* Animated graphics (snippets/divider-graphics.liquid).
+   Moving parts only animate transform, so the browser can move them without repainting.
+   --divider-speed (0.5, 1 or 2) is set by the Animation speed setting. */
+.divider-box {
+  position: relative;
+  overflow: hidden;
+}
+.divider-box--rolling-curve,
+.divider-box--chevrons {
+  aspect-ratio: 1440 / 120;
+}
+.divider-box--mountains {
+  aspect-ratio: 1440 / 140;
+}
+.divider-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  overflow: visible;
+}
+.divider-graphics rect {
+  shape-rendering: crispEdges;
+}
+
+/* Chevrons: the track is masked to a repeating chevron and moves one chevron width per loop; the fill inside it moves
+   back by the same amount, so the middle color stays in place on screen. Both only animate transform. The outer layer
+   fades the chevrons out at the edges with a still mask, so it works on a transparent bottom part too.
+   A chevron is 2/3 of the divider height wide (100cqh, the height of .divider-box--chevrons). */
+.divider-box--chevrons {
+  container-type: size;
+  background: var(--divider-bottom-fill);
+}
+.divider-chevrons-fade {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 25% 75%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0%, #000 25% 75%, transparent 100%);
+}
+.divider-chevrons-track {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(100cqh * -2 / 3);
+  right: 0;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 120'%3E%3Cpath d='M0 20h40l40 40-40 40H0l40-40z'/%3E%3C/svg%3E") 0 0 / auto 100% repeat-x;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 120'%3E%3Cpath d='M0 20h40l40 40-40 40H0l40-40z'/%3E%3C/svg%3E") 0 0 / auto 100% repeat-x;
+}
+.divider-chevrons-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(100cqh * 2 / 3);
+  right: 0;
+  background: var(--divider-middle-background);
+}
+
+@keyframes divider-slide {
+  to { transform: translateX(-50%); }
+}
+@keyframes divider-chevrons-track {
+  to { transform: translateX(calc(100cqh * 2 / 3)); }
+}
+@keyframes divider-chevrons-fill {
+  to { transform: translateX(calc(100cqh * -2 / 3)); }
+}
+@keyframes divider-glitch {
+  0%, 88%, 100% { transform: translateX(0); }
+  89% { transform: translateX(var(--gx)); }
+  92% { transform: translateX(calc(var(--gx) * -0.4)); }
+  95% { transform: translateX(calc(var(--gx) * 0.2)); }
+}
+
+/* Continuous: durations are per loop at medium speed. */
+.divider-motion-continuous .divider-slide {
+  animation: divider-slide calc(var(--slide-duration) / var(--divider-speed, 1)) linear infinite;
+}
+.divider-motion-continuous .divider-chevrons-track {
+  animation: divider-chevrons-track calc(1s / var(--divider-speed, 1)) linear infinite;
+}
+.divider-motion-continuous .divider-chevrons-fill {
+  animation: divider-chevrons-fill calc(1s / var(--divider-speed, 1)) linear infinite;
+}
+.divider-motion-continuous .divider-glitch {
+  animation: divider-glitch calc(var(--d) / var(--divider-speed, 1)) steps(1, end) calc(var(--delay) / var(--divider-speed, 1)) infinite;
+}
+
+/* On scroll: the animation follows the divider's way through the screen, repeating its loop a set number of
+   times per pass. The timeline is named on .divider-graphics, which clips its content (overflow: hidden) and
+   would stop an unnamed view() timeline on the moving parts from progressing.
+   Browsers without scroll-driven animations (Firefox) show the divider without motion. */
+@supports (animation-timeline: view()) {
+  .divider-motion-scroll {
+    view-timeline: --divider-pass block;
+  }
+  .divider-motion-scroll .divider-slide,
+  .divider-motion-scroll .divider-chevrons-track,
+  .divider-motion-scroll .divider-chevrons-fill,
+  .divider-motion-scroll .divider-glitch {
+    animation-duration: auto;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --divider-pass;
+  }
+  .divider-motion-scroll .divider-slide {
+    animation-name: divider-slide;
+    animation-iteration-count: calc(var(--slide-loops) * var(--divider-speed, 1));
+  }
+  .divider-motion-scroll .divider-chevrons-track,
+  .divider-motion-scroll .divider-chevrons-fill {
+    animation-iteration-count: calc(10 * var(--divider-speed, 1));
+  }
+  .divider-motion-scroll .divider-chevrons-track {
+    animation-name: divider-chevrons-track;
+  }
+  .divider-motion-scroll .divider-chevrons-fill {
+    animation-name: divider-chevrons-fill;
+  }
+  .divider-motion-scroll .divider-glitch {
+    animation-name: divider-glitch;
+    animation-timing-function: steps(1, end);
+    animation-iteration-count: calc(var(--i) * var(--divider-speed, 1));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .divider-graphics .divider-slide,
+  .divider-graphics .divider-chevrons-track,
+  .divider-graphics .divider-chevrons-fill,
+  .divider-graphics .divider-glitch {
+    animation: none;
+  }
+}

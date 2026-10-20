@@ -1,0 +1,41 @@
+{% comment %}
+  Renders up to 10 megamenu banner cards from block settings.
+
+  accepts:
+    - block: {Object} megamenu-banners block
+    - sizes: {String} image sizes attribute
+{% endcomment %}
+{%- for i in (1..10) -%}
+  {%- liquid
+    capture image_key
+      echo 'banner_'
+      echo i
+      echo '_image'
+    endcapture
+    capture title_key
+      echo 'banner_'
+      echo i
+      echo '_title'
+    endcapture
+    capture link_key
+      echo 'banner_'
+      echo i
+      echo '_link'
+    endcapture
+
+    assign banner_image = block.settings[image_key]
+    assign banner_title = block.settings[title_key]
+    assign banner_link = block.settings[link_key]
+  -%}
+  {%- if banner_image != blank -%}
+    {% render 'megamenu-banner-card',
+      image: banner_image,
+      title: banner_title,
+      link: banner_link,
+      aspect_ratio: block.settings.image_aspect_ratio,
+      text_position: block.settings.text_position,
+      title_style: block.settings.title_style,
+      sizes: sizes
+    %}
+  {%- endif -%}
+{%- endfor -%}

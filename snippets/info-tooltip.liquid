@@ -1,0 +1,51 @@
+{%- comment -%}
+  Info icon with a click-to-open tooltip. No JS: uses the native Popover API
+  (popovertarget + popover="auto") for open/close, Escape and outside click.
+  Positioned with CSS anchor positioning in section-specs-bar.css.
+
+  Accepts:
+  - id: {String} Unique id for the tooltip content element
+  - content: {String} Rich text tooltip content (HTML)
+  - label: {String} Name of the item the tooltip describes, used in the trigger aria-label
+  - part: {String} Optional. 'trigger' or 'content' renders only that half, for markup where they sit in different
+    elements (the Specs bar puts the trigger in a <dt> and the content in a <dd>). Default renders both.
+  - content_tag: {String} Optional tag for the content element. Default: div
+
+  Usage:
+  {% render 'info-tooltip', id: 'tooltip-123', content: 'Tooltip text', label: 'Weight' %}
+  {% render 'info-tooltip', id: 'tooltip-123', content: 'Tooltip text', label: 'Weight', part: 'content', content_tag: 'dd' %}
+{%- endcomment -%}
+
+{%- if content != blank -%}
+  {%- liquid
+    assign content_tag = content_tag | default: 'div'
+    assign show_trigger = true
+    assign show_content = true
+    if part == 'trigger'
+      assign show_content = false
+    elsif part == 'content'
+      assign show_trigger = false
+    endif
+  -%}
+  {%- if show_trigger -%}
+    <span class="info-tooltip">
+      <button
+        type="button"
+        class="info-tooltip-trigger"
+        popovertarget="{{ id }}"
+        aria-describedby="{{ id }}"
+        aria-label="{{ 'accessibility.more_info_about' | t: title: label | strip_html | escape }}">
+        {%- render 'icon-info' -%}
+      </button>
+      {%- if show_content -%}
+        <{{ content_tag }} id="{{ id }}" class="info-tooltip-content rte" popover="auto">
+          {{- content -}}
+        </{{ content_tag }}>
+      {%- endif -%}
+    </span>
+  {%- elsif show_content -%}
+    <{{ content_tag }} id="{{ id }}" class="info-tooltip-content rte" popover="auto">
+      {{- content -}}
+    </{{ content_tag }}>
+  {%- endif -%}
+{%- endif -%}

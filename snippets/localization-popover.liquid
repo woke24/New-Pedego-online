@@ -1,0 +1,93 @@
+{%- liquid
+  assign show_language = false
+  assign show_country = false
+
+  if localization.available_languages.size > 1
+    assign show_language = true
+  endif
+
+  if localization.available_countries.size > 1
+    assign show_country = true
+  endif
+
+  if show_country and show_language
+    capture region_aria_label
+      echo 'accessibility.country_selector_and_current' | t: current: localization.country, currency: localization.country.currency.iso_code
+      echo '. '
+      echo 'accessibility.language_selector_and_current' | t: current: localization.language.endonym_name
+    endcapture
+  elsif show_country
+    assign region_aria_label = 'accessibility.country_selector_and_current' | t: current: localization.country, currency: localization.country.currency.iso_code
+  else
+    assign region_aria_label = 'accessibility.language_selector_and_current' | t: current: localization.language.endonym_name
+  endif
+-%}
+
+{%- capture region_trigger_content -%}
+  {%- if show_country -%}
+    {%- case section.settings.region_menu -%}
+      {%- when 'globe' -%}
+        {% render 'icon-globe' %}
+        <span class="visually-hidden">{{ 'localization.country_label' | t }}</span>
+      {%- when 'neutral_flag' -%}
+        {% render 'icon-flag' %}
+        <span class="visually-hidden">{{ 'localization.country_label' | t }}</span>
+      {%- when 'country_flag' -%}
+        {{ localization.country | image_url: width: 32 | image_tag | replace: '<img', '<img class="country-flag"' }}
+        <span class="visually-hidden">{{ 'localization.country_label' | t }}</span>
+      {%- when 'text' -%}
+        {{ localization.country.iso_code }}&nbsp;·&nbsp;{{ localization.country.currency.iso_code }}&nbsp;{{ localization.country.currency.symbol }}
+    {%- endcase -%}
+  {%- elsif show_language -%}
+    {{ 'localization.language_label' | t }}
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- capture footer_trigger_content -%}
+  {%- if show_country -%}
+    {{ localization.country | image_url: width: 32 | image_tag | replace: '<img', '<img class="country-flag" loading="lazy" alt="[alt]"' | replace: '[alt]', localization.country.name }}
+    <span class="country-name">{{ localization.country.name }}</span>
+  {%- endif -%}
+  {%- if show_country and show_language -%}
+    <span class="localization-separator" aria-hidden="true">·</span>
+  {%- endif -%}
+  {%- if show_language -%}
+    <span class="language-code">{{ localization.language.iso_code | upcase }}</span>
+  {%- endif -%}
+  {% render 'icon-chevron-down--small' %}
+{%- endcapture -%}
+
+<localization-popover class="localization-popover localization-popover--{{ context }}{% if wrapper_class != blank %} {{ wrapper_class }}{% endif %}">
+  <details class="localization-popover__details" data-no-accordion-logic>
+    <summary
+      class="localization-popover__trigger{% if context == 'header' %} header-shortlink hover-style--navigation flex center-center{% else %} btn btn--secondary font-body size--small{% endif %}"
+      {% if context == 'header' %}style="gap:4px"{% endif %}
+      aria-label="{{ region_aria_label }}"
+    >
+      {%- if context == 'header' -%}
+        {{ region_trigger_content }}
+      {%- else -%}
+        {{ footer_trigger_content }}
+      {%- endif -%}
+    </summary>
+    <div class="localization-popover__panel" role="group">
+      {% render 'localization-popover-content',
+        form_id_prefix: form_id_prefix,
+        show_language: show_language,
+        show_country: show_country
+      %}
+    </div>
+  </details>
+</localization-popover>
+
+<noscript>
+  {%- if context == 'header' -%}
+    <a role="button" class="header-shortlink flex center-center no-js" href="#localization">
+      {%- if show_country -%}
+        {{ localization.country.iso_code }}&nbsp;·&nbsp;{{ localization.country.currency.iso_code }}&nbsp;{{ localization.country.currency.symbol }}
+      {%- else -%}
+        {{ localization.language.endonym_name | capitalize }}
+      {%- endif -%}
+    </a>
+  {%- endif -%}
+</noscript>

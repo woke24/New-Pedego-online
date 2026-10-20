@@ -1,0 +1,32 @@
+{%- comment -%}
+  Renders the product page "text" block. Used in product-template.liquid.
+
+  Accepts:
+  - block: Product section block object
+  - section: Section object
+{%- endcomment -%}
+
+{%- liquid
+  assign text_classes = 'rte'
+  if block.settings.size_multiplier != blank
+    assign text_classes = text_classes | append: ' ' | append: block.settings.size_multiplier
+  endif
+  if block.settings.sm_size_multiplier != blank
+    assign text_classes = text_classes | append: ' ' | append: block.settings.sm_size_multiplier
+  endif
+  if block.settings.style_subdued
+    assign text_classes = text_classes | append: ' style--subdued'
+  endif
+-%}
+{% assign rte_length = block.settings.text | strip_html | size %}
+{% if block.settings.read_more and rte_length > 250 %}
+  {%- assign block_unique_id = 'read-more-product-text-' | append: block.id | append: '-' | append: section.id -%}
+  {%- render 'read-more-text',
+    content: block.settings.text,
+    classes: text_classes,
+    style_boxed: block.settings.style_boxed,
+    block_id: block_unique_id,
+    attributes: block.shopify_attributes -%}
+{% else %}
+  <div class="{{ text_classes }} {%- if block.settings.style_boxed %} text--boxed{% endif %}">{{ block.settings.text }}</div>
+{% endif %}

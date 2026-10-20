@@ -1,0 +1,125 @@
+{%- liquid
+
+  # ** PURPOSE **
+  # 'media' snippet generates HTML Video element, image or a 3D / AR model viewer.
+
+  # ** PARAMETERS **
+  # media         =>  REQUIRED | image object
+  # aspect_ratio  =>  REQUIRED | string: 'portrait', 'landscape', 'square', 'natural'
+  # lazyload      =>  OPTIONAL | true / false
+  # context       =>  OPTIONAL | string | default: 'product' | 'product' OR 'zoom-gallery'
+  # ** NOTES **
+  # - Lazyload only works with images
+
+  # Notes:
+  # - Images support overlay captions in the main product section and can split alt and caption with a pipe character
+  # - Videos support overlay captions in the zoom gallery and show it there if the alt text is defined in the admin
+
+  assign load_xr_stuff = false
+  assign context = context | default: 'product'
+-%}
+
+{%- if media.media_type == 'image' -%}
+
+  {% liquid
+    # Extract caption from alt text
+    if media.alt contains '|'
+      assign media_alt = media.alt | split: '|' | first | strip
+      assign media_caption = media.alt | split: '|' | last | strip | default: media_alt
+    else
+      assign media_alt = media.alt
+      assign media_caption = ''
+    endif
+  %}
+
+  {%- render 'img',
+    src: media,
+    aspect_ratio: aspect_ratio,
+    lazyload: lazyload,
+    sizing_rule: sizing_rule,
+    background_color: background_color,
+    custom_classes: custom_classes,
+    sizes: sizes,
+    img_caption: media_caption,
+    alt: media_alt
+ -%}
+{%- else -%}
+
+  {%- case media.media_type -%}
+    {%- when 'external_video' -%}
+      {{ 'component-external-video.css' | asset_url | stylesheet_tag }}
+
+      {% liquid
+        # For external videos the alt text is used as caption when an alt text is set in the admin
+        if media.alt == product.title
+          assign media_caption = ""
+        else
+          assign media_caption = media.alt
+        endif
+      %}
+
+      <figure class="media{% if context == 'zoom-gallery' %} zoom-media{% endif %} {{ aspect_ratio }} media--{{ media.media_type }} {{ custom_classes -}}">
+        <external-video>
+          {%- if media.host == 'youtube' -%}
+            {{ media | external_video_url: playlist: media.external_id, disablekb: 1, rel: 0, enablejsapi: 1 | external_video_tag: loading: "lazy", data-type: "youtube", class: 'js-youtube' }}
+          {%- else -%}
+            {{ media | external_video_url: keyboard: 0, title: 0 | external_video_tag: loading: "lazy", data-type: "vimeo", class: 'js-vimeo' }}
+          {%- endif -%}
+        </external-video>
+        {%- if media_caption != blank and context == 'zoom-gallery' -%}
+          <figcaption class="media-caption size--tiny">
+            {{ media_caption }}
+          </figcaption>
+        {%- endif -%}
+      </figure>
+
+    {%- when 'video' -%}
+      {% capture video_content %}
+        {%- render 'video-frame',
+          video_default: media,
+          controls: true,
+          autoplay: true,
+          loop: true,
+          muted: true,
+          sizing_rule: sizing_rule,
+          aspect_ratio: aspect_ratio
+        -%}
+      {% endcapture %}
+      {% if context == 'product' %}
+        {{ video_content }}
+      {% elsif context == 'zoom-gallery' %}
+        <figure class="zoom-media">
+          {{ video_content }}
+          {%- unless media.alt == blank -%}
+            <figcaption class="media-caption size--tiny">
+              {{ media.alt }}
+            </figcaption>
+          {%- endunless -%}
+        </figure>
+      {% endif %}
+
+    {%- when 'model' -%}
+      <div class="model-container {{ custom_classes }}">
+        {%- assign load_xr_stuff = true -%}
+        <product-model class="media {{ aspect_ratio }} media--{{ media.media_type }}" data-media-id="{{ media.id }}" data-loaded="false">
+          {{ media | model_viewer_tag: background-color: background_color, toggleable: true }}
+        </product-model>
+        <button
+          class="btn btn--primary btn--full product__xr-button"
+          type="button"
+          aria-label="{{ 'products.product.xr_button_label' | t }}"
+          data-shopify-xr
+          data-shopify-model3d-id="{{ media.id }}"
+          data-shopify-title="{{ product.title }}"
+          data-shopify-xr-hidden>
+          {% render 'icon-3d-model' %} {{ 'products.product.xr_button' | t }}
+        </button>
+      </div>
+  {%- endcase -%}
+{%- endif -%}
+
+{%- if load_xr_stuff -%}
+  {{ 'component-product-model.css' | asset_url | stylesheet_tag }}
+  <script type="application/json" id="ProductJSON-{{ product.id }}">{{ product.media | where: 'media_type', 'model' | json }}</script>
+  <script type="text/javascript" src="{{ 'component-product-model.js' | asset_url }}" defer></script>
+{%- endif -%}

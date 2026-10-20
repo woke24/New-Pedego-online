@@ -1,0 +1,98 @@
+.attribute-insights {
+  --bar-height: 12px;
+  --line-height: 2px;
+  --marker-size: 12px;
+  --fill-color: var(--color-foreground);
+  --marker-color: var(--color-foreground);
+  --fill-background: var(--color-background-alt);
+  --border-radius: 0;
+  --segment-gap: 8px;
+}
+.attribute-insights .labels {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+.attribute-insights > *:is(.scale, .fill-bar, .segments) {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Display type: slider scale */
+.scale {
+  position: relative;
+  height: var(--marker-size);
+}
+.scale .line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: var(--line-height);
+  background: var(--fill-color);
+}
+.scale .marker {
+  position: absolute;
+  left: calc(var(--insights-value, 50) * 1%);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--marker-size);
+  height: var(--marker-size);
+  border-radius: 50%;
+  background: var(--marker-color);
+  box-shadow: 0 0 0 2px var(--color-background);
+  pointer-events: none;
+}
+.scale.show-splitters::before,
+.scale.show-splitters::after,
+.scale .helper-splitter {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: var(--line-height);
+  height: 100%;
+  background: var(--fill-color);
+}
+.scale.show-splitters::after {
+  right: 0;
+}
+.scale.show-splitters::before {
+  left: 0;
+}
+.scale .helper-splitter {
+  left: calc(var(--helper-splitter-position) - (var(--line-height) / 2));
+}
+
+/* Display type: fill bar */
+.fill-bar {
+  position: relative;
+  height: var(--bar-height);
+  background: var(--fill-background);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+.fill-bar .fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--fill-color);
+  width: calc(var(--insights-value, 50) * 1%);
+  border-radius: var(--border-radius);
+}
+
+/* Display type: segmented */
+.segments {
+  display: flex;
+  gap: var(--segment-gap);
+}
+.segments .segment {
+  flex: 1;
+  background: var(--fill-background);
+  height: var(--bar-height);
+  border-radius: var(--border-radius);
+}
+.segments .segment.active {
+  background: var(--fill-color);
+}

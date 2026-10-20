@@ -1,0 +1,285 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner": {
+      "type": "main-collection-banner",
+      "settings": {
+        "color_scheme": "",
+        "show_breadcrumb": true,
+        "image_layout": "show as_bg",
+        "center_text": false,
+        "md_padding_top": 48,
+        "md_padding_bottom": 120,
+        "padding_top": 40,
+        "padding_bottom": 64
+      }
+    },
+    "divider_q7hyHQ": {
+      "type": "divider",
+      "settings": {
+        "md_padding_top": 0,
+        "md_padding_bottom": 0,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "products": {
+      "type": "main-collection-product-grid",
+      "blocks": {
+        "banner_yV9wj3": {
+          "type": "banner",
+          "settings": {
+            "nth_item": 2,
+            "page_shown": "first",
+            "url": "",
+            "media_type": "video",
+            "title": "Made to endure",
+            "title_style": "body-text",
+            "content_alignment": "vertical-bottom horizontal-left",
+            "text_color": "#ffffff",
+            "overlay_color": "#000000",
+            "overlay_opacity": 30,
+            "md_column_span": 2,
+            "sm_column_span": 1,
+            "column_span": 1
+          }
+        },
+        "banner_cUhfen": {
+          "type": "banner",
+          "settings": {
+            "nth_item": 6,
+            "page_shown": "first",
+            "url": "",
+            "media_type": "video",
+            "title": "The last backpack you'll ever need",
+            "title_style": "body-text",
+            "content_alignment": "vertical-bottom horizontal-left",
+            "text_color": "#ffffff",
+            "overlay_color": "#000000",
+            "overlay_opacity": 30,
+            "md_column_span": 2,
+            "sm_column_span": 1,
+            "column_span": 1
+          }
+        }
+      },
+      "block_order": [
+        "banner_yV9wj3",
+        "banner_cUhfen"
+      ],
+      "settings": {
+        "color_scheme": "",
+        "products_per_page": 16,
+        "pagination_type": "button",
+        "show_count": true,
+        "enable_sorting": true,
+        "enable_filtering": true,
+        "enable_swatches": true,
+        "enable_full_width": false,
+        "md_items_per_row": 4,
+        "sm_grid_gap": -1,
+        "md_padding_top": 24,
+        "md_padding_bottom": 56,
+        "sm_items_per_row": 3,
+        "items_per_row": 1,
+        "grid_gap": -1,
+        "padding_top": 24,
+        "padding_bottom": 32
+      }
+    },
+    "image_with_hotspots_raqFqC": {
+      "type": "image-with-hotspots",
+      "blocks": {
+        "image_P3WXnP": {
+          "type": "image",
+          "settings": {
+            "md_padding_top": 0,
+            "md_padding_bottom": 0,
+            "padding_top": 0,
+            "padding_bottom": 0
+          }
+        },
+        "hotspot_E8yUyx": {
+          "type": "hotspot",
+          "settings": {
+            "title": "Floating top",
+            "title_position": "right",
+            "vertical_position": 19,
+            "horizontal_position": 26,
+            "text": "<h2>Floating top</h2><p>All Jääkäri backpacks have a floating top structure. It means that you can adjust the height of the top according to the items you carry. Having the top snug and tight with different amounts of load.</p><p>You can also fit different items between the floating top and the main compartment. Things like hiking shoes or foam rollers.<br/><br/>The top also has a zipper pocket where you can store items for easy access.</p>"
+          }
+        },
+        "hotspot_RbRF3c": {
+          "type": "hotspot",
+          "settings": {
+            "title": "Pals System",
+            "title_position": "left",
+            "vertical_position": 74,
+            "horizontal_position": 41,
+            "text": "<h3>Pals system</h3><p>This is the on demand info shown when the Hotspot is clicked.</p>"
+          }
+        },
+        "hotspot_799n6C": {
+          "type": "hotspot",
+          "settings": {
+            "title": "Durable materials",
+            "title_position": "left",
+            "vertical_position": 50,
+            "horizontal_position": 90,
+            "text": "<h3>Durable materials</h3><p>The majority of materials we use for our commercial production are the same which we use in equipment for the Finnish Defence Forces and other defence and security clients. Our most commonly used fabric in load carrying equipment is extremely wear resistant 1000D Cordura, as per FDF specs, with polyurethane coating on the inside. The webbing and edge tape we use are, again as per FDF specs, strong polyester webbing in various widths and thicknesses for different applications.<br/><br/>Our green and M05 camouflage materials and accessories are by default compliant with strict FDF specs for NIR reflection levels, as should be since these same materials are used in official military equipment.<br/></p>"
+          }
+        },
+        "subtitle_ngPbyQ": {
+          "type": "subtitle",
+          "settings": {
+            "subtitle": "Packed with",
+            "heading_tag": "h3",
+            "sm_size_multiplier": "sm-size--small",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--default",
+            "margin_top": 0
+          }
+        },
+        "title_i343aU": {
+          "type": "title",
+          "settings": {
+            "title": "Genius features",
+            "heading_tag": "h2",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--default",
+            "margin_top": 0
+          }
+        },
+        "text_Wdjk8n": {
+          "type": "text",
+          "settings": {
+            "text": "<p>The Jääkäri lineup offers a great set of default features. All Jääkäri backpacks include a Floating top, durable materials and the versatile PALS systems that makes adding new pockets and modules easy.</p>",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 12,
+            "size_multiplier": "size--default",
+            "margin_top": 0
+          }
+        }
+      },
+      "block_order": [
+        "image_P3WXnP",
+        "hotspot_E8yUyx",
+        "hotspot_RbRF3c",
+        "hotspot_799n6C",
+        "subtitle_ngPbyQ",
+        "title_i343aU",
+        "text_Wdjk8n"
+      ],
+      "settings": {
+        "color_scheme": "",
+        "section_bg": "",
+        "numbered_hotspots": false,
+        "enable_full_width": false,
+        "media_position": "media_last",
+        "content_width": "col-sm-max-4",
+        "desktop_alignment": "sm-text-align-left",
+        "sm_full_width_buttons": false,
+        "md_padding_top": 0,
+        "md_padding_bottom": 0,
+        "mobile_alignment": "text-align-left",
+        "full_width_buttons": false,
+        "sm_down_hide_hotspot_titles": false,
+        "padding_top": 0,
+        "padding_bottom": 24
+      }
+    },
+    "image_with_text_zhpCT3": {
+      "type": "image-with-text",
+      "blocks": {
+        "image_iDwJ4Q": {
+          "type": "image",
+          "settings": {
+            "media_aspect_ratio": "natural",
+            "media_link": ""
+          }
+        },
+        "subtitle_tTbVPY": {
+          "type": "subtitle",
+          "settings": {
+            "subtitle": "Backpack",
+            "heading_tag": "h3",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--default",
+            "margin_top": 0
+          }
+        },
+        "title_g3FYWB": {
+          "type": "title",
+          "settings": {
+            "title": "Customized to your needs",
+            "heading_tag": "h2",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--default",
+            "margin_top": 0
+          }
+        },
+        "text_jXkDYn": {
+          "type": "text",
+          "settings": {
+            "text": "<p>PALS webbing on the hip belt, sides, lid and bottom of the pack allow you to attach additional pouches and gear. This system offers numerous options for configuring the pack to suit your specific needs. Not only for pouches though, the PALS webbing can also be used to attach utility straps, shock cord, carabiners etc.</p>",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 12,
+            "size_multiplier": "size--default",
+            "margin_top": 0
+          }
+        },
+        "button_tFVAhw": {
+          "type": "button",
+          "settings": {
+            "button_label": "Backpack accessories",
+            "button_link": "shopify://collections/all",
+            "button_style": "",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 24,
+            "size_multiplier": "size--default",
+            "margin_top": 24
+          }
+        }
+      },
+      "block_order": [
+        "image_iDwJ4Q",
+        "subtitle_tTbVPY",
+        "title_g3FYWB",
+        "text_jXkDYn",
+        "button_tFVAhw"
+      ],
+      "settings": {
+        "color_scheme": "",
+        "enable_full_width": false,
+        "media_position": "media_first",
+        "content_width": "col-sm-max-4",
+        "desktop_alignment": "sm-text-align-left",
+        "sm_full_width_buttons": false,
+        "md_padding_top": 0,
+        "md_padding_bottom": 40,
+        "mobile_alignment": "text-align-left",
+        "full_width_buttons": false,
+        "padding_top": 0,
+        "padding_bottom": 24
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "divider_q7hyHQ",
+    "products",
+    "image_with_hotspots_raqFqC",
+    "image_with_text_zhpCT3"
+  ]
+}

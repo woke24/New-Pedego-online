@@ -1,0 +1,91 @@
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* Load more and infinite scroll: shown items text and progress bar */
+.pagination--load-more {
+  flex-direction: column;
+  gap: 24px;
+  text-align: center;
+}
+.pagination-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.pagination-progress__bar {
+  width: 100%;
+  max-width: 300px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-foreground-alt);
+  overflow: hidden;
+}
+.pagination-progress__bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-foreground);
+}
+
+.pagination-parts {
+  display: flex;
+  padding: 0 0.3rem;
+  background-color: var(--color-background-alt);
+  border-radius: var(--button-border-radius);
+}
+.pagination-item {
+  width: 4.4rem;
+  height: 4.4rem;
+  display: grid;
+  place-content: center;
+  line-height: 1;
+  border-radius: var(--button-border-radius);
+  transition: all 0.2s ease-in-out;
+}
+.arrow-link {
+  background-color: var(--color-background-alt);
+  border-radius: var(--button-border-radius);
+}
+.pagination .current-page {
+  background-color: var(--color-background);
+  box-shadow: 0 0 0 2px var(--color-button-background);
+}
+.arrow-link.disabled {
+  pointer-events: none;
+  opacity: 0.35;
+}
+.dot-notation {
+  width: auto;
+  padding: 0 0.3rem;
+}
+.pagination-item:not(.dot-notation,.current-page):hover {
+  color: var(--color-button-foreground);
+  background-color: var(--color-button-background);
+  box-shadow: 0 0 0 0.3rem var(--color-button-background), 0 0.2rem 0.8rem 0.3rem rgba(0,0,0,.15);
+}
+
+@media only screen and (max-width:767px) {
+  .wide-parts {
+    display: grid;
+    grid-template-areas:
+      "a a"
+      "b c";
+  }
+  .wide-parts .pagination-parts {
+    grid-area: a;
+  }
+  .wide-parts .arrow-link--prev {
+    grid-area: b;
+    width: 100%;
+  }
+  .wide-parts .arrow-link--next {
+    grid-area: c;
+    width: 100%;
+  }
+}

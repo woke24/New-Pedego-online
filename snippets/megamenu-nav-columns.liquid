@@ -1,0 +1,110 @@
+{% comment %}
+  Renders megamenu-columns nav: one splitted-nav-part per column with image and links.
+
+  accepts:
+    - block: {Object} megamenu-columns block
+    - links: {Array} parent menu item links
+    - menu_columns: {Number}
+    - sizes: {String} sizes attribute for column images
+    - context: {String} dropdown | drawer
+    - section: {Object} header section (drawer item render)
+{% endcomment %}
+{%- liquid
+  assign column_split_count = 0
+  for link in links
+    if link.title contains '|||'
+      assign column_split_count = column_split_count | plus: 1
+    endif
+  endfor
+
+  assign use_manual_column_splits = false
+  if column_split_count > 0
+    assign use_manual_column_splits = true
+  endif
+
+  assign column_aspect_ratio = block.settings.image_aspect_ratio | default: 'landscape_alt'
+  assign column_text_position = block.settings.text_position | default: 'vertical-bottom horizontal-center'
+  assign column_title_style = block.settings.title_style | default: 'body-text'
+-%}
+{%- for col in (1..6) -%}
+  {%- if col > menu_columns -%}
+    {%- continue -%}
+  {%- endif -%}
+
+  {%- liquid
+    case col
+      when 1
+        assign column_image = block.settings.column_1_image
+        assign column_title = block.settings.column_1_title
+        assign column_link = block.settings.column_1_link
+      when 2
+        assign column_image = block.settings.column_2_image
+        assign column_title = block.settings.column_2_title
+        assign column_link = block.settings.column_2_link
+      when 3
+        assign column_image = block.settings.column_3_image
+        assign column_title = block.settings.column_3_title
+        assign column_link = block.settings.column_3_link
+      when 4
+        assign column_image = block.settings.column_4_image
+        assign column_title = block.settings.column_4_title
+        assign column_link = block.settings.column_4_link
+      when 5
+        assign column_image = block.settings.column_5_image
+        assign column_title = block.settings.column_5_title
+        assign column_link = block.settings.column_5_link
+      when 6
+        assign column_image = block.settings.column_6_image
+        assign column_title = block.settings.column_6_title
+        assign column_link = block.settings.column_6_link
+    endcase
+  -%}
+
+  <div class="splitted-nav-part">
+    {%- if column_image != blank -%}
+      {% render 'megamenu-banner-card',
+        image: column_image,
+        title: column_title,
+        link: column_link,
+        aspect_ratio: column_aspect_ratio,
+        text_position: column_text_position,
+        title_style: column_title_style,
+        sizes: sizes
+      %}
+    {%- endif -%}
+
+    {%- if context == 'drawer' -%}
+      {%- for sub_menu_item in links -%}
+        {%- if use_manual_column_splits -%}
+          {%- assign current_link_index = forloop.index0 -%}
+          {%- assign link_column = 0 -%}
+          {%- for link in links -%}
+            {%- if link.title contains '|||' -%}
+              {%- assign link_column = link_column | plus: 1 -%}
+            {%- endif -%}
+            {%- if forloop.index0 == current_link_index -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- assign link_column = forloop.index0 | times: menu_columns | divided_by: links.size -%}
+        {%- endif -%}
+        {%- assign target_column = col | minus: 1 -%}
+        {%- if link_column == target_column -%}
+          {% render 'drawer-menu-items',
+            menu_item: sub_menu_item,
+            current_level: 2,
+            context: context,
+            section: section
+          %}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- else -%}
+      {% render 'megamenu-nav-links',
+        links: links,
+        column_index: col,
+        menu_columns: menu_columns  
+      %}
+    {%- endif -%}
+  </div>
+{%- endfor -%}

@@ -1,0 +1,766 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "blocks": {
+        "big-hero-image": {
+          "type": "image",
+          "settings": {
+            "media_type": "video"
+          }
+        },
+        "subtitle_qqWEtm": {
+          "type": "subtitle",
+          "settings": {
+            "subtitle": "Savotta Jääkäri",
+            "heading_tag": "h3",
+            "sm_size_multiplier": "sm-size--large",
+            "sm_margin_top": 40,
+            "size_multiplier": "size--tiny",
+            "margin_top": 24
+          }
+        },
+        "big-hero-title": {
+          "type": "title",
+          "settings": {
+            "title": "The last backpack\nyou'll ever need!!",
+            "heading_tag": "h1",
+            "sm_size_multiplier": "sm-size--huge",
+            "sm_margin_top": 8,
+            "size_multiplier": "size--small",
+            "margin_top": 8
+          }
+        },
+        "big-hero-buttons": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "Browse backpacks",
+            "button_link_1": "shopify://collections/all",
+            "button_style_1": "",
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_2": "",
+            "button_label_3": "",
+            "button_link_3": "",
+            "button_style_3": "",
+            "sm_full_width_buttons": false,
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 24,
+            "full_width_buttons": false,
+            "size_multiplier": "size--small",
+            "margin_top": 12
+          }
+        }
+      },
+      "block_order": [
+        "big-hero-image",
+        "subtitle_qqWEtm",
+        "big-hero-title",
+        "big-hero-buttons"
+      ],
+      "settings": {
+        "color_scheme": "",
+        "overlay_opacity": 30,
+        "media_link": "",
+        "enable_full_width": true,
+        "section_height_desktop": "by_pixels",
+        "section_pixel_height_desktop": 860,
+        "content_width": "col-sm-max-8",
+        "content_align_desktop": "sm-vertical-center sm-horizontal-left",
+        "desktop_alignment": "sm-text-align-left",
+        "md_padding_top": 0,
+        "md_padding_bottom": 0,
+        "section_height": "by_pixels",
+        "section_pixel_height": 510,
+        "content_align_mobile": "vertical-center horizontal-center",
+        "mobile_alignment": "text-align-center",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "hero-divider": {
+      "type": "divider",
+      "settings": {
+        "md_padding_top": 0,
+        "md_padding_bottom": 0,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "collection_list_bFbYLi": {
+      "type": "collection-list",
+      "blocks": {
+        "collection_idcnRW": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "card_bg": "bg-solid"
+          }
+        },
+        "collection_xpFx8U": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "card_bg": "bg-solid"
+          }
+        },
+        "collection_j4KwP4": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "card_bg": "bg-solid"
+          }
+        },
+        "collection_JP9kze": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "card_bg": "bg-solid"
+          }
+        }
+      },
+      "block_order": [
+        "collection_idcnRW",
+        "collection_xpFx8U",
+        "collection_j4KwP4",
+        "collection_JP9kze"
+      ],
+      "name": "t:sections.collection-list.name",
+      "settings": {
+        "color_scheme": "",
+        "enable_full_width": false,
+        "layout_desktop": "grid",
+        "collections_per_row_desktop": 4,
+        "sm_custom_gap": -1,
+        "md_padding_top": 40,
+        "md_padding_bottom": 40,
+        "collections_per_row_tablet": 4,
+        "layout_mobile": "slide peek",
+        "collections_per_row_mobile": 1,
+        "custom_gap": -1,
+        "padding_top": 40,
+        "padding_bottom": 0,
+        "autoplay": false,
+        "autoplay_speed": 5,
+        "sliding_behavior": "single"
+      }
+    },
+    "rich_text_UiHKHN": {
+      "type": "rich-text",
+      "blocks": {
+        "text_kKW6Eg": {
+          "type": "text",
+          "settings": {
+            "text": "<p>High quality functional equipment for demanding use in extreme environments. From a prestige Finnish brand <a href=\"https://www.savotta.fi/\" target=\"_blank\" title=\"https://www.savotta.fi/\"><em><strong>Savotta</strong></em></a><em><strong>.</strong></em></p>",
+            "sm_size_multiplier": "sm-size--huge",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--large",
+            "margin_top": 0
+          }
+        },
+        "buttons_iD3BDj": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "Theme features",
+            "button_link_1": "shopify://collections/all",
+            "button_style_1": "",
+            "button_label_2": "About Us",
+            "button_link_2": "shopify://collections/all",
+            "button_style_2": "secondary",
+            "button_label_3": "",
+            "button_link_3": "",
+            "button_style_3": "",
+            "sm_full_width_buttons": true,
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 24,
+            "full_width_buttons": true,
+            "size_multiplier": "size--small",
+            "margin_top": 0
+          }
+        }
+      },
+      "block_order": [
+        "text_kKW6Eg",
+        "buttons_iD3BDj"
+      ],
+      "settings": {
+        "color_scheme": "default",
+        "text_gradient_color": "",
+        "content_width": 100,
+        "desktop_content_alignment": "center",
+        "desktop_alignment": "sm-text-align-justify",
+        "md_padding_top": 40,
+        "md_padding_bottom": 40,
+        "mobile_alignment": "text-align-left",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "featured_collection": {
+      "type": "featured-collection-or-products",
+      "blocks": {
+        "featured-collection-1-header": {
+          "type": "section_header",
+          "settings": {
+            "subtitle": "The Jääkäri lineup",
+            "subtitle_tag": "h6",
+            "title": "",
+            "title_tag": "h2",
+            "text": "",
+            "text_alignment": "text-align-left",
+            "sm_size_multiplier": "sm-size--tiny",
+            "size_multiplier": "size--small"
+          }
+        }
+      },
+      "block_order": [
+        "featured-collection-1-header"
+      ],
+      "settings": {
+        "color_scheme": "",
+        "collection": "",
+        "product_list": [],
+        "product_limit": 12,
+        "view_all": true,
+        "enable_full_width": false,
+        "layout_desktop": "slide",
+        "products_per_row_desktop": 4,
+        "sm_custom_gap": -1,
+        "md_padding_top": 64,
+        "md_padding_bottom": 0,
+        "products_per_row_tablet": 4,
+        "layout_mobile": "slide peek",
+        "products_per_row_mobile": 1,
+        "custom_gap": -1,
+        "padding_top": 40,
+        "padding_bottom": 0,
+        "autoplay": true,
+        "autoplay_speed": 4,
+        "sliding_behavior": "all"
+      }
+    },
+    "image_with_hotspots_gVaV4m": {
+      "type": "image-with-hotspots",
+      "blocks": {
+        "image_nUcQq9": {
+          "type": "image",
+          "settings": {
+            "md_padding_top": 40,
+            "md_padding_bottom": 40,
+            "padding_top": 24,
+            "padding_bottom": 0
+          }
+        },
+        "hotspot_q43qYr": {
+          "type": "hotspot",
+          "settings": {
+            "title": "Floating top",
+            "title_position": "right",
+            "vertical_position": 13,
+            "horizontal_position": 66,
+            "text": "<h2>Floating top</h2><p>All Jääkäri backpacks have a floating top structure. It means that you can adjust the height of the top according to the items you carry. Having the top snug and tight with different amounts of load.</p><p>You can also fit different items between the floating top and the main compartment. Things like hiking shoes or foam rollers.<br/><br/>The top also has a zipper pocket where you can store items for easy access.</p>"
+          }
+        },
+        "hotspot_JVtNFJ": {
+          "type": "hotspot",
+          "settings": {
+            "title": "Pals system",
+            "title_position": "left",
+            "vertical_position": 50,
+            "horizontal_position": 31,
+            "text": "<h2>The PALS system</h2><p>PALS webbing on the hip belt, sides, lid and bottom of the pack allow you to attach additional pouches and gear. This system offers numerous options for configuring the pack to suit your specific needs. Not only for pouches though, the PALS webbing can also be used to attach utility straps, shock cord, carabiners etc.</p>"
+          }
+        },
+        "hotspot_DdpHhy": {
+          "type": "hotspot",
+          "settings": {
+            "title": "Durable materials",
+            "title_position": "right",
+            "vertical_position": 76,
+            "horizontal_position": 62,
+            "text": "<h2>Durable materials</h2><p>The majority of materials we use for our commercial production are the same which we use in equipment for the Finnish Defence Forces and other defence and security clients. Our most commonly used fabric in load carrying equipment is extremely wear resistant 1000D Cordura, as per FDF specs, with polyurethane coating on the inside. The webbing and edge tape we use are, again as per FDF specs, strong polyester webbing in various widths and thicknesses for different applications.<br/><br/>Our green and M05 camouflage materials and accessories are by default compliant with strict FDF specs for NIR reflection levels, as should be since these same materials are used in official military equipment.</p>"
+          }
+        },
+        "subtitle_bkQrpR": {
+          "type": "subtitle",
+          "settings": {
+            "subtitle": "Filled with",
+            "heading_tag": "h6",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--default",
+            "margin_top": 0
+          }
+        },
+        "title_HYWWN8": {
+          "type": "title",
+          "settings": {
+            "title": "Genius Features",
+            "heading_tag": "h2",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--default",
+            "margin_top": 0
+          }
+        },
+        "text_UyXgaJ": {
+          "type": "text",
+          "settings": {
+            "text": "<p>The Jääkäri lineup offers a great set of default features. All Jääkäri backpacks include a Floating top, durable materials and the versatile PALS systems that makes adding new pockets and modules easy.</p>",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 12,
+            "size_multiplier": "size--default",
+            "margin_top": 0
+          }
+        },
+        "button_MCw64A": {
+          "type": "button",
+          "settings": {
+            "button_label": "Browse backpacks",
+            "button_link": "shopify://collections/all",
+            "button_style": "",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 24,
+            "size_multiplier": "size--default",
+            "margin_top": 24
+          }
+        },
+        "button_M64WDG": {
+          "type": "button",
+          "settings": {
+            "button_label": "Bestseller – Jääkäri M",
+            "button_link": "shopify://collections/all",
+            "button_style": "secondary",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 12,
+            "size_multiplier": "size--default",
+            "margin_top": 12
+          }
+        }
+      },
+      "block_order": [
+        "image_nUcQq9",
+        "hotspot_q43qYr",
+        "hotspot_JVtNFJ",
+        "hotspot_DdpHhy",
+        "subtitle_bkQrpR",
+        "title_HYWWN8",
+        "text_UyXgaJ",
+        "button_MCw64A",
+        "button_M64WDG"
+      ],
+      "settings": {
+        "color_scheme": "color-main",
+        "section_bg": "linear-gradient(0deg, rgba(68, 68, 68, 1), rgba(52, 52, 52, 1) 100%)",
+        "numbered_hotspots": false,
+        "enable_full_width": false,
+        "media_position": "media_last",
+        "content_width": "col-sm-max-3",
+        "desktop_alignment": "sm-text-align-left",
+        "sm_full_width_buttons": true,
+        "md_padding_top": 24,
+        "md_padding_bottom": 0,
+        "mobile_alignment": "text-align-left",
+        "full_width_buttons": true,
+        "sm_down_hide_hotspot_titles": true,
+        "padding_top": 24,
+        "padding_bottom": 0
+      }
+    },
+    "sliding_text_aTPGb6": {
+      "type": "sliding-text",
+      "blocks": {
+        "text_gCCBJA": {
+          "type": "text",
+          "settings": {
+            "text": "Modern",
+            "link": ""
+          }
+        },
+        "text_QExdPY": {
+          "type": "text",
+          "settings": {
+            "text": "☆",
+            "link": ""
+          }
+        },
+        "text_VwLbPt": {
+          "type": "text",
+          "settings": {
+            "text": "Elegant",
+            "link": ""
+          }
+        },
+        "text_96tLYj": {
+          "type": "text",
+          "settings": {
+            "text": "☆",
+            "link": ""
+          }
+        },
+        "text_Bb8AhQ": {
+          "type": "text",
+          "settings": {
+            "text": "Blazing Fast",
+            "link": ""
+          }
+        },
+        "text_w9eL7F": {
+          "type": "text",
+          "settings": {
+            "text": "☆",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "text_gCCBJA",
+        "text_QExdPY",
+        "text_VwLbPt",
+        "text_96tLYj",
+        "text_Bb8AhQ",
+        "text_w9eL7F"
+      ],
+      "settings": {
+        "color_scheme": "",
+        "text_gradient_color": "linear-gradient(54deg, rgba(255, 177, 0, 1), rgba(101, 110, 48, 1) 76%, rgba(64, 73, 45, 1) 100%)",
+        "content_order": "horizontal",
+        "font": "heading",
+        "direction": "normal",
+        "speed": 10,
+        "pause_on_hover": false,
+        "sm_size_multiplier": "sm-size--outrageous",
+        "sm_item_gap": 80,
+        "sm_padding": 72,
+        "md_padding_top": 64,
+        "md_padding_bottom": 64,
+        "size_multiplier": "size--large",
+        "item_gap": 24,
+        "padding": 24,
+        "padding_top": 32,
+        "padding_bottom": 32
+      }
+    },
+    "featured_look_HMzRDg": {
+      "type": "featured-look",
+      "blocks": {
+        "section_header_Kx4A9B": {
+          "type": "section_header",
+          "settings": {
+            "subtitle": "",
+            "subtitle_tag": "h3",
+            "title": "Go EXTREME!",
+            "title_tag": "h2",
+            "text": "<p>If you want to carry all your and all your neighbour's personal belongings with you at any time, anywhere, here is a combo for you. Our biggest backpack – Jääkäri XL – with two 12 litres side pouches. Total capacity of 94 liters!</p>",
+            "text_alignment": "text-align-left",
+            "sm_size_multiplier": "sm-size--default",
+            "size_multiplier": "size--default"
+          }
+        },
+        "product_B3VkVE": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "vertical_position": 25,
+            "horizontal_position": 36
+          }
+        },
+        "product_Ggex4x": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "vertical_position": 52,
+            "horizontal_position": 11
+          }
+        },
+        "product_bJCxEt": {
+          "type": "product",
+          "settings": {
+            "product": "",
+            "vertical_position": 92,
+            "horizontal_position": 50
+          }
+        }
+      },
+      "block_order": [
+        "section_header_Kx4A9B",
+        "product_B3VkVE",
+        "product_Ggex4x",
+        "product_bJCxEt"
+      ],
+      "settings": {
+        "color_scheme": "color-main",
+        "enable_full_width": false,
+        "media_position": "media_first",
+        "md_padding_top": 0,
+        "md_padding_bottom": 160,
+        "padding_top": 0,
+        "padding_bottom": 40
+      }
+    },
+    "divider_a8k9zY": {
+      "type": "divider",
+      "settings": {
+        "md_padding_top": 80,
+        "md_padding_bottom": 0,
+        "padding_top": 24,
+        "padding_bottom": 0
+      }
+    },
+    "hero_countdown_WNDLTi": {
+      "type": "hero-countdown",
+      "blocks": {
+        "title_dG7XkW": {
+          "type": "title",
+          "settings": {
+            "title": "Limited time offer!\nUp to 50% off from selected products.",
+            "heading_tag": "h2",
+            "sm_size_multiplier": "sm-size--huge",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--default",
+            "margin_top": 0
+          }
+        },
+        "timer_NpU8JR": {
+          "type": "timer",
+          "settings": {
+            "the_date": "2026-12-30 12:00",
+            "time_units": "units-below",
+            "units_spacing": "units-spacing-medium",
+            "text_gradient_color": "linear-gradient(250deg, rgba(216, 10, 10, 1), rgba(255, 143, 0, 1) 100%)",
+            "sm_size_multiplier": "sm-size--outrageous",
+            "sm_margin_top": 24,
+            "size_multiplier": "size--default",
+            "margin_top": 12
+          }
+        },
+        "post_timer_message_ateKHe": {
+          "type": "post_timer_message",
+          "settings": {
+            "text": "<h1>The time is up!</h1><p>Tell your customer what happens now, since the timer has run out.</p>",
+            "button_label": "Button label",
+            "button_link": "",
+            "button_style": "",
+            "text_sm_size_multiplier": "sm-size--default",
+            "button_sm_size_multiplier": "sm-size--default",
+            "text_size_multiplier": "size--default",
+            "button_size_multiplier": "size--default"
+          }
+        }
+      },
+      "block_order": [
+        "title_dG7XkW",
+        "timer_NpU8JR",
+        "post_timer_message_ateKHe"
+      ],
+      "settings": {
+        "color_scheme": "alternative-1",
+        "overlay_opacity": 0,
+        "enable_full_width": true,
+        "section_height_desktop": "auto",
+        "section_pixel_height_desktop": 600,
+        "desktop_alignment": "sm-text-align-center",
+        "content_align_desktop": "sm-vertical-center sm-horizontal-center",
+        "md_padding_top": 0,
+        "md_padding_bottom": 0,
+        "section_height": "auto",
+        "section_pixel_height": 360,
+        "mobile_alignment": "text-align-center",
+        "content_align_mobile": "vertical-center horizontal-center",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "featured_collection_or_products_jmdJR7": {
+      "type": "featured-collection-or-products",
+      "settings": {
+        "color_scheme": "alternative-1",
+        "collection": "",
+        "product_list": [],
+        "product_limit": 4,
+        "view_all": false,
+        "enable_full_width": false,
+        "layout_desktop": "grid",
+        "products_per_row_desktop": 4,
+        "sm_custom_gap": -1,
+        "md_padding_top": 0,
+        "md_padding_bottom": 72,
+        "products_per_row_tablet": 4,
+        "layout_mobile": "slide peek",
+        "products_per_row_mobile": 1,
+        "custom_gap": -1,
+        "padding_top": 0,
+        "padding_bottom": 40,
+        "autoplay": false,
+        "autoplay_speed": 5,
+        "sliding_behavior": "single"
+      }
+    },
+    "divider_QeanHe": {
+      "type": "divider",
+      "settings": {
+        "md_padding_top": 0,
+        "md_padding_bottom": 0,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "rich_text_CHfjqt": {
+      "type": "rich-text",
+      "blocks": {
+        "subtitle_hbT6tQ": {
+          "type": "subtitle",
+          "settings": {
+            "subtitle": "Keikka",
+            "heading_tag": "h3",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--small",
+            "margin_top": 0
+          }
+        },
+        "title_6zXGmk": {
+          "type": "title",
+          "settings": {
+            "title": "Duffel bags",
+            "heading_tag": "h2",
+            "sm_size_multiplier": "sm-size--gigantic",
+            "sm_margin_top": 0,
+            "size_multiplier": "size--large",
+            "margin_top": 0
+          }
+        },
+        "text_xEjXg3": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Need a heavy duty duffel bag? Our 1000D Cordura duffel bags offer multiple carrying options and are built for real use. Most of our gear is made to meet Finnish military specs, and our duffel bags are no exception. For easier carry, turn your Keikka duffel bag into a backpack with the Keikka backpack harness accessory.</p>",
+            "sm_size_multiplier": "sm-size--default",
+            "sm_margin_top": 16,
+            "size_multiplier": "size--default",
+            "margin_top": 12
+          }
+        }
+      },
+      "block_order": [
+        "subtitle_hbT6tQ",
+        "title_6zXGmk",
+        "text_xEjXg3"
+      ],
+      "settings": {
+        "color_scheme": "color-main",
+        "text_gradient_color": "",
+        "content_width": 65,
+        "desktop_content_alignment": "left",
+        "desktop_alignment": "sm-text-align-left",
+        "md_padding_top": 160,
+        "md_padding_bottom": 40,
+        "mobile_alignment": "text-align-left",
+        "padding_top": 72,
+        "padding_bottom": 24
+      }
+    },
+    "hero_fURcG4": {
+      "type": "hero",
+      "blocks": {
+        "image_aTUhLD": {
+          "type": "image",
+          "settings": {
+            "media_type": "video"
+          }
+        }
+      },
+      "block_order": [
+        "image_aTUhLD"
+      ],
+      "settings": {
+        "color_scheme": "color-main",
+        "overlay_opacity": 0,
+        "media_link": "",
+        "enable_full_width": false,
+        "section_height_desktop": "by_pixels",
+        "section_pixel_height_desktop": 600,
+        "content_width": "col-sm-max-8",
+        "content_align_desktop": "sm-vertical-bottom sm-horizontal-left",
+        "desktop_alignment": "sm-text-align-left",
+        "md_padding_top": 0,
+        "md_padding_bottom": 24,
+        "section_height": "by_pixels",
+        "section_pixel_height": 280,
+        "content_align_mobile": "vertical-center horizontal-center",
+        "mobile_alignment": "text-align-left",
+        "padding_top": 0,
+        "padding_bottom": 24
+      }
+    },
+    "featured_collection_or_products_9YgGnC": {
+      "type": "featured-collection-or-products",
+      "blocks": {
+        "section_header_BUdarj": {
+          "type": "section_header",
+          "disabled": true,
+          "settings": {
+            "subtitle": "Subheading",
+            "subtitle_tag": "h3",
+            "title": "Featured collection",
+            "title_tag": "h2",
+            "text": "",
+            "text_alignment": "text-align-center",
+            "sm_size_multiplier": "sm-size--default",
+            "size_multiplier": "size--default"
+          }
+        }
+      },
+      "block_order": [
+        "section_header_BUdarj"
+      ],
+      "settings": {
+        "color_scheme": "color-main",
+        "collection": "",
+        "product_list": [],
+        "product_limit": 8,
+        "view_all": true,
+        "enable_full_width": false,
+        "layout_desktop": "grid",
+        "products_per_row_desktop": 4,
+        "sm_custom_gap": -1,
+        "md_padding_top": 0,
+        "md_padding_bottom": 40,
+        "products_per_row_tablet": 4,
+        "layout_mobile": "grid",
+        "products_per_row_mobile": 2,
+        "custom_gap": 8,
+        "padding_top": 0,
+        "padding_bottom": 40,
+        "autoplay": false,
+        "autoplay_speed": 5,
+        "sliding_behavior": "single"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "hero-divider",
+    "collection_list_bFbYLi",
+    "rich_text_UiHKHN",
+    "featured_collection",
+    "image_with_hotspots_gVaV4m",
+    "sliding_text_aTPGb6",
+    "featured_look_HMzRDg",
+    "divider_a8k9zY",
+    "hero_countdown_WNDLTi",
+    "featured_collection_or_products_jmdJR7",
+    "divider_QeanHe",
+    "rich_text_CHfjqt",
+    "hero_fURcG4",
+    "featured_collection_or_products_9YgGnC"
+  ]
+}

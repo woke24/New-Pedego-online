@@ -1,0 +1,89 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:section_groups.footer",
+  "type": "footer",
+  "sections": {
+    "footer-divider": {
+      "type": "divider",
+      "settings": {
+        "md_padding_top": 0,
+        "md_padding_bottom": 0,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "footer-0": {
+          "type": "link_list",
+          "settings": {
+            "title": "Quick links",
+            "menu": "footer",
+            "column_width": "col-md-3"
+          }
+        },
+        "footer-1": {
+          "type": "text",
+          "settings": {
+            "title": "About",
+            "text": "<p>Tell a bit about your brand and the products you are selling in this Online Store.</p>",
+            "column_width": "col-md-3"
+          }
+        },
+        "text_xjX69g": {
+          "type": "text",
+          "settings": {
+            "title": "Theme features",
+            "text": "<p>Taiga is packed with the latest and the greatest features for a successful online business.</p>",
+            "column_width": "col-md-3"
+          }
+        },
+        "newsletter_WzbBDe": {
+          "type": "newsletter",
+          "settings": {
+            "title": "Signup",
+            "richtext": "<p>Subscribe our newsletter to get the latest updates on our products.</p>",
+            "column_width": "col-md-3"
+          }
+        }
+      },
+      "block_order": [
+        "footer-0",
+        "footer-1",
+        "text_xjX69g",
+        "newsletter_WzbBDe"
+      ],
+      "settings": {
+        "color_scheme": "alternative-2",
+        "show_top_border": false,
+        "show_bottom_border": true,
+        "show_back_to_top": true,
+        "payment_enable": true,
+        "show_copyright": false,
+        "copyright_text": "",
+        "show_social": true,
+        "enable_localization_selector": true,
+        "enable_follow_on_shop": true,
+        "sm_size_multiplier": "sm-size--default",
+        "md_padding_top": 64,
+        "md_padding_bottom": 80,
+        "size_multiplier": "size--default",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "footer-divider",
+    "footer"
+  ]
+}

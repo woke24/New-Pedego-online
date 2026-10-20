@@ -1,0 +1,131 @@
+{{ 'component-zoom-gallery.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  # ** PURPOSE **
+  # Used to create a zoom gallery that can be used with product media or with gallery section. Uses product.media as medias when used with 'product' context. Uses section blocks as medias when used with 'gallery-section' context
+
+  # ** PARAMETERS **
+  # id                =>  REQUIRED | string | unique ID, can be section ID
+  # context           =>  OPTIONAL | string | default: 'product' | 'product' OR 'gallery-section'
+  # medias            =>  REQUIRED | array | product.media OR section.blocks | depending on the context
+  # filtered_media_ids => OPTIONAL | string | comma-token allowlist (same as product gallery); empty = show all
+  # filtered_media_count => OPTIONAL | number | visible count when filtering; defaults to medias.size
+  # zoom_type_mobile  =>  OPTIONAL | string | default: 'slider' | 'slider' OR 'column'
+  # zoom_type_desktop =>  OPTIONAL | string | default: 'slider' | 'slider','column'
+
+  assign context = context | default: 'product'
+
+  if zoom_type_mobile != 'slider'
+    assign zoom_type_mobile = 'column'
+  endif
+
+  if zoom_type_desktop != 'slider'
+    assign zoom_type_desktop = 'column'
+  endif
+
+  assign filtered_media_ids = filtered_media_ids | default: ''
+  assign filtered_media_count = filtered_media_count | default: medias.size
+  assign attached_to_variant = product.images | where: 'attached_to_variant?', true
+-%}
+
+<div id="modal--zoom-gallery-{{ id }}" class="modal modal--fullscreen zoom-gallery type-{{ zoom_type_mobile }} sm-type-{{ zoom_type_desktop }} color-{{ settings.color_scheme_modals }}" data-modal data-parent>
+  <a href="#" class="btn btn--primary btn--round modal-close pos--absolute" data-modal-close data-close aria-label="{{ 'accessibility.close_something' | t: something: 'modal' }}">{% render 'icon-close' %}</a>
+  <div class="modal-dialog" data-contents data-modal-dialog role="dialog" aria-modal="true" tabindex="-1">
+    <div class="modal-body" data-modal-body>
+      <gridy-slider
+        id="zoom-slider-{{ id }}"
+        class="gridy-slider"
+        data-mobile-enabled="{% if zoom_type_mobile == 'slider' %}true{% else %}false{% endif %}"
+        data-tablet-enabled="{% if zoom_type_desktop == 'slider' %}true{% else %}false{% endif %}"
+        data-desktop-enabled="{% if zoom_type_desktop == 'slider' %}true{% else %}false{% endif %}"
+        data-arrows="true">
+
+        <div class="grid gridy-track scrollbar--hide grid-cols-1">
+          {%- assign zoom_media_index = 0 -%}
+          {% if variant_images_mode == 'selected' and filtered_media_ids != '' %}
+            {%- assign zoom_media_index = zoom_media_index | plus: 1 -%}
+            <div id="modal-item-{{ product.selected_or_first_available_variant.featured_media.id }}" class="zoom-item zoom-item--{{ product.selected_or_first_available_variant.featured_media.media_type }}">
+              <div class="item-number size--nano flex center-center">
+                <span>{{- zoom_media_index }} / {{ filtered_media_count -}}</span>
+              </div>
+              {%- render 'product-media',
+                media: product.selected_or_first_available_variant.featured_media,
+                aspect_ratio: 'natural',
+                lazyload: true,
+                sizing_rule: 'contain',
+                custom_classes: 'zoom-media',
+                context: 'zoom-gallery'
+              -%}
+            </div>
+          {% endif %}
+          {%- for media in medias -%}
+            {%- liquid
+              if filtered_media_ids != ''
+                # When "selected" mode is enabled, we will skip that are attached to any variant
+                if variant_images_mode == 'selected' and attached_to_variant contains media.src
+                  continue
+                endif
+
+                assign zoom_media_token = ',' | append: media.id | append: ','
+                unless filtered_media_ids contains zoom_media_token
+                  continue
+                endunless
+              endif
+              assign zoom_media_index = zoom_media_index | plus: 1
+            -%}
+            <div id="modal-item-{{ media.id }}" class="zoom-item zoom-item--{{ media.media_type | default: 'image' }}">
+              <div class="item-number size--nano flex center-center">
+                <span>{{- zoom_media_index }} / {{ filtered_media_count -}}</span>
+              </div>
+              {% if context == 'product' %}
+                {%- render 'product-media',
+                  media: media,
+                  aspect_ratio: 'natural',
+                  lazyload: true,
+                  sizing_rule: 'contain',
+                  custom_classes: 'zoom-media',
+                  context: 'zoom-gallery'
+                -%}
+              {% elsif media.type == 'image' %}
+                {%- liquid
+                  if media.settings.image.alt contains '|'
+                    assign img_alt = media.settings.image.alt | split: '|' | first | strip
+                    assign img_caption = media.settings.image.alt | split: '|' | last | strip
+                  else
+                    assign img_alt = media.settings.image.alt
+                    assign img_caption = ''
+                  endif
+                -%}
+                {%- render 'img',
+                  src: media.settings.image,
+                  aspect_ratio: 'natural',
+                  sizing_rule: 'contain',
+                  custom_classes: 'zoom-media',
+                  lazyload: true,
+                  alt: img_alt,
+                  img_caption: img_caption -%}
+              {% endif %}
+
+              {% if context == 'gallery-section' and media.settings.products != blank %}
+                <div class="zoom-item-products">
+                  {% for product in media.settings.products %}
+                    <a href="{{ product.url }}" class="zoom-item-product-link" aria-label="{{ product.title }}">
+                      {{ product.featured_image | image_url: width: 120 | image_tag: width: 60, height: 60, alt: product.title }}
+                      <div class="zoom-item-product-link-content">
+                        <span class="gallery-product-link-title">{{ product.title }}</span>
+                        {% render 'price', product: product, price_class: 'size--small', font_weight: settings.product_card_price_font_weight %}
+                      </div>
+                    </a>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          {%- endfor -%}
+        </div>
+        {%- if filtered_media_count > 1 -%}
+          {% render 'gridy-arrows' %}
+        {%- endif -%}
+      </gridy-slider>
+    </div>
+  </div>
+</div>
